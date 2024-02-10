@@ -12,12 +12,10 @@
 
 
 
-
 #include "func.h"
 
 
 char *human_readable_size(uintmax_t size, char *buf) {
-
     const char *suffixes[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
     int i;
 
@@ -31,10 +29,7 @@ char *human_readable_size(uintmax_t size, char *buf) {
 
 char* format_last_modification_time(time_t time, char *buf) {
     struct tm *timeinfo = localtime(&time);
-
-    // Format the time as "YY.MM.DD HH:MM"
     strftime(buf, 20, "%y.%m.%d %H:%M", timeinfo);
 
-    // printf("buf: %s\n", buf);
     return buf;
 }

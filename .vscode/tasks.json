@@ -12,6 +12,7 @@
                 "check_func.c",
                 "list_builder.c",
                 "extra.c",
+                "rendering.c",
                 "-o",
                 "/home/dm/WebstormProjects/c/my_project/file_manager/file_manager",
                 "-lncurses"                  // Добавленный флаг для использования библиотеки ncurses

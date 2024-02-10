@@ -15,12 +15,9 @@
 #include "func.h"
 
 
-
-int ls_list(char *path, _Bool flag_hidden_files) {
-    printf("home: %s\n", path);
-    printf("\n");
-
-    char buf[20];
+int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag_hidden_files)
+{
+    char symb[2];
     
     DIR *dir = opendir(path);
     if (dir == NULL){
@@ -31,9 +28,8 @@ int ls_list(char *path, _Bool flag_hidden_files) {
     struct dirent *entry;
     struct stat file_info;
 
-    struct file_data directories[100];
-    struct file_data files[100];
-    int dir_count = 0, file_count = 0;
+    struct file_data *files = (struct file_data *)malloc(500 * sizeof(struct file_data));
+    int file_count = 0;
 
     if (strlen(path) == 1) {
         strcpy(directories[dir_count].name, "/");
@@ -66,39 +62,14 @@ int ls_list(char *path, _Bool flag_hidden_files) {
                 size_t length_link_name = strlen(entry->d_name) + strlen(link_target) + 5;
                 char link_name[target_length];
                 snprintf(link_name, length_link_name, "%s -> %s\n", entry->d_name, link_target);
+                strcpy(symb, "l");
 
-                
-                strncpy(current_file.name, link_name, sizeof(current_file.name));
-                strncpy(current_file.size, human_readable_size(file_info.st_size, buf), sizeof(current_file.size));
-                strncpy(current_file.time, format_last_modification_time(file_info.st_mtime, buf), sizeof(current_file.time));
-                sprintf(current_file.permissions, "%s%s%s%s%s%s%s%s%s%s",
-                    "l",
-                    (file_info.st_mode & S_IRUSR) ? "r" : "-",
-                    (file_info.st_mode & S_IWUSR) ? "w" : "-",
-                    (file_info.st_mode & S_IXUSR) ? "x" : "-",
-                    (file_info.st_mode & S_IRGRP) ? "r" : "-",
-                    (file_info.st_mode & S_IWGRP) ? "w" : "-",
-                    (file_info.st_mode & S_IXGRP) ? "x" : "-",
-                    (file_info.st_mode & S_IROTH) ? "r" : "-",
-                    (file_info.st_mode & S_IWOTH) ? "w" : "-",
-                    (file_info.st_mode & S_IXOTH) ? "x" : "-");
+                file_data(&current_file, link_name, &file_info, symb);
 
                 files[file_count++] = current_file;
             } else {
-                strncpy(current_file.name, entry->d_name, sizeof(current_file.name));
-                strncpy(current_file.size, human_readable_size(file_info.st_size, buf), sizeof(current_file.size));
-                strncpy(current_file.time, format_last_modification_time(file_info.st_mtime, buf), sizeof(current_file.time));
-                sprintf(current_file.permissions, "%s%s%s%s%s%s%s%s%s%s",
-                    (S_ISDIR(file_info.st_mode)) ? "d" : "-",
-                    (file_info.st_mode & S_IRUSR) ? "r" : "-",
-                    (file_info.st_mode & S_IWUSR) ? "w" : "-",
-                    (file_info.st_mode & S_IXUSR) ? "x" : "-",
-                    (file_info.st_mode & S_IRGRP) ? "r" : "-",
-                    (file_info.st_mode & S_IWGRP) ? "w" : "-",
-                    (file_info.st_mode & S_IXGRP) ? "x" : "-",
-                    (file_info.st_mode & S_IROTH) ? "r" : "-",
-                    (file_info.st_mode & S_IWOTH) ? "w" : "-",
-                    (file_info.st_mode & S_IXOTH) ? "x" : "-");
+                strcpy(symb, (S_ISDIR(file_info.st_mode)) ? "d" : "-");
+                file_data(&current_file, entry->d_name, &file_info, symb);
 
                 if (S_ISDIR(file_info.st_mode)) {
                     directories[dir_count++] = current_file;
@@ -110,34 +81,81 @@ int ls_list(char *path, _Bool flag_hidden_files) {
     }
     closedir(dir);
 
-    rendering(directories, files, dir_count, file_count);
-    return 0;
+    for(int i = 0; i < file_count; ++i) {
+        directories[dir_count++] = files[i];
+    }
+
+    free(files);
+    return dir_count;
 }
 
 
-int rendering(struct file_data *directories, struct file_data *files, int dir_count, int file_count)
+void file_data(struct file_data *current_file, char *file_name, struct stat *file_info, char *symb)
 {
+    char buf[20];
 
-     for (int i = 0; i < dir_count; i++) {
-        printf("Directory Name: %s\n", directories[i].name);
-        printf("Size: %s\n", directories[i].size);
-        printf("Permissions: %s\n", directories[i].permissions);
-        printf("Modification Time: %s\n", directories[i].time);
-        printf("\n");
-    }
-
-    for (int i = 0; i < file_count; i++) {
-        printf("File Name: %s\n", files[i].name);
-        printf("Size: %s\n", files[i].size);
-        printf("Permissions: %s\n", files[i].permissions);
-        printf("Modification Time: %s\n", files[i].time);
-        printf("\n");
-    }
-
-
-
-
-
-    return 0;
+    strncpy(current_file->name, file_name, sizeof(current_file->name));
+    strncpy(current_file->size, human_readable_size(file_info->st_size, buf), sizeof(current_file->size));
+    strncpy(current_file->time, format_last_modification_time(file_info->st_mtime, buf), sizeof(current_file->time));
+    sprintf(current_file->permissions, "%s%s%s%s%s%s%s%s%s%s",
+            symb,
+            (file_info->st_mode & S_IRUSR) ? "r" : "-",
+            (file_info->st_mode & S_IWUSR) ? "w" : "-",
+            (file_info->st_mode & S_IXUSR) ? (((file_info->st_mode & S_ISUID) ? "s" : "x")) : ((file_info->st_mode & S_ISUID) ? "S" : "-"),
+            (file_info->st_mode & S_IRGRP) ? "r" : "-",
+            (file_info->st_mode & S_IWGRP) ? "w" : "-",
+            (file_info->st_mode & S_IXGRP) ? (((file_info->st_mode & S_ISGID) ? "s" : "x")) : ((file_info->st_mode & S_ISGID) ? "S" : "-"),
+            (file_info->st_mode & S_IROTH) ? "r" : "-",
+            (file_info->st_mode & S_IWOTH) ? "w" : "-",
+            (file_info->st_mode & S_IXOTH) ? (((file_info->st_mode & S_ISVTX) ? "t" : "x")) : ((file_info->st_mode & S_ISVTX) ? "T" : "-"));
 }
+
+
+// int rendering(struct file_data *directories, int total_count)
+// {
+//     // printf("total_count: %u\n", total_count);
+//     for (int i = 0; i < total_count; i++) {
+//         printf("Directory Name: %s\n", directories[i].name);
+//         printf("Size: %s\n", directories[i].size);
+//         printf("Permissions: %s\n", directories[i].permissions);
+//         printf("Modification Time: %s\n", directories[i].time);
+//         printf("\n");
+//     }
+
+//     // for (int i = 0; i < file_count; i++) {
+//     //     printf("File Name: %s\n", files[i].name);
+//     //     printf("Size: %s\n", files[i].size);
+//     //     printf("Permissions: %s\n", files[i].permissions);
+//     //     printf("Modification Time: %s\n", files[i].time);
+//     //     printf("\n");
+//     // }
+
+//         // mvwprintw(win_left, row_to_highlight, 1, "file_manager");
+
+//         // mvwprintw(win_left, row_l1++, 1, "file_manager.c");
+//         // mvwprintw(win_left, row_l1++, 1, "q_info.txt");
+//         // mvwprintw(win_left, row_l1++, 1, "test.c");
+
+//         // mvwprintw(win_left, row_l2++, width / 2 - 32, " size");
+//         // mvwprintw(win_left, row_l2++, width / 2 - 32, "55,3K");
+//         // mvwprintw(win_left, row_l2++, width / 2 - 32, "55,3K");
+//         // mvwprintw(win_left, row_l2++, width / 2 - 32, "55130");
+//         // mvwprintw(win_left, row_l2++, width / 2 - 32, "55,3K");
+        
+        
+//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "     data");
+//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "31.01.24 17:52");
+//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "31.01.24 17:53");
+//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "29.01.24 18:25");
+//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "30.01.24 18:07");
+        
+//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "permission");
+//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "-rwxrwxr-x");
+//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "-rw-rw-r--");
+//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "-rw-rw-r--");
+//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "-rw-rw-r--");
+
+
+//     return 0;
+// }
 
