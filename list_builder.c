@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -36,8 +37,8 @@ int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag
     } else {
         strcpy(directories[dir_count].name, "..");
     }
-    strcpy(directories[dir_count].size, "size");
-    strcpy(directories[dir_count].time, "date");
+    strcpy(directories[dir_count].size, " size");
+    strcpy(directories[dir_count].time, "     data");
     strcpy(directories[dir_count].permissions, "permission");
     dir_count++;
 
@@ -48,6 +49,9 @@ int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag
         if ((strchr(entry->d_name, '.') == entry->d_name) && flag_hidden_files){
             continue;
         }
+
+        // printf("Folder: %s\n", entry->d_name);
+        // printf("Folder: %s\n", entry->d_name);
         size_t length_full_path = strlen(path) + strlen(entry->d_name) + 2;
         char full_path[length_full_path];
         snprintf(full_path, length_full_path, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, entry->d_name);
@@ -86,6 +90,9 @@ int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag
     }
 
     free(files);
+    // for (int i = 0; i < dir_count; i++) {
+    //     printf("\nDirectory Name: %s | %s | %s | %s\n", directories[i].name, directories[i].size, directories[i].permissions, directories[i].time);
+    // }
     return dir_count;
 }
 
@@ -111,51 +118,13 @@ void file_data(struct file_data *current_file, char *file_name, struct stat *fil
 }
 
 
-// int rendering(struct file_data *directories, int total_count)
-// {
-//     // printf("total_count: %u\n", total_count);
-//     for (int i = 0; i < total_count; i++) {
-//         printf("Directory Name: %s\n", directories[i].name);
-//         printf("Size: %s\n", directories[i].size);
-//         printf("Permissions: %s\n", directories[i].permissions);
-//         printf("Modification Time: %s\n", directories[i].time);
-//         printf("\n");
+// void strtrim(char *str) {
+//     size_t len = strlen(str);
+//     while (len > 0 && isspace((unsigned char)str[len - 1])) {
+//         str[--len] = '\0';
 //     }
-
-//     // for (int i = 0; i < file_count; i++) {
-//     //     printf("File Name: %s\n", files[i].name);
-//     //     printf("Size: %s\n", files[i].size);
-//     //     printf("Permissions: %s\n", files[i].permissions);
-//     //     printf("Modification Time: %s\n", files[i].time);
-//     //     printf("\n");
-//     // }
-
-//         // mvwprintw(win_left, row_to_highlight, 1, "file_manager");
-
-//         // mvwprintw(win_left, row_l1++, 1, "file_manager.c");
-//         // mvwprintw(win_left, row_l1++, 1, "q_info.txt");
-//         // mvwprintw(win_left, row_l1++, 1, "test.c");
-
-//         // mvwprintw(win_left, row_l2++, width / 2 - 32, " size");
-//         // mvwprintw(win_left, row_l2++, width / 2 - 32, "55,3K");
-//         // mvwprintw(win_left, row_l2++, width / 2 - 32, "55,3K");
-//         // mvwprintw(win_left, row_l2++, width / 2 - 32, "55130");
-//         // mvwprintw(win_left, row_l2++, width / 2 - 32, "55,3K");
-        
-        
-//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "     data");
-//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "31.01.24 17:52");
-//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "31.01.24 17:53");
-//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "29.01.24 18:25");
-//         // mvwprintw(win_left, row_l3++, width / 2 - 26, "30.01.24 18:07");
-        
-//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "permission");
-//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "-rwxrwxr-x");
-//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "-rw-rw-r--");
-//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "-rw-rw-r--");
-//         // mvwprintw(win_left, row_l4++, width / 2 - 11, "-rw-rw-r--");
-
-
-//     return 0;
+//     while (*str && isspace((unsigned char)*str)) {
+//         ++str;
+//         --len;
+//     }
 // }
-

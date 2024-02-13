@@ -15,6 +15,18 @@
 #include "func.h"
 
 
+// char *human_readable_size(uintmax_t size, char *buf) {
+//     const char *suffixes[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
+//     int i;
+
+//     for (i = 0; size >= 1024 && i < (sizeof(suffixes) / sizeof(suffixes[0]) - 1); ++i) {
+//         size /= 1024;
+//     }
+
+//     sprintf(buf, "%ju %s", size, suffixes[i]);
+//     return buf;
+// }
+
 char *human_readable_size(uintmax_t size, char *buf) {
     const char *suffixes[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
     int i;
@@ -23,9 +35,14 @@ char *human_readable_size(uintmax_t size, char *buf) {
         size /= 1024;
     }
 
-    sprintf(buf, "%ju %s", size, suffixes[i]);
+    if (strcmp(suffixes[i], "B") == 0) {
+        sprintf(buf, "%3ju %s ", size, suffixes[i]);
+    } else {
+        sprintf(buf, "%3ju %s", size, suffixes[i]);
+    }
     return buf;
 }
+
 
 char* format_last_modification_time(time_t time, char *buf) {
     struct tm *timeinfo = localtime(&time);
