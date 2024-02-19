@@ -90,9 +90,6 @@ int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag
     }
 
     free(files);
-    // for (int i = 0; i < dir_count; i++) {
-    //     printf("\nDirectory Name: %s | %s | %s | %s\n", directories[i].name, directories[i].size, directories[i].permissions, directories[i].time);
-    // }
     return dir_count;
 }
 
@@ -118,13 +115,13 @@ void file_data(struct file_data *current_file, char *file_name, struct stat *fil
 }
 
 
-// void strtrim(char *str) {
-//     size_t len = strlen(str);
-//     while (len > 0 && isspace((unsigned char)str[len - 1])) {
-//         str[--len] = '\0';
-//     }
-//     while (*str && isspace((unsigned char)*str)) {
-//         ++str;
-//         --len;
-//     }
-// }
+void ls_list_offset(char *str) {
+    size_t len = strlen(str);
+    while (len > 0 && isspace((unsigned char)str[len - 1])) {
+        str[--len] = '\0';
+    }
+    while (*str && isspace((unsigned char)*str)) {
+        ++str;
+        --len;
+    }
+}

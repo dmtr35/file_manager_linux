@@ -28,19 +28,7 @@ struct coordinates {
     int cursor_y;
 };
 
-// struct coordinates_left {
-//     int height_win_left;
-//     int width_win_left;
-//     int cursor_left_x;
-//     int cursor_left_y;
-// };
 
-// struct coordinates_right {
-//     int height_win_right;
-//     int width_win_right;
-//     int cursor_right_x;
-//     int cursor_right_y;
-// };
 
 
 // check_func.c
@@ -59,7 +47,15 @@ void strtrim(char *str);
 
 
 // rendering
-void rendering(char *path, struct file_data *all_files, struct coordinates *coords, int number_lines, _Bool left_of_right, _Bool active, WINDOW *win);
+void rendering(char *path, struct file_data *all_files, struct coordinates *coords, int number_lines, _Bool left_of_right, _Bool active, WINDOW *win, int offset);
+void trim_filename(struct file_data *all_files, int number_lines, int max_length);
 
+
+// extra_func
+void remove_first_char(char *str);
+
+
+// button_processing
+void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path);
 
 #endif

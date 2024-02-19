@@ -13,9 +13,11 @@
                 "list_builder.c",
                 "extra.c",
                 "rendering.c",
+                "extra_func.c",
+                "button_processing.c",
                 "-o",
                 "/home/dm/WebstormProjects/c/my_project/file_manager/file_manager",
-                "-lncurses"                  // Добавленный флаг для использования библиотеки ncurses
+                "-lncursesw"                  // Добавленный флаг для использования библиотеки ncurses
             ],
             "options": {
                 "cwd": "${fileDirname}"
