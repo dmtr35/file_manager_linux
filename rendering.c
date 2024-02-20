@@ -115,10 +115,17 @@ void rendering(char *path, struct file_data *all_files, struct coordinates *coor
                 wattron(win, A_BOLD);
                 wattron(win, COLOR_PAIR(6));                       // Включаем цветовую пару для всей строки
                 mvwhline(win, row, 1, ' ', coords->width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
-                mvwprintw(win, row, 1, all_files[i].name);         // Выводим текст
-                mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 32) : (coords->width / 2 - 33),all_files[i].size);
-                mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 25) : (coords->width / 2 - 26),all_files[i].time);
-                mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 10) : (coords->width / 2 - 11), all_files[i].permissions);
+                if (left_of_right) {
+                    mvwprintw(win, row, 1, all_files[i].name); // Выводим текст
+                    mvwprintw(win, row, (coords->width / 2 - 33), all_files[i].size);
+                    mvwprintw(win, row, (coords->width / 2 - 26), all_files[i].time);
+                    mvwprintw(win, row, (coords->width / 2 - 11), all_files[i].permissions);
+                } else {
+                    mvwprintw(win, row, 1, all_files[i].name); // Выводим текст
+                    mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 32) : (coords->width / 2 - 33), all_files[i].size);
+                    mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 25) : (coords->width / 2 - 26), all_files[i].time);
+                    mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 10) : (coords->width / 2 - 11), all_files[i].permissions);
+                }
                 wattroff(win, COLOR_PAIR(6)); // Отключаем цветовую пару
                 wattroff(win, A_BOLD);
 
@@ -127,8 +134,7 @@ void rendering(char *path, struct file_data *all_files, struct coordinates *coor
         }
     }
 
-
-
+    
     wrefresh(win);
 }
 

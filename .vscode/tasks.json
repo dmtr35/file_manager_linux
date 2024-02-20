@@ -15,6 +15,7 @@
                 "rendering.c",
                 "extra_func.c",
                 "button_processing.c",
+                "render_vim_window.c",
                 "-o",
                 "/home/dm/WebstormProjects/c/my_project/file_manager/file_manager",
                 "-lncursesw"                  // Добавленный флаг для использования библиотеки ncurses

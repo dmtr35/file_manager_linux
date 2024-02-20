@@ -57,13 +57,15 @@ int main() {
     _Bool flag_hidden_files = 1;
     struct user_data *ptr_user_data = malloc(sizeof(struct user_data));
     int res_check = check_func(ptr_user_data);
-    
+    strcpy(previous_path_left, ptr_user_data->current_directory);    
+    strcpy(previous_path_right, ptr_user_data->home);
 
 
     while (1) {
         getmaxyx(stdscr, coords.height, coords.width);
         win_left = newwin(coords.height, coords.width / 2, 0, 0);
         win_right = newwin(coords.height, coords.width % 2 ? (coords.width / 2) + 1 : coords.width / 2, 0, coords.width / 2);
+        // wclear(win_left);
         int number_lines_left = ls_list(ptr_user_data->current_directory, all_files_left, number_lines, flag_hidden_files);
         rendering(ptr_user_data->current_directory, all_files_left, &coords, number_lines_left, 1, active, win_left, offset_left);
         int number_lines_right = ls_list(ptr_user_data->home, all_files_right, number_lines, flag_hidden_files);
@@ -164,7 +166,7 @@ int main() {
             } else {
                 click_on_file(ptr_user_data->home, all_files_right, &coords, previous_path_right);
             }
-        } else if (ch == 16) {
+        } else if (ch == 16) {                                      // Ctrl + p - переход на сохраненный ранее путь
             if (active) {
                 char temp[1024];
                 strcpy(temp, ptr_user_data->current_directory);
@@ -175,6 +177,15 @@ int main() {
                 strcpy(temp, ptr_user_data->home);
                 strcpy(ptr_user_data->home, previous_path_right);
                 strcpy(previous_path_right, temp);
+            }
+        } 
+        // else if (ch == ('V' & 0x1F)) {                            // Обработка нажатия Ctrl + V
+        else if (ch == 'v') {                            // Обработка нажатия Ctrl + V
+            
+            if (active) {
+                open_in_vim(ptr_user_data->current_directory, all_files_left, &coords, win_left);
+            } else {
+                open_in_vim(ptr_user_data->home, all_files_right, &coords, win_right);
             }
         }
     }

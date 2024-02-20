@@ -57,5 +57,14 @@ void remove_first_char(char *str);
 
 // button_processing
 void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path);
+void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, WINDOW *win);
+
+// render_vim_window.c
+
+
+
+
+
+
 
 #endif
