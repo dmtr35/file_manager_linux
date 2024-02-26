@@ -18,31 +18,6 @@
 WINDOW *win_left;
 WINDOW *win_right;
 
-// int render_ls(char *path, struct file_data *all_files, struct coordinates *coords, int number_lines, _Bool flag_hidden_files, _Bool left_of_right, _Bool active, int offset, WINDOW *win)
-// {
-//     getmaxyx(stdscr, coords->height, coords->width);
-//     win_left = newwin(coords->height, coords->width / 2, 0, 0);
-//     win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-//     win = left_of_right ? win_left : win_right;
-
-//     int res_number_lines = ls_list(path, all_files, number_lines, flag_hidden_files);
-//     rend_XXX(path, all_files, coords, flag_hidden_files, res_number_lines, left_of_right, active, offset, win);
-//     // rendering(path, all_files, coords, flag_hidden_files, res_number_lines, left_of_right, active, offset, win);
-
-//     return res_number_lines;
-// }
-
-
-// void render_command(struct user_data *ptr_user_data, struct coordinates *coords, _Bool left_of_right, _Bool active, _Bool *bool_win_command)
-// {
-//     getmaxyx(stdscr, coords->height, coords->width);
-//     win_left = newwin(coords->height, coords->width / 2, 0, 0);
-//     win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-//     win = left_of_right ? win_left : win_right;
-
-//     rendering_comm(ptr_user_data, coords, left_of_right, active, bool_win_command, win);
-//     // bool_win_command = !bool_win_command;
-// }
 
 
 int main() {
@@ -56,7 +31,6 @@ int main() {
     // printw ("%i\n%i\n%i\n", getch (), getch (), getch ());
     curs_set(0);
 
-    _Bool left_of_right = 1;
     _Bool active = 1;
     _Bool bool_win_command = 0;
     char previous_path_left[1024];
@@ -97,34 +71,27 @@ int main() {
         win_left = newwin(coords.height, coords.width / 2, 0, 0);
         win_right = newwin(coords.height, coords.width % 2 ? (coords.width / 2) + 1 : coords.width / 2, 0, coords.width / 2);
 
-        if(active) {
-            number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, 0, !active, offset_right, win_right);
-            number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, flag_hidden_files, 1, active, offset_left, win_left);
+        if(!bool_win_command) {
+            if(active) {
+                number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
+                number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, flag_hidden_files, active, offset_left, win_left);
+            } else {
+                number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, flag_hidden_files, active, offset_left, win_left);
+                number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
+            }
         } else {
-            number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, flag_hidden_files, 1, active, offset_left, win_left);
-            number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, 0, !active, offset_right, win_right);
-        }
-        // if(active) {
-        //     number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, number_lines, flag_hidden_files, 0, !active, offset_right, win_right);
-        //     number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, number_lines, flag_hidden_files, 1, active, offset_left, win_left);
-        // } else {
-        //     number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, number_lines, flag_hidden_files, 1, active, offset_left, win_left);
-        //     number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, number_lines, flag_hidden_files, 0, !active, offset_right, win_right);
-        // }
-        // =====================================================
-        // if(!bool_win_command) {
-        //     // curs_set(0);
-        //     // number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, number_lines, flag_hidden_files, 1, active, offset_left, win_left);
-            // number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, number_lines, flag_hidden_files, 1, active, offset_left, win_left);
-            // number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, number_lines, flag_hidden_files, 0, !active, offset_right, win_right);
-        // } else {
-        //     // curs_set(1);
-        //     // render_command(ptr_user_data, &coords, left_of_right, active, &bool_win_command);
-        //     // number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, number_lines, flag_hidden_files, 0, !active, offset_right, win, win_left, win_right);
-        // } 
+            if(active) {
+                number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
+                render_comm(ptr_user_data, &coords, active, &bool_win_command, win_left);
+            } else {
+                render_comm(ptr_user_data, &coords, active, &bool_win_command, win_left);
+                number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
+            }
 
-        // wrefresh(win_right);
-        // wrefresh(win_left);
+            if(active && !bool_win_command) {
+                continue;
+            }
+        }
 
         int ch;
         if (active) {
@@ -241,18 +208,18 @@ int main() {
                 strcpy(previous_path_right, temp);
             }
         } 
-        // else if (ch == ('V' & 0x1F)) {                            // Обработка нажатия Ctrl + V
+        else if (ch == ('V' & 0x1F)) {                            // Обработка нажатия Ctrl + V
         // // else if (ch == 'v') {                            // Обработка нажатия Ctrl + V
             
-        //     if (active) {
-        //         open_in_vim(ptr_user_data->left_path, all_files_left, &coords, win_left);
-        //     } else {
-        //         open_in_vim(ptr_user_data->right_path, all_files_right, &coords, win_right);
-        //     }
-        // } 
+            if (active) {
+                open_in_vim(ptr_user_data->left_path, all_files_left, &coords, win_left);
+            } else {
+                open_in_vim(ptr_user_data->right_path, all_files_right, &coords, win_right);
+            }
+        } 
 
-        else if (ch == 'c') {
-        // else if (ch == 3) {
+        // else if (ch == 1) {                                           // ctrl + a
+        else if (ch == 'a') {
             bool_win_command = !bool_win_command;
         }
     }

@@ -34,7 +34,6 @@ struct coordinates {
 
 // check_func.c
 int check_func(struct user_data *ptr_user_data);
-void render_command(struct user_data *ptr_user_data, struct coordinates *coords, _Bool left_of_right, _Bool active, _Bool *bool_win_command);
 
 // extra.c
 char *human_readable_size(uintmax_t size, char *buf);
@@ -48,7 +47,7 @@ void strtrim(char *str);
 
 
 // rendering_ls
-int render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool left_of_right, _Bool active, int offset, WINDOW *win);
+int render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
 void trim_filename(struct file_data *all_files, int number_lines, int max_length);
 
 
@@ -61,7 +60,7 @@ void click_on_file(char *path, struct file_data *all_files, struct coordinates *
 void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, WINDOW *win);
 
 // rendering_command.c
-void rendering_comm(struct user_data *ptr_user_data, struct coordinates *coords, _Bool left_of_right, _Bool active, _Bool *bool_win_command, WINDOW *win);
+void render_comm(struct user_data *ptr_user_data, struct coordinates *coords, _Bool active, _Bool *bool_win_command, WINDOW *win);
 void add_char_to_command_line(WINDOW *win, char c);
 void remove_char_from_command_line(WINDOW *win, size_t cursor_coords);
 

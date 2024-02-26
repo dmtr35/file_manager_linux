@@ -17,7 +17,7 @@
 
 
 
-void rendering_comm(struct user_data *ptr_user_data, struct coordinates *coords, _Bool left_of_right, _Bool active, _Bool *bool_win_command, WINDOW *win)
+void render_comm(struct user_data *ptr_user_data, struct coordinates *coords, _Bool active, _Bool *bool_win_command, WINDOW *win)
 {
 
     size_t size_user_data_home = strlen(ptr_user_data->home_path);
@@ -46,9 +46,9 @@ void rendering_comm(struct user_data *ptr_user_data, struct coordinates *coords,
         while (!is_enter_pressed) {
             int ch = wgetch(win);
             if (ch != ERR) {
-                if (ch == '\t') {
+                if (ch == 'a') {
                     is_enter_pressed = true;
-                    bool_win_command = false;
+                    *bool_win_command = false;
                 } else if (ch == '\n') {
                     row++;
                     wattron(win, A_BOLD);
