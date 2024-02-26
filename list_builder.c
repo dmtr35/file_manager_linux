@@ -16,9 +16,10 @@
 #include "func.h"
 
 
-int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag_hidden_files)
+int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files)
 {
     char symb[2];
+    int dir_count = 0;
     
     DIR *dir = opendir(path);
     if (dir == NULL){
@@ -33,13 +34,13 @@ int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag
     int file_count = 0;
 
     if (strlen(path) == 1) {
-        strcpy(directories[dir_count].name, "/");
+        strcpy(all_files[dir_count].name, "/");
     } else {
-        strcpy(directories[dir_count].name, "..");
+        strcpy(all_files[dir_count].name, "..");
     }
-    strcpy(directories[dir_count].size, " size");
-    strcpy(directories[dir_count].time, "     data");
-    strcpy(directories[dir_count].permissions, "permission");
+    strcpy(all_files[dir_count].size, " size");
+    strcpy(all_files[dir_count].time, "     data");
+    strcpy(all_files[dir_count].permissions, "permission");
     dir_count++;
 
     while ((entry = readdir(dir)) != NULL) {
@@ -76,7 +77,7 @@ int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag
                 file_data(&current_file, entry->d_name, &file_info, symb);
 
                 if (S_ISDIR(file_info.st_mode)) {
-                    directories[dir_count++] = current_file;
+                    all_files[dir_count++] = current_file;
                 } else {
                     files[file_count++] = current_file;
                 }
@@ -86,7 +87,7 @@ int ls_list(char *path, struct file_data *directories, int dir_count, _Bool flag
     closedir(dir);
 
     for(int i = 0; i < file_count; ++i) {
-        directories[dir_count++] = files[i];
+        all_files[dir_count++] = files[i];
     }
 
     free(files);

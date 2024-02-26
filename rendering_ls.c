@@ -11,8 +11,11 @@
 
 #include "func.h"
 
-void rendering(char *path, struct file_data *all_files, struct coordinates *coords, int number_lines, _Bool left_of_right, _Bool active, WINDOW *win, int offset)
+
+int render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool left_of_right, _Bool active, int offset, WINDOW *win)
 {
+    int res_number_lines = ls_list(path, all_files, flag_hidden_files);
+
     start_color();
     init_color(COLOR_BLUE, 0, 0, 650);
     init_color(COLOR_WHITE, 1000, 1000, 1000);
@@ -31,13 +34,12 @@ void rendering(char *path, struct file_data *all_files, struct coordinates *coor
     init_pair(14, COLOR_GREEN, COLOR_MAGENTA); // Цветовая пара 1: Белый текст на темносинем фоне         // folder
     init_pair(15, COLOR_RED, COLOR_MAGENTA); // Цветовая пара 1: Белый текст на темносинем фоне         // folder
     init_pair(16, COLOR_BLACK, COLOR_MAGENTA); // Цветовая пара 1: Белый текст на темносинем фоне         // folder
-
-
     active ? wbkgd(win, COLOR_PAIR(1)) : wbkgd(win, COLOR_PAIR(11));
+
     getmaxyx(win, coords->height_win, coords->width_win);
 
     int max_length = coords->width_win - 35;
-    trim_filename(all_files, number_lines, max_length);
+    trim_filename(all_files, res_number_lines, max_length);
 
     if(left_of_right) {
         mvwvline(win, 1, coords->width_win - 34, ACS_VLINE, coords->height - 4);
@@ -59,7 +61,7 @@ void rendering(char *path, struct file_data *all_files, struct coordinates *coor
 
     int i = 0 + offset;
     int row = 1;
-    for (; i < number_lines && i < (coords->height_win - 4) + offset; ++i, ++row) {
+    for (; i < res_number_lines && i < (coords->height_win - 4) + offset; ++i, ++row) {
         wattron(win, A_BOLD);
         if (strstr(all_files[i].permissions, "d") != NULL || strcmp(all_files[i].name, "..") == 0) {
             if (all_files[i].name[0] == '.' || strcmp(all_files[i].name, "..") == 0) {
@@ -110,7 +112,7 @@ void rendering(char *path, struct file_data *all_files, struct coordinates *coor
     row = 1;
     int quantity_lines = (coords->height_win - 4) + offset;
     if (active) {
-        for (; i < number_lines && row <= quantity_lines; ++i, ++row) {
+        for (; i < res_number_lines && row <= quantity_lines; ++i, ++row) {
             if (row == coords->cursor_y) {
                 wattron(win, A_BOLD);
                 wattron(win, COLOR_PAIR(6));                       // Включаем цветовую пару для всей строки
@@ -134,8 +136,9 @@ void rendering(char *path, struct file_data *all_files, struct coordinates *coor
         }
     }
 
-    
     wrefresh(win);
+
+    return res_number_lines;
 }
 
 

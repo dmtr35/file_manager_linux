@@ -36,8 +36,8 @@ void click_on_file(char *path, struct file_data *all_files, struct coordinates *
         strcpy(path, new_path);
         coords->cursor_y = 1;
     } else if ((strcmp(all_files[i].name, "..") == 0)) {
-        char *parent_dir = dirname(path);
         strcpy(previous_path, path);
+        char *parent_dir = dirname(path);
         strcpy(path, parent_dir);
         coords->cursor_y = 1;
     } 
@@ -63,6 +63,8 @@ void open_in_vim(char *path, struct file_data *all_files, struct coordinates *co
         snprintf(command, sizeof(command), "vim -c \"edit %s\" -c \"wincmd w\" -c \"resize %d\" -c \"wincmd w\" -c \"resize %d\"", file_name, height_win, width_win);
 
         system(command);
+        curs_set(1);
+        curs_set(0);
 
         wclear(win);
         wnoutrefresh(win);
