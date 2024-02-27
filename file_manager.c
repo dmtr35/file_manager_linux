@@ -32,6 +32,7 @@ int main() {
     curs_set(0);
 
     _Bool active = 1;
+    _Bool left_right = 0;
     _Bool bool_win_command = 0;
     char previous_path_left[1024];
     char previous_path_right[1024];
@@ -50,8 +51,6 @@ int main() {
     int offset_left = 0;
     int offset_right = 0;
 
-    int number_lines_left = 0;
-    int number_lines_right = 0;
 
     int prev_height;
     int prev_width;
@@ -65,29 +64,28 @@ int main() {
     strcpy(previous_path_right, ptr_user_data->right_path);
 
 
-
     while (1) {
+        int quantity_lines_left;
+        int quantity_lines_right;
         getmaxyx(stdscr, coords.height, coords.width);
         win_left = newwin(coords.height, coords.width / 2, 0, 0);
         win_right = newwin(coords.height, coords.width % 2 ? (coords.width / 2) + 1 : coords.width / 2, 0, coords.width / 2);
 
         if(!bool_win_command) {
             if(active) {
-                number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
-                number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, flag_hidden_files, active, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, active, offset_left, win_left);
             } else {
-                number_lines_left = render_ls(ptr_user_data->left_path, all_files_left, &coords, flag_hidden_files, active, offset_left, win_left);
-                number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, active, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
             }
         } else {
             if(active) {
-                number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
-                number_lines_right = render_comm_XXX(ptr_user_data, all_files_right, &coords, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
-                // render_comm(ptr_user_data, &coords, active, &bool_win_command, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
+                render_comm_XXX(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
             } else {
-                // render_comm(ptr_user_data, &coords, active, &bool_win_command, win_left);
-                number_lines_right = render_comm_XXX(ptr_user_data, all_files_right, &coords, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
-                number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
+                render_comm_XXX(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
             }
 
             if(active && !bool_win_command) {
@@ -127,9 +125,9 @@ int main() {
             }
         } else if (ch == '\n') {
             if (active) {
-                click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left);
+                click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, &offset_left);
             } else {
-                click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right);
+                click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, &offset_right);
             }
             
         } else if (ch == 27) {
@@ -137,8 +135,8 @@ int main() {
             int next2 = wgetch(stdscr);
             if (next1 == '[' && next2 == 'A') {
                 int offset_to_increment = active ? offset_left : offset_right;
-                int number_lines = (active ? number_lines_left : number_lines_right);
-                int hidden_row = number_lines - coords.cursor_y;
+                int quantity_lines = (active ? quantity_lines_left : quantity_lines_right);
+                int hidden_row = quantity_lines - coords.cursor_y;
                 if (coords.cursor_y > 1) {
                     coords.cursor_y--;
                 } else if (coords.cursor_y == 1 && offset_to_increment > 0) {
@@ -151,9 +149,9 @@ int main() {
 
             } else if (next1 == '[' && next2 == 'B') {
                 int offset_to_increment = active ? offset_left : offset_right;
-                int number_lines = (active ? number_lines_left : number_lines_right);
-                int hidden_row = number_lines - coords.cursor_y;
-                if (coords.cursor_y < number_lines && coords.cursor_y < coords.height_win - 4) {
+                int quantity_lines = (active ? quantity_lines_left : quantity_lines_right);
+                int hidden_row = quantity_lines - coords.cursor_y;
+                if (coords.cursor_y < quantity_lines && coords.cursor_y < coords.height_win - 4) {
                     coords.cursor_y++;
 
                 } 
@@ -163,10 +161,10 @@ int main() {
 
             } else if (next1 == '[' && next2 == 'C') {
                 int offset_to_increment = active ? offset_left : offset_right;
-                int number_lines = (active ? number_lines_left : number_lines_right);
-                int hidden_row = number_lines - (coords.height_win - 4) - offset_to_increment;
-                if(number_lines <= coords.height_win - 4) {
-                    coords.cursor_y = number_lines;
+                int quantity_lines = (active ? quantity_lines_left : quantity_lines_right);
+                int hidden_row = quantity_lines - (coords.height_win - 4) - offset_to_increment;
+                if(quantity_lines <= coords.height_win - 4) {
+                    coords.cursor_y = quantity_lines;
                 } else {
                     if(active) {
                         offset_left += hidden_row;
@@ -190,9 +188,9 @@ int main() {
 
         } else if (ch == 127 || ch == KEY_BACKSPACE) {
             if (active) {
-                click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left);
+                click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, &offset_left);
             } else {
-                click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right);
+                click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, &offset_right);
             }
             
         } 

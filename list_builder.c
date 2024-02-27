@@ -16,10 +16,16 @@
 #include "func.h"
 
 
-int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files)
+int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files, int *quantity_lines)
 {
+    *quantity_lines = 0;
+    // for (int i = 0; i < *quantity_lines; ++i) {
+    // //     // printf("%s\n", all_files[i].name);
+    //     int tt=0;
+    // }
+
     char symb[2];
-    int dir_count = 0;
+    // int dir_count = 0;
     
     DIR *dir = opendir(path);
     if (dir == NULL){
@@ -34,14 +40,14 @@ int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files)
     int file_count = 0;
 
     if (strlen(path) == 1) {
-        strcpy(all_files[dir_count].name, "/");
+        strcpy(all_files[*quantity_lines].name, "/");
     } else {
-        strcpy(all_files[dir_count].name, "..");
+        strcpy(all_files[*quantity_lines].name, "..");
     }
-    strcpy(all_files[dir_count].size, " size");
-    strcpy(all_files[dir_count].time, "     data");
-    strcpy(all_files[dir_count].permissions, "permission");
-    dir_count++;
+    strcpy(all_files[*quantity_lines].size, " size");
+    strcpy(all_files[*quantity_lines].time, "     data");
+    strcpy(all_files[*quantity_lines].permissions, "permission");
+    (*quantity_lines)++;
 
     while ((entry = readdir(dir)) != NULL) {
         if ((strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)){
@@ -77,7 +83,7 @@ int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files)
                 file_data(&current_file, entry->d_name, &file_info, symb);
 
                 if (S_ISDIR(file_info.st_mode)) {
-                    all_files[dir_count++] = current_file;
+                    all_files[(*quantity_lines)++] = current_file;
                 } else {
                     files[file_count++] = current_file;
                 }
@@ -87,11 +93,11 @@ int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files)
     closedir(dir);
 
     for(int i = 0; i < file_count; ++i) {
-        all_files[dir_count++] = files[i];
+        all_files[(*quantity_lines)++] = files[i];
+        // printf("%s\n", all_files[i].name);
     }
 
     free(files);
-    return dir_count;
 }
 
 

@@ -41,13 +41,14 @@ char* format_last_modification_time(time_t time, char *buf);
 
 
 // list_builder.c
-int ls_list(char *path, struct file_data *directories, _Bool flag_hidden_files);
+int ls_list(char *path, struct file_data *directories, _Bool flag_hidden_files, int *quantity_lines);
 void file_data(struct file_data *current_file, char *file_name, struct stat *file_info, char *symb);
 void strtrim(char *str);
 
 
 // rendering_ls
-int render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
+// void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
+void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, int *quantity_lines, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
 void trim_filename(struct file_data *all_files, int number_lines, int max_length);
 
 
@@ -56,7 +57,7 @@ void remove_first_char(char *str);
 
 
 // button_processing
-void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path);
+void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, int *offset);
 void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, WINDOW *win);
 
 // rendering_command.c
@@ -66,7 +67,7 @@ void remove_char_from_command_line(WINDOW *win, size_t cursor_coords);
 
 
 // testing.c
-int render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
-
+// void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
+void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, int *quantity_lines_right, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
 
 #endif

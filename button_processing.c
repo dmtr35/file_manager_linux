@@ -18,7 +18,7 @@
 
 
 
-void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path)
+void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, int *offset)
 {
     int i = coords->cursor_y - 1;
     char *file_name = all_files[i].name;
@@ -35,11 +35,13 @@ void click_on_file(char *path, struct file_data *all_files, struct coordinates *
         }
         strcpy(path, new_path);
         coords->cursor_y = 1;
+        *offset = 0;
     } else if ((strcmp(all_files[i].name, "..") == 0)) {
         strcpy(previous_path, path);
         char *parent_dir = dirname(path);
         strcpy(path, parent_dir);
         coords->cursor_y = 1;
+        *offset = 0;
     } 
     // else if ((strchr(all_files[i].permissions, '-') == 0) || (strchr(all_files[i].permissions, 'l') == 0)) {
 

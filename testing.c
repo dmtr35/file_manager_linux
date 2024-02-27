@@ -15,14 +15,14 @@
 #include "func.h"
 
 
-int render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right)
+void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, int *quantity_lines_right, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right)
 {
-
+    // initscr();
+    
     size_t size_user_data_home = strlen(ptr_user_data->home_path);
     size_t size_user_data_current = strlen(ptr_user_data->left_path) + 1;
     char current_path_comm[size_user_data_current];
     char *substr_start = strstr(ptr_user_data->left_path, ptr_user_data->home_path);
-    int number_lines_right;
 
     if (substr_start != NULL) {
         char *start_of_path = substr_start + size_user_data_home;
@@ -44,12 +44,17 @@ int render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files
     if (active) {
         while (!is_enter_pressed) {
             int ch = wgetch(win_left);
+
+            getmaxyx(stdscr, coords->height, coords->width);
+            // win_left = newwin(coords->height, coords->width / 2, 0, 0);
+            win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
+
             if (ch != ERR) {
                 if (ch == 1 || ch == 'a') {
                     is_enter_pressed = true;
                     *bool_win_command = false;
                 } else if (ch == '\n') {
-                    number_lines_right = render_ls(ptr_user_data->right_path, all_files, coords, flag_hidden_files, !active, offset, win_right);
+                    render_ls(ptr_user_data->right_path, all_files, coords, quantity_lines_right, flag_hidden_files, !active, offset, win_right);
                     row++;
                     wattron(win_left, A_BOLD);
                     wprintw(win_left, "\n%s:%s$ ", ptr_user_data->user, current_path_comm);
@@ -57,15 +62,15 @@ int render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files
                     wmove(win_left, row, cursor_coords);
                 } else if (ch == KEY_BACKSPACE || ch == 127) {
                     remove_char_from_command_line(win_left, cursor_coords);
+                } else if (ch == KEY_RESIZE) {
+                    render_ls(ptr_user_data->right_path, all_files, coords, quantity_lines_right, flag_hidden_files, !active, offset, win_right);                                                                                           // Обновление окна
                 } else {
                     add_char_to_command_line(win_left, ch);
-                }
+                } 
             }
         }
     }
-
     wrefresh(win_left);
-    return number_lines_right;
 }
 
 
