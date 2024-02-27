@@ -50,8 +50,8 @@ int main() {
     int offset_left = 0;
     int offset_right = 0;
 
-    int number_lines_left;
-    int number_lines_right;
+    int number_lines_left = 0;
+    int number_lines_right = 0;
 
     int prev_height;
     int prev_width;
@@ -82,9 +82,11 @@ int main() {
         } else {
             if(active) {
                 number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
-                render_comm(ptr_user_data, &coords, active, &bool_win_command, win_left);
+                number_lines_right = render_comm_XXX(ptr_user_data, all_files_right, &coords, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
+                // render_comm(ptr_user_data, &coords, active, &bool_win_command, win_left);
             } else {
-                render_comm(ptr_user_data, &coords, active, &bool_win_command, win_left);
+                // render_comm(ptr_user_data, &coords, active, &bool_win_command, win_left);
+                number_lines_right = render_comm_XXX(ptr_user_data, all_files_right, &coords, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
                 number_lines_right = render_ls(ptr_user_data->right_path, all_files_right, &coords, flag_hidden_files, !active, offset_right, win_right);
             }
 
@@ -218,8 +220,8 @@ int main() {
             }
         } 
 
-        // else if (ch == 1) {                                           // ctrl + a
-        else if (ch == 'a') {
+        else if (ch == 1 || ch == 'a') {                                           // ctrl + a
+        // else if (ch == 'a') {
             bool_win_command = !bool_win_command;
         }
     }

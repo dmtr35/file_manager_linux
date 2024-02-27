@@ -65,7 +65,8 @@ void add_char_to_command_line(WINDOW *win, char c);
 void remove_char_from_command_line(WINDOW *win, size_t cursor_coords);
 
 
-
+// testing.c
+int render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
 
 
 #endif

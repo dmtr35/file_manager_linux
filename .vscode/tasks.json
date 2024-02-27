@@ -16,6 +16,7 @@
                 "extra_func.c",
                 "button_processing.c",
                 "rendering_command.c",
+                "testing.c",
                 "-o",
                 "/home/dm/WebstormProjects/c/my_project/file_manager/file_manager",
                 "-lncursesw"
