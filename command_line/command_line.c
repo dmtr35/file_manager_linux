@@ -12,10 +12,12 @@
 #include <locale.h>
 #include <signal.h>
 
-#include "func.h"
+#include "../func.h"
 
+// char screen_buffer[10000] = {0};
+// int buffer_pos = 0;
 
-void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, int *quantity_lines_right, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right)
+void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, int *quantity_lines_right, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right)
 {
     // initscr();
     
@@ -23,6 +25,7 @@ void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_file
     size_t size_user_data_current = strlen(ptr_user_data->left_path) + 1;
     char current_path_comm[size_user_data_current];
     char *substr_start = strstr(ptr_user_data->left_path, ptr_user_data->home_path);
+
 
     if (substr_start != NULL) {
         char *start_of_path = substr_start + size_user_data_home;
@@ -35,6 +38,11 @@ void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_file
     wattron(win_left, A_BOLD);
     wprintw(win_left, "%s:%s$", ptr_user_data->user, current_path_comm);
     wattroff(win_left, A_BOLD);
+    save_to_buffer(ptr_user_data->user);
+    save_to_buffer(":");
+    save_to_buffer(current_path_comm);
+    save_to_buffer("$ ");
+
 
     wmove(win_left, 0, cursor_coords);
 
@@ -43,6 +51,7 @@ void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_file
 
     if (active) {
         while (!is_enter_pressed) {
+            // printf("%s\n", screen_buffer);
             int ch = wgetch(win_left);
 
             getmaxyx(stdscr, coords->height, coords->width);
@@ -53,9 +62,19 @@ void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_file
                 if (ch == 1 || ch == 'a') {
                     is_enter_pressed = true;
                     *bool_win_command = false;
+                } else if (ch == 'z') {
+                    restore_from_buffer(win_left);
                 } else if (ch == '\n') {
+                    save_to_buffer("\n");
+                    save_to_buffer(ptr_user_data->user);
+                    save_to_buffer(":");
+                    save_to_buffer(current_path_comm);
+                    save_to_buffer("$ ");
                     render_ls(ptr_user_data->right_path, all_files, coords, quantity_lines_right, flag_hidden_files, !active, offset, win_right);
                     row++;
+                    // if() {
+
+                    // }
                     wattron(win_left, A_BOLD);
                     wprintw(win_left, "\n%s:%s$ ", ptr_user_data->user, current_path_comm);
                     wattroff(win_left, A_BOLD);
@@ -64,8 +83,21 @@ void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_file
                     remove_char_from_command_line(win_left, cursor_coords);
                 } else if (ch == KEY_RESIZE) {
                     render_ls(ptr_user_data->right_path, all_files, coords, quantity_lines_right, flag_hidden_files, !active, offset, win_right);                                                                                           // Обновление окна
+                    getmaxyx(stdscr, coords->height, coords->width);
+                    win_left = newwin(coords->height, coords->width / 2, 0, 0);                    
+                    restore_from_buffer(win_left);
+                    
                 } else {
-                    add_char_to_command_line(win_left, ch);
+                    add_char_to_command_line(win_left, ch, row, cursor_coords);
+                        printf("%ld:%d\n", cursor_coords, coords->width / 2);
+                    if (cursor_coords >= coords->width / 2) {
+                        row++;
+                    } 
+                    // else {
+                        // row++;
+                    // }
+                    // printf("ch: %c", ch);
+                    // printf("x: %d, y: %d", coords->cursor_y, coords->cursor_x);
                 } 
             }
         }
@@ -74,17 +106,3 @@ void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_file
 }
 
 
-void add_char_to_command_line(WINDOW *win_left, char c) {
-    waddch(win_left, c);
-    wrefresh(win_left);
-}
-
-void remove_char_from_command_line(WINDOW *win_left, size_t cursor_coords) {
-    int y, x;
-    getyx(win_left, y, x);
-    if (x > cursor_coords) {
-        mvwaddch(win_left, y, x - 1, ' ');                                           // Заменяем предыдущий символ пробелом
-        wmove(win_left, y, x - 1);                                                   // Перемещаем курсор на предыдущий символ
-        wrefresh(win_left);
-    }
-}

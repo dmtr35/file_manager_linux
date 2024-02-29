@@ -82,9 +82,9 @@ int main() {
         } else {
             if(active) {
                 render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
-                render_comm_XXX(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
+                render_comm_line(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
             } else {
-                render_comm_XXX(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
+                render_comm_line(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
                 render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
             }
 

@@ -62,12 +62,15 @@ void open_in_vim(char *path, struct file_data *all_files, struct coordinates *co
 
 // rendering_command.c
 void render_comm(struct user_data *ptr_user_data, struct coordinates *coords, _Bool active, _Bool *bool_win_command, WINDOW *win);
-void add_char_to_command_line(WINDOW *win, char c);
+
+
+// command_line.c
+void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, int *quantity_lines_right, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
+// buffer_save.c
+void add_char_to_command_line(WINDOW *win, char c, int x, int y);
 void remove_char_from_command_line(WINDOW *win, size_t cursor_coords);
+void save_to_buffer(const char *text);
+void restore_from_buffer(WINDOW *win);
 
-
-// testing.c
-// void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
-void render_comm_XXX(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, int *quantity_lines_right, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
 
 #endif
