@@ -6,7 +6,7 @@
         "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
 
 
-        "c": "cd /home/dm/WebstormProjects/c/my_project/file_manager/ && gcc -std=c99 file_manager.c check_func.c list_builder.c extra.c rendering_ls.c extra_func.c button_processing.c rendering_command.c command_line/command_line.c command_line/buffer_save.c -o file_manager -lncursesw && ./file_manager",
+        "c": "cd /home/dm/WebstormProjects/c/my_project/file_manager/ && gcc -std=c99 file_manager.c check_func.c list_builder.c extra.c rendering_ls.c extra_func.c button_processing.c command_line/command_line.c command_line/buffer_save.c rendering_help.c rendering_bool.c -o file_manager -lncursesw && ./file_manager",
         
         
                 

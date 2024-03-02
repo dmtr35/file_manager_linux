@@ -15,11 +15,12 @@
                 "rendering_ls.c",
                 "extra_func.c",
                 "button_processing.c",
-                "rendering_command.c",
-                "/home/dm/WebstormProjects/c/my_project/file_manager/command_line/command_line.c",
-                "/home/dm/WebstormProjects/c/my_project/file_manager/command_line/buffer_save.c",
+                "${fileDirname}/command_line/command_line.c",
+                "${fileDirname}/command_line/buffer_save.c",
+                "rendering_help.c",
+                "rendering_bool.c",
                 "-o",
-                "/home/dm/WebstormProjects/c/my_project/file_manager/file_manager",
+                "${fileDirname}/file_manager",
                 "-lncursesw"
             ],
             "options": {

@@ -17,6 +17,7 @@
 
 WINDOW *win_left;
 WINDOW *win_right;
+WINDOW *win_menu;
 
 
 
@@ -32,8 +33,10 @@ int main() {
     curs_set(0);
 
     _Bool active = 1;
-    _Bool left_right = 0;
+    _Bool left_right = 1;
     _Bool bool_win_command = 0;
+    _Bool menu_bool = 0;
+    _Bool help_bool = 0;
     char previous_path_left[1024];
     char previous_path_right[1024];
     
@@ -43,6 +46,8 @@ int main() {
     coords.width = 0;
     coords.height_win = 0;
     coords.width_win = 0;
+    coords.height_menu = 0;
+    coords.width_menu = 0;
     coords.cursor_x = 1;
     coords.cursor_y = 1;            
 
@@ -70,26 +75,45 @@ int main() {
         getmaxyx(stdscr, coords.height, coords.width);
         win_left = newwin(coords.height, coords.width / 2, 0, 0);
         win_right = newwin(coords.height, coords.width % 2 ? (coords.width / 2) + 1 : coords.width / 2, 0, coords.width / 2);
+        // win_menu = newwin(coords.height / 5, coords.width / 10, 10, 10);
 
-        if(!bool_win_command) {
+        if(!bool_win_command && !help_bool && !menu_bool) {
             if(active) {
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, active, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, left_right, !active, offset_right, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, left_right, active, offset_left, win_left);
             } else {
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, active, offset_left, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, left_right, active, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, left_right, !active, offset_right, win_right);
             }
-        } else {
+        } else if (bool_win_command) {
             if(active) {
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
-                render_comm_line(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, left_right, !active, offset_right, win_right);
+                render_comm_line(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, left_right, active, offset_right, win_left, win_right);
             } else {
-                render_comm_line(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, active, offset_right, win_left, win_right);
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
+                render_comm_line(ptr_user_data, all_files_right, &coords, &quantity_lines_right, &bool_win_command, flag_hidden_files, left_right, active, offset_right, win_left, win_right);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, left_right, !active, offset_right, win_right);
             }
 
             if(active && !bool_win_command) {
                 continue;
+            }
+        } else if (help_bool) {
+            if(active) {
+                render_help(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, left_right, active, offset_left, win_left);
+            } else {
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, left_right, active, offset_left, win_left);
+                render_help(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
+            }
+        } else if (menu_bool) {
+            if(active) {
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, left_right, !active, offset_right, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, left_right, !active, offset_left, win_left);
+                render_menu(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, active, offset_right, win_menu);
+            } else {
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, left_right, !active, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, left_right, !active, offset_right, win_right);
+                render_menu(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, active, offset_right, win_menu);
             }
         }
 
@@ -104,7 +128,7 @@ int main() {
         if (ch == 'q') {
             break;
         } else if (ch == '\t') {
-            if(active) {
+                if(active) {
                 cursor_left = coords.cursor_y;
             } else {
                 cursor_right = coords.cursor_y;
@@ -218,10 +242,18 @@ int main() {
             }
         } 
 
-        else if (ch == 1 || ch == 'a') {                                           // ctrl + a
+        else if (ch == '\b' || ch == 'h') {                                           // ctrl + h  // help_bool
         // else if (ch == 'a') {
-            bool_win_command = !bool_win_command;
+            help_bool = !help_bool;
         }
+        else if (ch == 'm') {                                           // ctrl + h  // help_bool
+        // else if (ch == 'a') {
+            menu_bool = !menu_bool;
+        }
+        // else if (ch == 1) {                                           // ctrl + a   терминал, приостановлено
+        // // else if (ch == 'a') {
+        //     bool_win_command = !bool_win_command;
+        // }
     }
 
     endwin();

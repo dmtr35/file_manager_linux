@@ -12,13 +12,9 @@
 #include "func.h"
 
 
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, int *quantity_lines, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win)
+void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, int *quantity_lines, _Bool flag_hidden_files, _Bool left_right, _Bool active, int offset, WINDOW *win)
 {
     ls_list(path, all_files, flag_hidden_files, quantity_lines);
-    // for (int i = 0; i < *quantity_lines; ++i) {
-    //     // printf("%s\n", all_files[i].name);
-    //     int tt=0;
-    // }
 
     start_color();
     init_color(COLOR_BLUE, 0, 0, 650);
@@ -41,18 +37,22 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
     active ? wbkgd(win, COLOR_PAIR(1)) : wbkgd(win, COLOR_PAIR(11));
 
     getmaxyx(win, coords->height_win, coords->width_win);
+    int total_width = coords->width;
+    int window_width = coords->width_win; 
+    int check_side = (window_width == (total_width / 2)) ? 1 : 0;
+
 
     int max_length = coords->width_win - 35;
     trim_filename(all_files, *quantity_lines, max_length);
 
-    if(active) {
+    if(check_side) {
         mvwvline(win, 1, coords->width_win - 34, ACS_VLINE, coords->height - 4);
         mvwvline(win, 1, coords->width_win - 27, ACS_VLINE, coords->height - 4);
         mvwvline(win, 1, coords->width_win - 12, ACS_VLINE, coords->height - 4);
     } else {
-        mvwvline(win, 1, coords->width % 2 ? (coords->width_win - 33) - 1 : (coords->width_win - 34), ACS_VLINE, coords->height - 4);
-        mvwvline(win, 1, coords->width % 2 ? (coords->width_win - 26) - 1 : (coords->width_win - 27), ACS_VLINE, coords->height - 4);
-        mvwvline(win, 1, coords->width % 2 ? (coords->width_win - 11) - 1 : (coords->width_win - 12), ACS_VLINE, coords->height - 4);
+        mvwvline(win, 1, (coords->width_win - 33) - 1, ACS_VLINE, coords->height - 4);
+        mvwvline(win, 1, (coords->width_win - 26) - 1, ACS_VLINE, coords->height - 4);
+        mvwvline(win, 1, (coords->width_win - 11) - 1, ACS_VLINE, coords->height - 4);
     }
     mvwhline(win, coords->height_win - 3, 1, ACS_HLINE, coords->width_win - 2);
     wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
@@ -100,14 +100,14 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
             mvwprintw(win, row, 1, all_files[i].name);
             active ? wattroff(win, COLOR_PAIR(2)) : wattroff(win, COLOR_PAIR(12));
         }
-        if(active) {
+        if(check_side) {
             mvwprintw(win, row, coords->width / 2 - 33, all_files[i].size);
             mvwprintw(win, row, coords->width / 2 - 26, all_files[i].time);
             mvwprintw(win, row, coords->width / 2 - 11, all_files[i].permissions);
         } else {
-            mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 32) : (coords->width / 2 - 33), all_files[i].size);
-            mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 25) : (coords->width / 2 - 26), all_files[i].time);
-            mvwprintw(win, row, coords->width % 2 ? (coords->width / 2 - 10) : (coords->width / 2 - 11), all_files[i].permissions);
+            mvwprintw(win, row, coords->width / 2 - 32, all_files[i].size);
+            mvwprintw(win, row, coords->width / 2 - 25, all_files[i].time);
+            mvwprintw(win, row, coords->width / 2 - 10, all_files[i].permissions);
         }
         wattroff(win, A_BOLD);
     }
@@ -121,7 +121,7 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
                 wattron(win, A_BOLD);
                 wattron(win, COLOR_PAIR(6));                       // Включаем цветовую пару для всей строки
                 mvwhline(win, row, 1, ' ', coords->width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
-                if (active) {
+                if (check_side) {
                     mvwprintw(win, row, 1, all_files[i].name); // Выводим текст
                     mvwprintw(win, row, (coords->width / 2 - 33), all_files[i].size);
                     mvwprintw(win, row, (coords->width / 2 - 26), all_files[i].time);
