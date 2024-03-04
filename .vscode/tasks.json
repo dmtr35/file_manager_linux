@@ -18,7 +18,7 @@
                 "${fileDirname}/command_line/command_line.c",
                 "${fileDirname}/command_line/buffer_save.c",
                 "rendering_help.c",
-                "rendering_bool.c",
+                "rendering_menu.c",
                 "-o",
                 "${fileDirname}/file_manager",
                 "-lncursesw"
