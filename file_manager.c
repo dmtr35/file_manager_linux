@@ -63,8 +63,10 @@ int main()
     strcpy(previous_path_left, ptr_user_data->left_path);
     strcpy(previous_path_right, ptr_user_data->right_path);
 
+
     while (1)
     {
+        int coords_cursor_y_menu = 3;
         int i = coords.cursor_y - 1;
         active ? strcpy(ptr_user_data->coorsor_file, all_files_left[i].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[i].name);
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
@@ -104,8 +106,7 @@ int main()
                 render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
             }
 
-            if (active && !bool_win_command)
-            {
+            if (active && !bool_win_command) {
                 continue;
             }
         }
@@ -122,19 +123,20 @@ int main()
                 render_help(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
             }
         }
-        else if (menu_bool)
-        {
-            if (active)
-            {
+        else if (menu_bool) {
+            _Bool turn_render_ls = true;
+            if (active) {
                 render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
                 render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, active, offset_left, win_left);
-                render_menu(ptr_user_data, all_files_left, &coords, active, win_menu);
+                render_menu(ptr_user_data, all_files_left, all_files_right, &quantity_lines_left, &quantity_lines_right, flag_hidden_files, offset_left, offset_right, &coords_cursor_y_menu, &coords, active, &menu_bool, turn_render_ls, win_menu, win_right, win_left);
             }
-            else
-            {
+            else {
                 render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, active, offset_left, win_left);
                 render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
-                render_menu(ptr_user_data, all_files_right, &coords, active, win_menu);
+                render_menu(ptr_user_data, all_files_left, all_files_right, &quantity_lines_left, &quantity_lines_right, flag_hidden_files, offset_left, offset_right, &coords_cursor_y_menu, &coords, active, &menu_bool, !turn_render_ls, win_menu, win_right, win_left);
+            }
+            if (!menu_bool) {
+                continue;
             }
         }
 

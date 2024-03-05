@@ -11,7 +11,7 @@
 
 #include "func.h"
 
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool active, WINDOW *win)
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, int *quantity_lines_left, int *quantity_lines_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
     start_color();
     // init_color(COLOR_BLUE, 0, 0, 650);
@@ -31,12 +31,10 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files, s
     init_pair(14, COLOR_GREEN, COLOR_MAGENTA); // Цветовая пара 1: Белый текст на темносинем фоне         // folder
     init_pair(15, COLOR_RED, COLOR_MAGENTA); // Цветовая пара 1: Белый текст на темносинем фоне         // folder
     init_pair(16, COLOR_BLACK, COLOR_MAGENTA); // Цветовая пара 1: Белый текст на темносинем фоне         // folder
-    wbkgd(win, COLOR_PAIR(3));
+    wbkgd(win_menu, COLOR_PAIR(3));
 
-    wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
     int height_win;
     int width_win;
-    getmaxyx(win, height_win, width_win);
 
     char path[256];
     strcpy(path, active ? ptr_user_data->left_path : ptr_user_data->right_path);
@@ -45,103 +43,112 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files, s
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
     char new_path[size_new_path];
 
-    snprintf(new_path, size_new_path, "%s/%s", path, file_name);
 
 
-    wattron(win, A_BOLD);
-    // wattron(win, COLOR_PAIR(6));
-    // mvwprintw(win, 1, width_win > , path);
-    mvwprintw(win, 1, 1, new_path);
-    // wattroff(win, COLOR_PAIR(6));
-    // wprintw(win, "%s", path);
-    wattroff(win, A_BOLD);
 
-    //     char screen_buffer[10000] = {0};
-    //     int buffer_pos = 0;
+    bool is_enter_pressed = true;
+    int row;
 
-    //     size_t size_user_data_home = strlen(ptr_user_data->home_path);
-    //     size_t size_user_data_current = strlen(ptr_user_data->left_path) + 1;
-    //     char current_path_comm[size_user_data_current];
-    //     char *substr_start = strstr(ptr_user_data->left_path, ptr_user_data->home_path);
+    while (is_enter_pressed) {
+        getmaxyx(win_menu, height_win, width_win);
+        size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
+        size_t width_menu = leng_path < coords->width / 3 ? coords->width / 3 : leng_path;
+        win_menu = newwin(10, width_menu, (coords->height / 2) - 5, coords->width / 2 - width_menu / 2);
 
-    //     if (substr_start != NULL) {
-    //         char *start_of_path = substr_start + size_user_data_home;
-    //         sprintf(current_path_comm, "~%s", start_of_path);
-    //     } else {
-    //         strcpy(current_path_comm, ptr_user_data->left_path);
-    //     }
-    //     size_t cursor_coords = strlen(ptr_user_data->user) + strlen(current_path_comm) + 3;
+        wborder(win_menu, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+        snprintf(new_path, size_new_path, "%s/%s", path, file_name);
+        // printf("%s\n", screen_buffer);
+        wattron(win_menu, A_BOLD);
+        mvwprintw(win_menu, 1, 1, new_path);
+        mvwprintw(win_menu, 3, width_win / 2 - 2, "Copy");
+        mvwprintw(win_menu, 4, width_win / 2 - 2, "Move");
+        mvwprintw(win_menu, 5, width_win / 2 - 3, "Delete");
+        wattroff(win_menu, A_BOLD);
 
-    //     // wattron(win_left, A_BOLD);
-    //     wprintw(win_left, "%s:%s$", ptr_user_data->user, current_path_comm);
-    //     // wattroff(win_left, A_BOLD);
-    //     save_to_buffer(ptr_user_data->user, screen_buffer, &buffer_pos);
-    //     save_to_buffer(":", screen_buffer, &buffer_pos);
-    //     save_to_buffer(current_path_comm, screen_buffer, &buffer_pos);
-    //     save_to_buffer("$ ", screen_buffer, &buffer_pos);
+        int offset = 0;
+        int i = 0 + offset;
+        int row = 3;
+        for (; i < 3 && row <= 5; ++i, ++row) {
+            if (row == *coords_cursor_y_menu) {
+                wattron(win_menu, A_BOLD);
+                wattron(win_menu, COLOR_PAIR(13));                       // Включаем цветовую пару для всей строки
+                mvwhline(win_menu, row, 1, ' ', width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
 
-    //     wmove(win_left, 0, cursor_coords);
+                mvwprintw(win_menu, 1, 1, new_path);
+                mvwprintw(win_menu, 3, width_win / 2 - 2, "Copy");
+                mvwprintw(win_menu, 4, width_win / 2 - 2, "Move");
+                mvwprintw(win_menu, 5, width_win / 2 - 3, "Delete");
 
-    //     bool is_enter_pressed = false;
-    //     int row;
+                wattroff(win_menu, COLOR_PAIR(13)); // Отключаем цветовую пару
+                wattroff(win_menu, A_BOLD);
 
-    //     if (active) {
-    //         while (!is_enter_pressed) {
-    //             // printf("%s\n", screen_buffer);
-    //             int ch = wgetch(win_left);
+            } 
+    }
 
-    //             getmaxyx(stdscr, coords->height, coords->width);
-    //             // win_left = newwin(coords->height, coords->width / 2, 0, 0);
-    //             win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
+        int ch = wgetch(win_menu);
 
-    //             if (ch != ERR) {
-    //                 if (ch == 1 || ch == 'a') {
-    //                     is_enter_pressed = true;
-    //                     *bool_win_command = false;
-    //                 } else if (ch == 'z') {
-    //                     restore_from_buffer(win_left, screen_buffer);
-    //                 } else if (ch == '\n') {
-    //                     save_to_buffer("\n", screen_buffer, &buffer_pos);
-    //                     save_to_buffer(ptr_user_data->user, screen_buffer, &buffer_pos);
-    //                     save_to_buffer(":", screen_buffer, &buffer_pos);
-    //                     save_to_buffer(current_path_comm, screen_buffer, &buffer_pos);
-    //                     save_to_buffer("$ ", screen_buffer, &buffer_pos);
-    //                     render_ls(ptr_user_data->right_path, all_files, coords, quantity_lines_right, flag_hidden_files, !active, offset, win_right);
-    //                     row++;
+        
 
-    //                     count_row++;
+        if (ch != ERR) {
+            if (ch == 1 || ch == 'm') {
+                is_enter_pressed = false;
+                *menu_bool = false;
+            } else if (ch == 'z') {
+                // restore_from_buffer(win_left, screen_buffer);
 
-    //                     if (count_row >= coords->height) {
-    //                         int offset = (count_row - coords->height) + 1;
-    //                         restore_from_buffer_offset(win_left, screen_buffer, offset);
-    //                     } else {
-    //                         int offset = -5;
-    //                         restore_from_buffer_offset(win_left, screen_buffer, offset);
-    //                         // restore_from_buffer(win_left, screen_buffer);
-    //                     }
+            } else if (ch == '\n') {
+                if (*coords_cursor_y_menu == 3) {
+                    printf("here1");
+                } else if (*coords_cursor_y_menu == 4) {
+                    printf("here2");
+                } else if (*coords_cursor_y_menu == 5) {
+                    
 
-    //                 } else if (ch == KEY_BACKSPACE || ch == 127) {
-    //                     remove_char_from_command_line(win_left, cursor_coords, screen_buffer, &buffer_pos);
-    //                 } else if (ch == KEY_RESIZE) {
-    //                     render_ls(ptr_user_data->right_path, all_files, coords, quantity_lines_right, flag_hidden_files, !active, offset, win_right);                                                                                           // Обновление окна
-    //                     getmaxyx(stdscr, coords->height, coords->width);
-    //                     win_left = newwin(coords->height, coords->width / 2, 0, 0);
-    //                     restore_from_buffer(win_left, screen_buffer);
 
-    //                 } else {
-    //                     add_char_to_command_line(win_left, ch, screen_buffer, &buffer_pos);
-    //                         // printf("%ld:%d\n", cursor_coords, coords->width / 2);
-    //                     // if (cursor_coords >= coords->width / 2) {
-    //                     //     row++;
-    //                     // }
-    //                     // else {
-    //                         // row++;
-    //                     // }
-    //                     // printf("ch: %c", ch);
-    //                     // printf("x: %d, y: %d", coords->cursor_y, coords->cursor_x);
-    //                 }
-    //             }
-    //         }
-    //     }
-        wrefresh(win);
+
+
+                }
+                is_enter_pressed = false;
+                *menu_bool = false;
+            } else if (ch == 'r' || ch == KEY_RESIZE) {
+                getmaxyx(stdscr, coords->height, coords->width);
+                win_left = newwin(coords->height, coords->width / 2, 0, 0);
+                win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, quantity_lines_right, flag_hidden_files, turn_render_ls ? 1 : 0, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, quantity_lines_right, flag_hidden_files, turn_render_ls ? 0 : 1, offset_right, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, quantity_lines_left, quantity_lines_right, flag_hidden_files, offset_left, offset_right, coords_cursor_y_menu, coords, active, menu_bool, turn_render_ls, win_menu, win_right, win_left);
+                is_enter_pressed = false;
+            }
+            else if (ch == 27) {
+                int next1 = wgetch(stdscr);
+                int next2 = wgetch(stdscr);
+                if (next1 == '[' && next2 == 'A') {
+                    if (*coords_cursor_y_menu > 3) {
+                        (*coords_cursor_y_menu)--;
+                    }
+                getmaxyx(stdscr, coords->height, coords->width);
+                win_left = newwin(coords->height, coords->width / 2, 0, 0);
+                win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, quantity_lines_right, flag_hidden_files, turn_render_ls ? 1 : 0, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, quantity_lines_right, flag_hidden_files, turn_render_ls ? 0 : 1, offset_right, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, quantity_lines_left, quantity_lines_right, flag_hidden_files, offset_left, offset_right, coords_cursor_y_menu, coords, active, menu_bool, turn_render_ls, win_menu, win_right, win_left);
+                is_enter_pressed = false;
+                } 
+                else if (next1 == '[' && next2 == 'B') {
+                    if (*coords_cursor_y_menu < 5) {
+                        (*coords_cursor_y_menu)++;
+                    }
+                getmaxyx(stdscr, coords->height, coords->width);
+                win_left = newwin(coords->height, coords->width / 2, 0, 0);
+                win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, quantity_lines_right, flag_hidden_files, turn_render_ls ? 1 : 0, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, quantity_lines_right, flag_hidden_files, turn_render_ls ? 0 : 1, offset_right, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, quantity_lines_left, quantity_lines_right, flag_hidden_files, offset_left, offset_right, coords_cursor_y_menu, coords, active, menu_bool, turn_render_ls, win_menu, win_right, win_left);
+                is_enter_pressed = false;
+                }
+            }
+        }
+    }
+    wrefresh(win_menu);
 }
+
