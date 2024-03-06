@@ -11,7 +11,6 @@
                 "file_manager.c",
                 "check_func.c",
                 "list_builder.c",
-                "extra.c",
                 "rendering_ls.c",
                 "extra_func.c",
                 "button_processing.c",
@@ -19,8 +18,9 @@
                 "${fileDirname}/command_line/buffer_save.c",
                 "rendering_help.c",
                 "rendering_menu.c",
+                "remove_file.c",
                 "-o",
-                "${fileDirname}/file_manager",
+                "${fileDirname}/file_manager_linux",
                 "-lncursesw"
             ],
             "options": {

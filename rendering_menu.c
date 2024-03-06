@@ -102,11 +102,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 } else if (*coords_cursor_y_menu == 4) {
                     printf("here2");
                 } else if (*coords_cursor_y_menu == 5) {
-                    
-
-
-
-
+                    remove_directory_recursive(path, file_name);
                 }
                 is_enter_pressed = false;
                 *menu_bool = false;

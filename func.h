@@ -38,9 +38,11 @@ struct coordinates {
 // check_func.c
 int check_func(struct user_data *ptr_user_data);
 
-// extra.c
+// extra_func.c
+int is_directory(const char *path);
 char *human_readable_size(uintmax_t size, char *buf);
-char* format_last_modification_time(time_t time, char *buf);
+char *format_last_modification_time(time_t time, char *buf);
+void remove_first_char(char *str);
 
 
 // list_builder.c
@@ -52,10 +54,6 @@ void strtrim(char *str);
 // rendering_ls
 void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, int *quantity_lines, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
 void trim_filename(struct file_data *all_files, int *number_lines, int max_length);
-
-
-// extra_func
-void remove_first_char(char *str);
 
 
 // button_processing
@@ -81,5 +79,9 @@ void render_help(char *path, struct file_data *all_files, struct coordinates *co
 // rendering_menu
 // void render_menu(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool active, _Bool *menu_bool, WINDOW *win);
 void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, int *quantity_lines_left, int *quantity_lines_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+
+// remove_file
+void remove_one_file(const char *path);
+void remove_directory_recursive(const char *path, char *file_name);
 
 #endif
