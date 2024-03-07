@@ -35,6 +35,7 @@ int main()
     _Bool menu_bool = 0;
     _Bool help_bool = 0;
     _Bool flag_hidden_files = 1;
+    _Bool out_bool = 0;
     char previous_path_left[1024];
     char previous_path_right[1024];
 
@@ -128,12 +129,15 @@ int main()
             if (active) {
                 render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
                 render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, active, offset_left, win_left);
-                render_menu(ptr_user_data, all_files_left, all_files_right, &quantity_lines_left, &quantity_lines_right, flag_hidden_files, offset_left, offset_right, &coords_cursor_y_menu, &coords, active, &menu_bool, turn_render_ls, win_menu, win_right, win_left);
+                render_menu(ptr_user_data, all_files_left, all_files_right, &quantity_lines_left, &quantity_lines_right, flag_hidden_files, offset_left, offset_right, &coords_cursor_y_menu, &coords, active, &menu_bool, &out_bool, turn_render_ls, win_menu, win_right, win_left);
             }
             else {
                 render_ls(ptr_user_data->left_path, all_files_left, &coords, &quantity_lines_left, flag_hidden_files, active, offset_left, win_left);
                 render_ls(ptr_user_data->right_path, all_files_right, &coords, &quantity_lines_right, flag_hidden_files, !active, offset_right, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, &quantity_lines_left, &quantity_lines_right, flag_hidden_files, offset_left, offset_right, &coords_cursor_y_menu, &coords, active, &menu_bool, !turn_render_ls, win_menu, win_right, win_left);
+                render_menu(ptr_user_data, all_files_left, all_files_right, &quantity_lines_left, &quantity_lines_right, flag_hidden_files, offset_left, offset_right, &coords_cursor_y_menu, &coords, active, &menu_bool, &out_bool, !turn_render_ls, win_menu, win_right, win_left);
+            }
+            if (out_bool) {
+                break;
             }
             if (!menu_bool) {
                 continue;
@@ -141,17 +145,14 @@ int main()
         }
 
         int ch;
-        if (active)
-        {
+        if (active) {
             ch = wgetch(win_left);
         }
-        else
-        {
+        else {
             ch = wgetch(win_right);
         }
 
-        if (ch == 'q')
-        {
+        if (ch == 'q') {
             break;
         }
         else if (ch == '\t')

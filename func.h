@@ -78,7 +78,7 @@ void render_help(char *path, struct file_data *all_files, struct coordinates *co
 
 // rendering_menu
 // void render_menu(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool active, _Bool *menu_bool, WINDOW *win);
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, int *quantity_lines_left, int *quantity_lines_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, int *quantity_lines_left, int *quantity_lines_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool *out_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 // remove_file
 void remove_one_file(const char *path);
