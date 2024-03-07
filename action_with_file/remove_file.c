@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <libgen.h>
 
-#include "func.h"
+#include "../func.h"
 
 
 void remove_one_file(const char *path)
@@ -21,10 +21,37 @@ void remove_one_file(const char *path)
 void remove_directory_recursive(const char *path, char *file_name)
 {
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
-    char new_path[size_new_path];
-    snprintf(new_path, size_new_path, "%s/%s", path, file_name);
+    char full_path[size_new_path];
+    snprintf(full_path, size_new_path, "%s/%s", path, file_name);
 
-    DIR *dir = opendir(path);
+    struct stat statbuf;
+    if (lstat(full_path, &statbuf) == -1) {
+        char original_full_path[size_new_path];
+        strcpy(original_full_path, full_path);
+        char *ptr = strstr(original_full_path, " ->");
+            if (ptr != NULL) {
+            *ptr = '\0';
+        }
+        remove_one_file(original_full_path);
+        perror("Error getting file status");
+        return;
+    }
+
+    if (stat(full_path, &statbuf) == -1) {
+        perror("Error getting file status");
+        return;
+    }
+    if (!S_ISDIR(statbuf.st_mode)) {
+        remove_one_file(full_path);
+        return;
+    }
+
+    DIR *dir = opendir(full_path);
+    if (dir == NULL){
+        perror("Error opening directory");
+        return;
+    }
+
     struct dirent *entry; // прочитать содержимое директории
 
     while ((entry = readdir(dir)) != NULL) {
@@ -32,19 +59,20 @@ void remove_directory_recursive(const char *path, char *file_name)
             continue;
         }
 
-        char absolute_path[strlen(path) + strlen(entry->d_name) + 2];
-        snprintf(absolute_path, sizeof(absolute_path), "%s/%s", path, entry->d_name);
+        size_t size_absolute_path = strlen(full_path) + strlen(entry->d_name) + 2;
+        char absolute_path[size_absolute_path];
+        snprintf(absolute_path, size_absolute_path, "%s/%s", full_path, entry->d_name);
 
 
         if (is_directory(absolute_path)) {
-            remove_directory_recursive(absolute_path, entry->d_name);
+            remove_directory_recursive(full_path, entry->d_name);
         } else {
             remove_one_file(absolute_path);
         }
     }
 
     closedir(dir);
-    remove_one_file(new_path);
+    remove_one_file(full_path);
 }
 
 // void save_file(char *absolute_path, char *dir_name, char *file_name, struct user_data *ptr_user_data)

@@ -1,0 +1,1 @@
+/home/dm/WebstormProjects/c/my_project/file_manager_linux/link_test.l

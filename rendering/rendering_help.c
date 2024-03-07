@@ -9,7 +9,7 @@
 #include <ncurses.h>
 #include <signal.h>
 
-#include "func.h"
+#include "../func.h"
 
 
 

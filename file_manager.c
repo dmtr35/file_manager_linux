@@ -34,6 +34,7 @@ int main()
     _Bool bool_win_command = 0;
     _Bool menu_bool = 0;
     _Bool help_bool = 0;
+    _Bool flag_hidden_files = 1;
     char previous_path_left[1024];
     char previous_path_right[1024];
 
@@ -57,7 +58,6 @@ int main()
 
     struct file_data *all_files_left = (struct file_data *)malloc(500 * sizeof(struct file_data));
     struct file_data *all_files_right = (struct file_data *)malloc(500 * sizeof(struct file_data));
-    _Bool flag_hidden_files = 1;
     struct user_data *ptr_user_data = malloc(sizeof(struct user_data));
     int res_check = check_func(ptr_user_data);
     strcpy(previous_path_left, ptr_user_data->left_path);
@@ -261,16 +261,12 @@ int main()
                     coords.cursor_y = coords.height_win - 4;
                 }
             }
-            else if (next1 == '[' && next2 == 'D')
-            {
+            else if (next1 == '[' && next2 == 'D') {
                 int offset_to_increment = active ? offset_left : offset_right;
 
-                if (active)
-                {
+                if (active) {
                     offset_left = 0;
-                }
-                else
-                {
+                } else {
                     offset_right = 0;
                 }
                 coords.cursor_y = 1;
@@ -333,6 +329,15 @@ int main()
         // // else if (ch == 'a') {
         //     bool_win_command = !bool_win_command;
         // }
+        else if (ch == 'w') {                                           // ctrl + a   терминал, приостановлено
+            int quantity_lines = active ? quantity_lines_left : quantity_lines_right;
+
+            flag_hidden_files = !flag_hidden_files;
+
+            offset_left = 0;
+            offset_right = 0;
+            coords.cursor_y = 1;
+        }
     }
 
     endwin();

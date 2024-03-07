@@ -43,13 +43,6 @@ void click_on_file(char *path, struct file_data *all_files, struct coordinates *
         coords->cursor_y = 1;
         *offset = 0;
     } 
-    // else if ((strchr(all_files[i].permissions, '-') == 0) || (strchr(all_files[i].permissions, 'l') == 0)) {
-
-
-
-
-    // }
-
 }
 
 void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, WINDOW *win)

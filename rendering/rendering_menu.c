@@ -9,7 +9,7 @@
 #include <ncurses.h>
 #include <signal.h>
 
-#include "func.h"
+#include "../func.h"
 
 void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, int *quantity_lines_left, int *quantity_lines_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
@@ -51,6 +51,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 
     while (is_enter_pressed) {
         getmaxyx(win_menu, height_win, width_win);
+        int quantity_lines = active ? *quantity_lines_left : *quantity_lines_right;
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
         size_t width_menu = leng_path < coords->width / 3 ? coords->width / 3 : leng_path;
         win_menu = newwin(10, width_menu, (coords->height / 2) - 5, coords->width / 2 - width_menu / 2);
@@ -103,6 +104,13 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                     printf("here2");
                 } else if (*coords_cursor_y_menu == 5) {
                     remove_directory_recursive(path, file_name);
+                    if(quantity_lines == coords->cursor_y) {
+                        coords->cursor_y--;
+                    }
+
+
+
+
                 }
                 is_enter_pressed = false;
                 *menu_bool = false;
