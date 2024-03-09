@@ -30,6 +30,9 @@ struct coordinates {
     int width_menu;
     int cursor_x;
     int cursor_y;
+
+    int quantity_lines_left;
+    int quantity_lines_right;
 };
 
 
@@ -52,8 +55,13 @@ void strtrim(char *str);
 
 
 // rendering_ls
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, int *quantity_lines, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
+void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
 void trim_filename(struct file_data *all_files, int *number_lines, int max_length);
+void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
+void render_help(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool *out_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+
+
 
 
 // button_processing
@@ -62,7 +70,6 @@ void open_in_vim(char *path, struct file_data *all_files, struct coordinates *co
 
 
 // command_line.c
-void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, int *quantity_lines_right, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
 // buffer_save.c
 void add_char_to_command_line(WINDOW *win_left, char c, char *screen_buffer, int *buffer_pos);
 // void add_char_to_command_line(WINDOW *win, char c, int x, int y);
@@ -73,12 +80,10 @@ void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
 
 
 // rendering_help
-void render_help(char *path, struct file_data *all_files, struct coordinates *coords, int *quantity_lines, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
 
 
 // rendering_menu
 // void render_menu(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool active, _Bool *menu_bool, WINDOW *win);
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, int *quantity_lines_left, int *quantity_lines_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool *out_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 // remove_file
 void remove_one_file(const char *path);

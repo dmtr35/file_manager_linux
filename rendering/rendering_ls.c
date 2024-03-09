@@ -16,8 +16,15 @@
 // time
 // permissions
 
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, int *quantity_lines, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win)
+void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win)
 {
+    getmaxyx(win, coords->height_win, coords->width_win);
+    int total_width = coords->width;
+    int window_width = coords->width_win; 
+    int check_side = (window_width == (total_width / 2)) ? 1 : 0;
+
+    int *quantity_lines;
+    quantity_lines = check_side ? &coords->quantity_lines_left : &coords->quantity_lines_right;
     ls_list(path, all_files, flag_hidden_files, quantity_lines);
 
     struct file_data *all_files_ls = (struct file_data *)malloc(500 * sizeof(struct file_data));
@@ -50,10 +57,6 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
     init_pair(16, COLOR_BLACK, COLOR_MAGENTA); // Цветовая пара 1: Белый текст на темносинем фоне         // folder
     active ? wbkgd(win, COLOR_PAIR(1)) : wbkgd(win, COLOR_PAIR(11));
 
-    getmaxyx(win, coords->height_win, coords->width_win);
-    int total_width = coords->width;
-    int window_width = coords->width_win; 
-    int check_side = (window_width == (total_width / 2)) ? 1 : 0;
 
 
     int max_length = coords->width_win - 35;
