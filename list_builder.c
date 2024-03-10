@@ -18,7 +18,7 @@
 
 int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files, int *quantity_lines)
 {
-    *quantity_lines = 0;
+    // *quantity_lines = 0;
     // for (int i = 0; i < *quantity_lines; ++i) {
     // //     // printf("%s\n", all_files[i].name);
     //     int tt=0;

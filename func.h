@@ -14,6 +14,14 @@ struct user_data {
     char coorsor_file[1024];
 };
 
+struct set_bool {
+    _Bool hidden_files_bool;
+    _Bool command_bool;
+    _Bool menu_bool;
+    _Bool help_bool;
+    _Bool out_bool;
+};
+
 struct file_data {
     char name[1024];
     char size[7];
@@ -55,11 +63,11 @@ void strtrim(char *str);
 
 
 // rendering_ls
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
-void trim_filename(struct file_data *all_files, int *number_lines, int max_length);
-void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool *bool_win_command, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win_left, WINDOW *win_right);
-void render_help(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win);
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool *out_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int offset, WINDOW *win);
+void trim_filename(struct file_data *all_files, int number_lines, int max_length);
+void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int offset, WINDOW *win_left, WINDOW *win_right);
+void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, int offset, WINDOW *win);
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 
 

@@ -11,25 +11,22 @@
 
 #include "../func.h"
 
-// name
-// size
-// time
-// permissions
 
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, _Bool flag_hidden_files, _Bool active, int offset, WINDOW *win)
+void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int offset, WINDOW *win)
 {
     getmaxyx(win, coords->height_win, coords->width_win);
-    int total_width = coords->width;
-    int window_width = coords->width_win; 
-    int check_side = (window_width == (total_width / 2)) ? 1 : 0;
 
-    int *quantity_lines;
-    quantity_lines = check_side ? &coords->quantity_lines_left : &coords->quantity_lines_right;
-    ls_list(path, all_files, flag_hidden_files, quantity_lines);
+    int quantity_lines = 0;
+    ls_list(path, all_files, set_bool->hidden_files_bool, &quantity_lines);
+    if (check_side) {
+        coords->quantity_lines_left = quantity_lines;
+    } else {
+        coords->quantity_lines_right = quantity_lines;
+    }
 
     struct file_data *all_files_ls = (struct file_data *)malloc(500 * sizeof(struct file_data));
     if (all_files_ls != NULL) {
-        for (int i = 0; i < *quantity_lines; i++) {
+        for (int i = 0; i < quantity_lines; i++) {
             strcpy(all_files_ls[i].name, all_files[i].name);
             strcpy(all_files_ls[i].size, all_files[i].size);
             strcpy(all_files_ls[i].time, all_files[i].time);
@@ -84,7 +81,7 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
 
     int i = 0 + offset;
     int row = 1;
-    for (; i < *quantity_lines && i < (coords->height_win - 4) + offset; ++i, ++row) {
+    for (; i < quantity_lines && i < (coords->height_win - 4) + offset; ++i, ++row) {
         wattron(win, A_BOLD);
         if (strstr(all_files_ls[i].permissions, "d") != NULL || strcmp(all_files_ls[i].name, "..") == 0) {
             if (all_files_ls[i].name[0] == '.' || strcmp(all_files_ls[i].name, "..") == 0) {
@@ -197,7 +194,7 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
     row = 1;
     int last_line = (coords->height_win - 4) + offset;
     if (active) {
-        for (; i < *quantity_lines && row <= last_line; ++i, ++row) {
+        for (; i < quantity_lines && row <= last_line; ++i, ++row) {
             if (row == coords->cursor_y) {
                 wattron(win, A_BOLD);
                 wattron(win, COLOR_PAIR(6));                       // Включаем цветовую пару для всей строки
@@ -239,8 +236,8 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
 }
 
 
-void trim_filename(struct file_data *all_files_ls, int *number_lines, int max_length) {
-    for(int i = 0; i < *number_lines; ++i) {
+void trim_filename(struct file_data *all_files_ls, int number_lines, int max_length) {
+    for(int i = 0; i < number_lines; ++i) {
         int name_length = strlen(all_files_ls[i].name);
         all_files_ls[i].name[max_length] = '\0';
     }

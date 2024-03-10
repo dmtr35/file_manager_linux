@@ -11,7 +11,7 @@
 
 #include "../func.h"
 
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool flag_hidden_files, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool *menu_bool, _Bool *out_bool, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int offset_left, int offset_right, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
     start_color();
     // init_color(COLOR_BLUE, 0, 0, 650);
@@ -95,14 +95,14 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
         if (ch != ERR) {
             if (ch == 1 || ch == 'm') {
                 is_enter_pressed = false;
-                *menu_bool = false;
+                set_bool->menu_bool = false;
             } else if (ch == 'z') {
                 // restore_from_buffer(win_left, screen_buffer);
 
             } else if (ch == 'q') {
                 is_enter_pressed = false;
-                *menu_bool = false;
-                *out_bool = true;
+                set_bool->menu_bool = false;
+                set_bool->out_bool = true;
             break;
             } else if (ch == '\n') {
                 if (*coords_cursor_y_menu == 3) {
@@ -120,14 +120,14 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 
                 }
                 is_enter_pressed = false;
-                *menu_bool = false;
+                set_bool->menu_bool = false;
             } else if (ch == 'r' || ch == KEY_RESIZE) {
                 getmaxyx(stdscr, coords->height, coords->width);
                 win_left = newwin(coords->height, coords->width / 2, 0, 0);
                 win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, flag_hidden_files, turn_render_ls ? 1 : 0, offset_left, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, flag_hidden_files, turn_render_ls ? 0 : 1, offset_right, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, flag_hidden_files, offset_left, offset_right, coords_cursor_y_menu, coords, active, menu_bool, out_bool, turn_render_ls, win_menu, win_right, win_left);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, offset_right, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, offset_left, offset_right, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, win_menu, win_right, win_left);
                 is_enter_pressed = false;
             }
             else if (ch == 27) {
@@ -140,9 +140,9 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 getmaxyx(stdscr, coords->height, coords->width);
                 win_left = newwin(coords->height, coords->width / 2, 0, 0);
                 win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, flag_hidden_files, turn_render_ls ? 1 : 0, offset_left, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, flag_hidden_files, turn_render_ls ? 0 : 1, offset_right, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, flag_hidden_files, offset_left, offset_right, coords_cursor_y_menu, coords, active, menu_bool, out_bool, turn_render_ls, win_menu, win_right, win_left);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, offset_right, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, offset_left, offset_right, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, win_menu, win_right, win_left);
                 is_enter_pressed = false;
                 } 
                 else if (next1 == '[' && next2 == 'B') {
@@ -152,9 +152,9 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 getmaxyx(stdscr, coords->height, coords->width);
                 win_left = newwin(coords->height, coords->width / 2, 0, 0);
                 win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, flag_hidden_files, turn_render_ls ? 1 : 0, offset_left, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, flag_hidden_files, turn_render_ls ? 0 : 1, offset_right, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, flag_hidden_files, offset_left, offset_right, coords_cursor_y_menu, coords, active, menu_bool, out_bool, turn_render_ls, win_menu, win_right, win_left);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, offset_left, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, offset_right, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, offset_left, offset_right, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, win_menu, win_right, win_left);
                 is_enter_pressed = false;
                 }
             }
