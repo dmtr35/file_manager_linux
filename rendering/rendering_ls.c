@@ -12,16 +12,19 @@
 #include "../func.h"
 
 
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int offset, WINDOW *win)
+void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, WINDOW *win)
 {
     getmaxyx(win, coords->height_win, coords->width_win);
 
+    int offset = 0;
     int quantity_lines = 0;
     ls_list(path, all_files, set_bool->hidden_files_bool, &quantity_lines);
     if (check_side) {
         coords->quantity_lines_left = quantity_lines;
+        offset = coords->offset_left;
     } else {
         coords->quantity_lines_right = quantity_lines;
+        offset = coords->offset_right;
     }
 
     struct file_data *all_files_ls = (struct file_data *)malloc(500 * sizeof(struct file_data));

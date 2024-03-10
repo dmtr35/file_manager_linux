@@ -30,7 +30,6 @@ int main()
     // printw ("%i\n%i\n%i\n", getch (), getch (), getch ());
     curs_set(0);
 
-
     struct set_bool set_bool;
     set_bool.hidden_files_bool = 1;
     set_bool.command_bool = 0;
@@ -56,11 +55,11 @@ int main()
     coords.quantity_lines_left = 0;
     coords.quantity_lines_right = 0;
 
+    coords.offset_left = 0;
+    coords.offset_right = 0;
+
     int cursor_left = 1;
     int cursor_right = 1;
-    int offset_left = 0;
-    int offset_right = 0;
-
 
     struct file_data *all_files_left = (struct file_data *)malloc(500 * sizeof(struct file_data));
     struct file_data *all_files_right = (struct file_data *)malloc(500 * sizeof(struct file_data));
@@ -69,11 +68,10 @@ int main()
     strcpy(previous_path_left, ptr_user_data->left_path);
     strcpy(previous_path_right, ptr_user_data->right_path);
 
-
     while (1)
     {
         int coords_cursor_y_menu = 3;
-        int i = coords.cursor_y - 1;
+        int i = coords.cursor_y + (check_side ? coords.offset_left : coords.offset_right) - 1;
         active ? strcpy(ptr_user_data->coorsor_file, all_files_left[i].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[i].name);
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
         size_t width_menu = leng_path < coords.width / 3 ? coords.width / 3 : leng_path;
@@ -85,70 +83,91 @@ int main()
         win_right = newwin(coords.height, coords.width % 2 ? (coords.width / 2) + 1 : coords.width / 2, 0, coords.width / 2);
         win_menu = newwin(10, width_menu, (coords.height / 2) - 5, coords.width / 2 - width_menu / 2);
 
-        if (!set_bool.command_bool && !set_bool.help_bool && !set_bool.menu_bool) {
-            if (active) {
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, offset_right, win_right);
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, offset_left, win_left);
+        if (!set_bool.command_bool && !set_bool.help_bool && !set_bool.menu_bool)
+        {
+            if (active)
+            {
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
             }
-            else {
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, offset_left, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, offset_right, win_right);
-            }
-        } else if (set_bool.command_bool) { 
-            if (active) {
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, offset_right, win_right);
-                render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, offset_right, win_left, win_right);
-            } else {
-                render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, offset_right, win_left, win_right);
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, offset_right, win_right);
-            }
-
-            if (active && !set_bool.command_bool) {
-                continue;
-            }
-        } else if (set_bool.help_bool) {
-            if (active) {
-                render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, offset_right, win_right);
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, offset_left, win_left);
-            } else {
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, offset_left, win_left);
-                render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, offset_right, win_right);
+            else
+            {
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
             }
         }
-        else if (set_bool.menu_bool) {
+        else if (set_bool.command_bool)
+        {
+            if (active)
+            {
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
+                render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, win_left, win_right);
+            }
+            else
+            {
+                render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, win_left, win_right);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
+            }
+
+            if (active && !set_bool.command_bool)
+            {
+                continue;
+            }
+        }
+        else if (set_bool.help_bool)
+        {
+            if (active)
+            {
+                render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
+            }
+            else
+            {
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
+                render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, win_right);
+            }
+        }
+        else if (set_bool.menu_bool)
+        {
             _Bool turn_render_ls = true;
-            if (active) {
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, offset_right, win_right);
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, offset_left, win_left);
-                render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, offset_left, offset_right, &coords_cursor_y_menu, &coords, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+            if (active)
+            {
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
+                render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, &coords_cursor_y_menu, &coords, active, check_side, turn_render_ls, win_menu, win_right, win_left);
             }
-            else {
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, offset_left, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, offset_right, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, offset_left, offset_right, &coords_cursor_y_menu, &coords, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
+            else
+            {
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, &coords_cursor_y_menu, &coords, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
             }
-            if (set_bool.out_bool) {
+            if (set_bool.out_bool)
+            {
                 break;
             }
-            if (!set_bool.menu_bool) {
+            if (!set_bool.menu_bool)
+            {
                 continue;
             }
         }
 
         int ch;
-        if (active) {
+        if (active)
+        {
             ch = wgetch(win_left);
         }
-        else {
+        else
+        {
             ch = wgetch(win_right);
         }
 
-        if (ch == 'q') {
+        if (ch == 'q')
+        {
             break;
         }
         else if (ch == '\t')
         {
-            // menu_bool = false;
             if (active)
             {
                 cursor_left = coords.cursor_y;
@@ -185,11 +204,11 @@ int main()
         {
             if (active)
             {
-                click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, &offset_left);
+                click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, check_side);
             }
             else
             {
-                click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, &offset_right);
+                click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, !check_side);
             }
         }
         else if (ch == 27)
@@ -198,7 +217,7 @@ int main()
             int next2 = wgetch(stdscr);
             if (next1 == '[' && next2 == 'A')
             {
-                int offset_to_increment = active ? offset_left : offset_right;                                     // вверх
+                int offset_to_increment = active ? coords.offset_left : coords.offset_right; // вверх
                 int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
                 int hidden_row = quantity_lines - coords.cursor_y;
                 if (coords.cursor_y > 1)
@@ -209,17 +228,17 @@ int main()
                 {
                     if (active)
                     {
-                        offset_left--;
+                        coords.offset_left--;
                     }
                     else
                     {
-                        offset_right--;
+                        coords.offset_right--;
                     }
                 }
             }
             else if (next1 == '[' && next2 == 'B')
             {
-                int offset_to_increment = active ? offset_left : offset_right;                                     // вниз
+                int offset_to_increment = active ? coords.offset_left : coords.offset_right; // вниз
                 int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
                 int hidden_row = quantity_lines - coords.cursor_y;
                 if (coords.cursor_y < quantity_lines && coords.cursor_y < coords.height_win - 4)
@@ -228,12 +247,12 @@ int main()
                 }
                 else if ((coords.cursor_y >= coords.height_win - 4) && hidden_row > offset_to_increment)
                 {
-                    active ? offset_left++ : offset_right++;
+                    active ? coords.offset_left++ : coords.offset_right++;
                 }
             }
             else if (next1 == '[' && next2 == 'C')
             {
-                int offset_to_increment = active ? offset_left : offset_right;
+                int offset_to_increment = active ? coords.offset_left : coords.offset_right;
                 int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
                 int hidden_row = quantity_lines - (coords.height_win - 4) - offset_to_increment;
                 if (quantity_lines <= coords.height_win - 4)
@@ -244,22 +263,26 @@ int main()
                 {
                     if (active)
                     {
-                        offset_left += hidden_row;
+                        coords.offset_left += hidden_row;
                     }
                     else
                     {
-                        offset_right += hidden_row;
+                        coords.offset_right += hidden_row;
                     }
                     coords.cursor_y = coords.height_win - 4;
                 }
             }
-            else if (next1 == '[' && next2 == 'D') {
-                int offset_to_increment = active ? offset_left : offset_right;
+            else if (next1 == '[' && next2 == 'D')
+            {
+                int offset_to_increment = active ? coords.offset_left : coords.offset_right;
 
-                if (active) {
-                    offset_left = 0;
-                } else {
-                    offset_right = 0;
+                if (active)
+                {
+                    coords.offset_left = 0;
+                }
+                else
+                {
+                    coords.offset_right = 0;
                 }
                 coords.cursor_y = 1;
             }
@@ -268,15 +291,17 @@ int main()
         {
             if (active)
             {
-                click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, &offset_left);
+                // click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, check_side);
+                backspace(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, check_side);
             }
             else
             {
-                click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, &offset_right);
+                // click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, !check_side);
+                backspace(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, !check_side);
             }
         }
         else if (ch == 16)
-        {   // Ctrl + p - переход на сохраненный ранее путь
+        { // Ctrl + p - переход на сохраненный ранее путь
             // else if (ch == 'p') {                                      // Ctrl + p - переход на сохраненный ранее путь
             if (active)
             {
@@ -294,26 +319,26 @@ int main()
             }
         }
         else if (ch == ('V' & 0x1F))
-        {   // Обработка нажатия Ctrl + V
+        { // Обработка нажатия Ctrl + V
             // // else if (ch == 'v') {                            // Обработка нажатия Ctrl + V
 
             if (active)
             {
-                open_in_vim(ptr_user_data->left_path, all_files_left, &coords, win_left);
+                open_in_vim(ptr_user_data->left_path, all_files_left, &coords, check_side, win_left);
             }
             else
             {
-                open_in_vim(ptr_user_data->right_path, all_files_right, &coords, win_right);
+                open_in_vim(ptr_user_data->right_path, all_files_right, &coords, !check_side, win_right);
             }
         }
 
         else if (ch == '\b' || ch == 'h')
-        {   // ctrl + h  // help_bool
+        { // ctrl + h  // help_bool
             // else if (ch == 'a') {
             set_bool.help_bool = !set_bool.help_bool;
         }
         else if (ch == 'm')
-        {   // ctrl + h  // help_bool
+        { // ctrl + h  // help_bool
             // else if (ch == 'a') {
             set_bool.menu_bool = !set_bool.menu_bool;
         }
@@ -321,13 +346,14 @@ int main()
         // // else if (ch == 'a') {
         //     set_bool.command_bool = !set_bool.command_bool;
         // }
-        else if (ch == 'w') {                                           // ctrl + a   терминал, приостановлено
+        else if (ch == 'w')
+        { // ctrl + a   терминал, приостановлено
             int quantity_lines = active ? coords.quantity_lines_left : coords.quantity_lines_right;
 
             set_bool.hidden_files_bool = !set_bool.hidden_files_bool;
 
-            offset_left = 0;
-            offset_right = 0;
+            coords.offset_left = 0;
+            coords.offset_right = 0;
             coords.cursor_y = 1;
         }
     }

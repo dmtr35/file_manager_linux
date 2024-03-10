@@ -18,12 +18,13 @@
 
 
 
-void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, int *offset)
+void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, _Bool check_side)
 {
-    int i = coords->cursor_y - 1;
+    int i = coords->cursor_y + (check_side ? coords->offset_left : coords->offset_right) - 1;
     char *file_name = all_files[i].name;
     char height_win;
     char width_win;
+
 
     if ((strchr(all_files[i].permissions, 'd') != NULL)) {
         strcpy(previous_path, path);
@@ -35,19 +36,45 @@ void click_on_file(char *path, struct file_data *all_files, struct coordinates *
         }
         strcpy(path, new_path);
         coords->cursor_y = 1;
-        *offset = 0;
+
+        if (check_side) {
+            coords->offset_left = 0;
+        } else {
+            coords->offset_right = 0;
+        }
     } else if ((strcmp(all_files[i].name, "..") == 0)) {
-        strcpy(previous_path, path);
-        char *parent_dir = dirname(path);
-        strcpy(path, parent_dir);
-        coords->cursor_y = 1;
-        *offset = 0;
+        backspace(path, all_files, coords, previous_path, check_side);
+        // strcpy(previous_path, path);
+        // char *parent_dir = dirname(path);
+        // strcpy(path, parent_dir);
+        // coords->cursor_y = 1;
+
+        // if (check_side) {
+        //     coords->offset_right = 0;
+        // } else {
+        //     coords->offset_left = 0;
+        // }
     } 
 }
 
-void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, WINDOW *win)
+void backspace(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, _Bool check_side) {
+    strcpy(previous_path, path);
+    char *parent_dir = dirname(path);
+    strcpy(path, parent_dir);
+    coords->cursor_y = 1;
+
+    if (check_side) {
+        coords->offset_left = 0;
+    } else {
+        coords->offset_right = 0;
+    }
+}
+
+void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, _Bool check_side, WINDOW *win)
 {
-    int i = coords->cursor_y - 1;
+    // int i = coords->cursor_y - 1;
+    int i = coords->cursor_y + (check_side ? coords->offset_left : coords->offset_right) - 1;
+    
     char *file_name = all_files[i].name;
     char height_win;
     char width_win;
