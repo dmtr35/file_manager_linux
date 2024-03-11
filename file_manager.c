@@ -51,15 +51,15 @@ int main()
     coords.width_menu = 0;
     coords.cursor_x = 1;
     coords.cursor_y = 1;
-
     coords.quantity_lines_left = 0;
     coords.quantity_lines_right = 0;
-
     coords.offset_left = 0;
     coords.offset_right = 0;
 
     int cursor_left = 1;
     int cursor_right = 1;
+
+    char arr_coorsor[20] = {0};
 
     struct file_data *all_files_left = (struct file_data *)malloc(500 * sizeof(struct file_data));
     struct file_data *all_files_right = (struct file_data *)malloc(500 * sizeof(struct file_data));
@@ -72,6 +72,11 @@ int main()
     {
         int coords_cursor_y_menu = 3;
         int i = coords.cursor_y + (check_side ? coords.offset_left : coords.offset_right) - 1;
+        arr_coorsor[0] = i + 1;
+        arr_coorsor[1] = 5;
+        arr_coorsor[2] = 7;
+        arr_coorsor[3] = 9;
+        size_t leng_arr_coorsor = sizeof(arr_coorsor) / sizeof(*arr_coorsor);
         active ? strcpy(ptr_user_data->coorsor_file, all_files_left[i].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[i].name);
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
         size_t width_menu = leng_path < coords.width / 3 ? coords.width / 3 : leng_path;
@@ -87,26 +92,26 @@ int main()
         {
             if (active)
             {
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor, win_left);
             }
             else
             {
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
             }
         }
         else if (set_bool.command_bool)
         {
             if (active)
             {
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
-                render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, win_left, win_right);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
+                render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor, win_left, win_right);
             }
             else
             {
-                render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, win_left, win_right);
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
+                render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor, win_left, win_right);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
             }
 
             if (active && !set_bool.command_bool)
@@ -118,13 +123,13 @@ int main()
         {
             if (active)
             {
-                render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, win_right);
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
+                render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, arr_coorsor, leng_arr_coorsor, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor, win_left);
             }
             else
             {
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
-                render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor, win_left);
+                render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, arr_coorsor, leng_arr_coorsor, win_right);
             }
         }
         else if (set_bool.menu_bool)
@@ -132,15 +137,15 @@ int main()
             _Bool turn_render_ls = true;
             if (active)
             {
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
-                render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, &coords_cursor_y_menu, &coords, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor, win_left);
+                render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, &coords_cursor_y_menu, &coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor, win_menu, win_right, win_left);
             }
             else
             {
-                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, &coords_cursor_y_menu, &coords, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
+                render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, &coords_cursor_y_menu, &coords, active, check_side, !turn_render_ls, arr_coorsor, leng_arr_coorsor, win_menu, win_right, win_left);
             }
             if (set_bool.out_bool)
             {
