@@ -184,9 +184,23 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
             mvwprintw(win, row, coords->width / 2 - 26, all_files_ls[i].time);
             mvwprintw(win, row, coords->width / 2 - 11, all_files_ls[i].permissions);
         } else {
-            mvwprintw(win, row, coords->width / 2 - 32, all_files_ls[i].size);
-            mvwprintw(win, row, coords->width / 2 - 25, all_files_ls[i].time);
-            mvwprintw(win, row, coords->width / 2 - 10, all_files_ls[i].permissions);
+            if (coords->width_win % 2 == 0 && coords->width % 2 == 0) {
+                mvwprintw(win, row, coords->width / 2 - 33, all_files_ls[i].size);
+                mvwprintw(win, row, coords->width / 2 - 26, all_files_ls[i].time);
+                mvwprintw(win, row, coords->width / 2 - 11, all_files_ls[i].permissions);
+            } else if (coords->width_win % 2 != 0 && coords->width % 2 != 0) {
+                mvwprintw(win, row, coords->width / 2 - 32, all_files_ls[i].size);
+                mvwprintw(win, row, coords->width / 2 - 25, all_files_ls[i].time);
+                mvwprintw(win, row, coords->width / 2 - 10, all_files_ls[i].permissions);
+            } else if (coords->width_win % 2 == 0 && coords->width % 2 != 0) {
+                mvwprintw(win, row, coords->width / 2 - 32, all_files_ls[i].size);
+                mvwprintw(win, row, coords->width / 2 - 25, all_files_ls[i].time);
+                mvwprintw(win, row, coords->width / 2 - 10, all_files_ls[i].permissions);
+            } else if (coords->width_win % 2 != 0 && coords->width % 2 == 0) {
+                mvwprintw(win, row, coords->width / 2 - 33, all_files_ls[i].size);
+                mvwprintw(win, row, coords->width / 2 - 26, all_files_ls[i].time);
+                mvwprintw(win, row, coords->width / 2 - 11, all_files_ls[i].permissions);
+            }
         }
         wattroff(win, A_BOLD);
 
@@ -240,12 +254,20 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
                     mvwprintw(win, row, (coords->width / 2 - 26), all_files_ls[i].time);
                     mvwprintw(win, row, (coords->width / 2 - 11), all_files_ls[i].permissions);
 
+                    if (strcmp(all_files[i].name, "..") == 0) {
+                    } else {
+                        mvwprintw(win, coords->height_win - 2, 1, all_files[i].name);
+                    }
                 } else {
                     mvwprintw(win, row, 1, all_files_ls[i].name);  // Выводим текст
                     mvwprintw(win, row, coords->width / 2 - 32, all_files_ls[i].size);
                     mvwprintw(win, row, coords->width / 2 - 25, all_files_ls[i].time);
                     mvwprintw(win, row, coords->width / 2 - 10, all_files_ls[i].permissions);
 
+                    if (strcmp(all_files[i].name, "..") == 0) {
+                    } else {
+                        mvwprintw(win, coords->height_win - 2, 1, all_files[i].name);
+                    }
                 }
                 wattroff(win, COLOR_PAIR(6)); // Отключаем цветовую пару
                 wattroff(win, A_BOLD);

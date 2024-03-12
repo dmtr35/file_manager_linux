@@ -73,9 +73,9 @@ int main()
         int coords_cursor_y_menu = 3;
         int i = coords.cursor_y + (check_side ? coords.offset_left : coords.offset_right) - 1;
         arr_coorsor[0] = i + 1;
-        arr_coorsor[1] = 5;
-        arr_coorsor[2] = 7;
-        arr_coorsor[3] = 9;
+        // arr_coorsor[1] = 5;
+        // arr_coorsor[2] = 7;
+        // arr_coorsor[3] = 9;
         size_t leng_arr_coorsor = sizeof(arr_coorsor) / sizeof(*arr_coorsor);
         active ? strcpy(ptr_user_data->coorsor_file, all_files_left[i].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[i].name);
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
@@ -85,6 +85,7 @@ int main()
         // int quantity_lines_right;
         getmaxyx(stdscr, coords.height, coords.width);
         win_left = newwin(coords.height, coords.width / 2, 0, 0);
+        // win_right = newwin(coords.height, coords.width / 2, 0, coords.width / 2);
         win_right = newwin(coords.height, coords.width % 2 ? (coords.width / 2) + 1 : coords.width / 2, 0, coords.width / 2);
         win_menu = newwin(10, width_menu, (coords.height / 2) - 5, coords.width / 2 - width_menu / 2);
 
