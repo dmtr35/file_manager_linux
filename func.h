@@ -57,6 +57,11 @@ int is_directory(const char *path);
 char *human_readable_size(uintmax_t size, char *buf);
 char *format_last_modification_time(time_t time, char *buf);
 void remove_first_char(char *str);
+void removeDuplicates(int *arr, size_t size);
+void addToArr(int *arr, size_t size, int value);
+void removeFromArr(int *arr, size_t size, int value);
+bool containsElement(int *arr, size_t size, int value);
+void fillWithZeros(int *arr, size_t size);
 
 
 // list_builder.c
@@ -66,11 +71,11 @@ void strtrim(char *str);
 
 
 // rendering_ls
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, char *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win);
+void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win);
 void trim_filename(struct file_data *all_files, int number_lines, int max_length);
-void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, char *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_left, WINDOW *win_right);
-void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, char *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win);
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, char *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_left, WINDOW *win_right);
+void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win);
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 
 

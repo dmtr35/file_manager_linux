@@ -59,7 +59,7 @@ int main()
     int cursor_left = 1;
     int cursor_right = 1;
 
-    char arr_coorsor[20] = {0};
+    int arr_coorsor[20] = {0};
 
     struct file_data *all_files_left = (struct file_data *)malloc(500 * sizeof(struct file_data));
     struct file_data *all_files_right = (struct file_data *)malloc(500 * sizeof(struct file_data));
@@ -71,21 +71,15 @@ int main()
     while (1)
     {
         int coords_cursor_y_menu = 3;
-        int i = coords.cursor_y + (check_side ? coords.offset_left : coords.offset_right) - 1;
-        arr_coorsor[0] = i + 1;
-        // arr_coorsor[1] = 5;
-        // arr_coorsor[2] = 7;
-        // arr_coorsor[3] = 9;
+        int i = coords.cursor_y + (active ? coords.offset_left : coords.offset_right) - 1;
         size_t leng_arr_coorsor = sizeof(arr_coorsor) / sizeof(*arr_coorsor);
+        removeDuplicates(arr_coorsor, leng_arr_coorsor);
         active ? strcpy(ptr_user_data->coorsor_file, all_files_left[i].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[i].name);
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
         size_t width_menu = leng_path < coords.width / 3 ? coords.width / 3 : leng_path;
 
-        // int quantity_lines_left;
-        // int quantity_lines_right;
         getmaxyx(stdscr, coords.height, coords.width);
         win_left = newwin(coords.height, coords.width / 2, 0, 0);
-        // win_right = newwin(coords.height, coords.width / 2, 0, coords.width / 2);
         win_right = newwin(coords.height, coords.width % 2 ? (coords.width / 2) + 1 : coords.width / 2, 0, coords.width / 2);
         win_menu = newwin(10, width_menu, (coords.height / 2) - 5, coords.width / 2 - width_menu / 2);
 
@@ -183,6 +177,7 @@ int main()
                 cursor_right = coords.cursor_y;
             }
             active = !active;
+            fillWithZeros(arr_coorsor, leng_arr_coorsor);                   // очистить массив с отметками строк
             if (active)
             {
                 if (cursor_left <= (coords.height_win - 4))
@@ -361,6 +356,17 @@ int main()
             coords.offset_left = 0;
             coords.offset_right = 0;
             coords.cursor_y = 1;
+        }
+        if (ch == ' ') {
+            if (strcmp(ptr_user_data->coorsor_file, "..") != 0) {
+                bool contains = containsElement(arr_coorsor, leng_arr_coorsor, i + 1);
+                if(contains) {
+                    removeFromArr(arr_coorsor, leng_arr_coorsor, i + 1);
+                } else {
+                    addToArr(arr_coorsor, leng_arr_coorsor, i + 1);
+                }
+            }
+
         }
     }
 

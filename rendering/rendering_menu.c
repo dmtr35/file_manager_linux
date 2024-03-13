@@ -11,7 +11,7 @@
 
 #include "../func.h"
 
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, char *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
     start_color();
     // init_color(COLOR_BLUE, 0, 0, 650);

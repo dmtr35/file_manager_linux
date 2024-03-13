@@ -18,7 +18,7 @@ char screen_buffer[10000] = {0};
 int buffer_pos = 0;
 int count_row = 0;
 
-void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, char *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_left, WINDOW *win_right)
+void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_left, WINDOW *win_right)
 {
     char screen_buffer[10000] = {0};
     int buffer_pos = 0;

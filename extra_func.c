@@ -57,3 +57,72 @@ char* format_last_modification_time(time_t time, char *buf) {
 
     return buf;
 }
+
+
+void removeDuplicates(int *arr, size_t size) {
+    if (size <= 1) {
+        return;  // Если в массиве нет элементов или только один элемент, дубликатов нет
+    }
+
+    // Сортируем массив
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = i + 1; j < size; j++) {
+            if (arr[i] > arr[j]) {
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+
+    // Удаляем дубликаты
+    int j = 0;  // Индекс для нового массива без дубликатов
+    for (int i = 0; i < size - 1; i++) {
+        if (arr[i] != arr[i + 1]) {
+            arr[j++] = arr[i];  // Сохраняем только уникальные элементы
+        }
+    }
+    arr[j++] = arr[size - 1];  // Сохраняем последний элемент
+
+    // Сдвигаем все элементы на одну позицию влево, чтобы заменить нулевой элемент
+    for (int i = 0; i < j - 1; i++) {
+        arr[i] = arr[i + 1];
+    }
+
+    // Заполняем все оставшиеся элементы массива нулями
+    for (int i = j - 1; i < size; i++) {
+        arr[i] = 0;
+    }
+}
+
+void addToArr(int *arr, size_t size, int value) {
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == 0) {
+            arr[i] = value;
+            break;
+        }
+    }
+}
+
+// Функция для удаления элемента из массива
+void removeFromArr(int *arr, size_t size, int value) {
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == value) {
+            arr[i] = 0;
+            break;
+        }
+    }
+}
+
+bool containsElement(int *arr, size_t size, int value) {
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == value) {
+            return true;  // Элемент найден, возвращаем true
+        }
+    }
+    return false;  // Элемент не найден, возвращаем false
+}
+
+void fillWithZeros(int *arr, size_t size) {
+    memset(arr, 0, size * sizeof(int));
+}
