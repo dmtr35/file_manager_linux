@@ -43,31 +43,59 @@ void click_on_file(char *path, struct file_data *all_files, struct coordinates *
             coords->offset_right = 0;
         }
     } else if ((strcmp(all_files[i].name, "..") == 0)) {
-        backspace(path, all_files, coords, previous_path, check_side);
-        // strcpy(previous_path, path);
-        // char *parent_dir = dirname(path);
-        // strcpy(path, parent_dir);
-        // coords->cursor_y = 1;
+        strcpy(previous_path, path);
+        char *parent_dir = dirname(path);
+        strcpy(path, parent_dir);
+        coords->cursor_y = 1;
 
-        // if (check_side) {
-        //     coords->offset_right = 0;
-        // } else {
-        //     coords->offset_left = 0;
-        // }
+        if (check_side) {
+            coords->offset_left = 0;
+        } else {
+            coords->offset_right = 0;
+        }
     } 
 }
 
-void backspace(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, _Bool check_side) {
-    strcpy(previous_path, path);
-    char *parent_dir = dirname(path);
-    strcpy(path, parent_dir);
-    coords->cursor_y = 1;
-
+void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side) {
     if (check_side) {
         coords->offset_left = 0;
     } else {
         coords->offset_right = 0;
     }
+    int quantity_lines = 0;
+    int height_win = coords->height_win - 4;
+
+    size_t leng_path = strlen(path) + 1;
+    char path_copy[leng_path];
+    strcpy(path_copy, path);
+    strcpy(previous_path, path_copy);
+    char *parent_dir = dirname(path);
+    const char *dirname = basename(path_copy);
+
+    struct file_data *backspace_files = (struct file_data *)malloc(500 * sizeof(struct file_data));
+    ls_list(path, backspace_files, set_bool->hidden_files_bool, &quantity_lines);
+
+    int count = 0;
+    for(; count < quantity_lines; ++count){
+        char rrr[250];
+        strcpy(rrr, backspace_files->name);
+        if((strstr(backspace_files[count].name, dirname)) != 0) {
+            break;
+        }
+    }
+
+    if(height_win <= count) {
+        if (check_side) {
+            coords->offset_left = (count + 1) - height_win;
+        } else {
+            coords->offset_right = (count + 1) - height_win;
+        }
+        coords->cursor_y = height_win;
+    } else {
+        coords->cursor_y = (count + 1);
+    }
+
+    free(backspace_files);
 }
 
 void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, _Bool check_side, WINDOW *win)
@@ -92,4 +120,10 @@ void open_in_vim(char *path, struct file_data *all_files, struct coordinates *co
         wnoutrefresh(win);
     }
 }
+
+
+
+
+
+
 

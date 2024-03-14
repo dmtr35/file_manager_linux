@@ -292,13 +292,13 @@ int main()
         {
             if (active)
             {
-                // click_on_file(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, check_side);
-                backspace(ptr_user_data->left_path, all_files_left, &coords, previous_path_left, check_side);
+                backspace(ptr_user_data->left_path, all_files_left, &coords, &set_bool, previous_path_left, check_side);
+                // backspace(ptr_user_data->left_path, all_files_left, &coords, &set_bool, previous_path_left, check_side);
             }
             else
             {
-                // click_on_file(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, !check_side);
-                backspace(ptr_user_data->right_path, all_files_right, &coords, previous_path_right, !check_side);
+                backspace(ptr_user_data->right_path, all_files_right, &coords, &set_bool, previous_path_right, !check_side);
+                // backspace(ptr_user_data->right_path, all_files_right, &coords, &set_bool, previous_path_right, !check_side);
             }
         }
         else if (ch == 16)

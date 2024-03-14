@@ -81,8 +81,10 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 
 
 // button_processing
+void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side);
+
 void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, _Bool check_side);
-void backspace(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, _Bool check_side);
+// void backspace(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, _Bool check_side);
 void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, _Bool check_side, WINDOW *win);
 
 
