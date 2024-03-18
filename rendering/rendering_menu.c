@@ -11,7 +11,7 @@
 
 #include "../func.h"
 
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
     start_color();
     // init_color(COLOR_BLUE, 0, 0, 650);
@@ -45,15 +45,13 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
     char new_path[size_new_path];
 
 
-
-
+    int *offset = active ? &coords->offset_left : &coords->offset_right;
+    int *quantity_lines = active ? &coords->quantity_lines_left : &coords->quantity_lines_right;
     bool is_enter_pressed = true;
     int row;
 
     while (is_enter_pressed) {
         getmaxyx(win_menu, height_win, width_win);
-        // int quantity_lines = active ? *quantity_lines_left : *quantity_lines_right;
-        int quantity_lines = active ? coords->quantity_lines_left : coords->quantity_lines_right;
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
         size_t width_menu = leng_path < coords->width / 3 ? coords->width / 3 : leng_path;
         win_menu = newwin(10, width_menu, (coords->height / 2) - 5, coords->width / 2 - width_menu / 2);
@@ -68,8 +66,8 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
         mvwprintw(win_menu, 5, width_win / 2 - 3, "Delete");
         wattroff(win_menu, A_BOLD);
 
-        int offset = 0;
-        int i = 0 + offset;
+        int offset_menu = 0;
+        int i = 0 + offset_menu;
         int row = 3;
         for (; i < 3 && row <= 5; ++i, ++row) {
             if (row == *coords_cursor_y_menu) {
@@ -93,7 +91,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
         
 
         if (ch != ERR) {
-            if (ch == 1 || ch == 'm') {
+            if (ch == 1 || ch == 'm') {                 
                 is_enter_pressed = false;
                 set_bool->menu_bool = false;
             } else if (ch == 'z') {
@@ -110,10 +108,28 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 } else if (*coords_cursor_y_menu == 4) {
                     printf("here2");
                 } else if (*coords_cursor_y_menu == 5) {
-                    remove_directory_recursive(path, file_name);
-                    if(quantity_lines == coords->cursor_y) {
-                        coords->cursor_y--;
+                    int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
+                    int count_item_arr = count_non_zero_elements(arr_coorsor, leng_arr_coorsor_full);
+                    if(check_empty) {
+                        remove_directory_recursive(path, file_name);
+                        if(*quantity_lines == (coords->cursor_y + *offset)) {
+                            coords->cursor_y--;
+                        }
+                    } else {
+                        remove_files(path, arr_coorsor, active, active ? all_files_left : all_files_right, coords);
+                        fillWithZeros(arr_coorsor, coords, leng_arr_coorsor_full);
+                        if(coords->cursor_y  + *offset > *quantity_lines - count_item_arr && *offset != 0) {
+                            *offset -= count_item_arr;
+                        } else if(coords->cursor_y  + *offset > *quantity_lines - count_item_arr && *offset == 0){
+                            coords->cursor_y = *quantity_lines - count_item_arr - *offset;
+                        }
                     }
+                if(offset < 0){
+                    offset = 0;
+                }
+
+
+
 
 
 
@@ -125,9 +141,9 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 getmaxyx(stdscr, coords->height, coords->width);
                 win_left = newwin(coords->height, coords->width / 2, 0, 0);
                 win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor, win_menu, win_right, win_left);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
                 is_enter_pressed = false;
             }
             else if (ch == 27) {
@@ -140,9 +156,9 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 getmaxyx(stdscr, coords->height, coords->width);
                 win_left = newwin(coords->height, coords->width / 2, 0, 0);
                 win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor, win_menu, win_right, win_left);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
                 is_enter_pressed = false;
                 } 
                 else if (next1 == '[' && next2 == 'B') {
@@ -152,9 +168,9 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 getmaxyx(stdscr, coords->height, coords->width);
                 win_left = newwin(coords->height, coords->width / 2, 0, 0);
                 win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor, win_menu, win_right, win_left);
+                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
+                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
                 is_enter_pressed = false;
                 }
             }

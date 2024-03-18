@@ -13,7 +13,7 @@
 
 
 
-void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win)
+void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win)
 {
     char title[5] = "HELP";
 

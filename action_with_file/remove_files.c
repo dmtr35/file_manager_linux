@@ -12,13 +12,28 @@
 #include "../func.h"
 
 
-void remove_one_file(const char *path)
+
+
+void remove_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords)
 {
-    remove(path);
+    int quantity_lines = active ? coords->quantity_lines_left : coords->quantity_lines_right;
+
+    for(int i = 0; i < quantity_lines; ++i) {
+        for(int j = 0; j < coords->leng_arr_coorsor; ++j) {
+            if(all_files[i].file_id == arr_coorsor[j]) {
+                int tt;
+                tt = all_files[i].file_id;
+                size_t leng_file_name = strlen(all_files[i].name) + 1;
+                char file_name[leng_file_name];
+                strcpy(file_name, all_files[i].name);
+                remove_directory_recursive(path, file_name);
+            }
+        }
+    }
 }
 
 
-void remove_directory_recursive(const char *path, char *file_name)
+void remove_directory_recursive(char *path, char *file_name)
 {
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
     char full_path[size_new_path];
@@ -48,7 +63,6 @@ void remove_directory_recursive(const char *path, char *file_name)
 
     DIR *dir = opendir(full_path);
     if (dir == NULL){
-        perror("Error opening directory");
         return;
     }
 
@@ -74,6 +88,16 @@ void remove_directory_recursive(const char *path, char *file_name)
     closedir(dir);
     remove_one_file(full_path);
 }
+
+
+void remove_one_file(char *path)
+{
+    remove(path);
+}
+
+
+
+
 
 // void save_file(char *absolute_path, char *dir_name, char *file_name, struct user_data *ptr_user_data)
 // {

@@ -15,7 +15,7 @@
                 "button_processing.c",
                 "${fileDirname}/command_line/command_line.c",
                 "${fileDirname}/command_line/buffer_save.c",
-                "${fileDirname}/action_with_file/remove_file.c",
+                "${fileDirname}/action_with_file/remove_files.c",
                 
                 "${fileDirname}/rendering/rendering_ls.c",
                 "${fileDirname}/rendering/rendering_help.c",

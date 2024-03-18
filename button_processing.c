@@ -53,7 +53,7 @@ void click_on_file(char *path, struct file_data *all_files, struct coordinates *
         } else {
             coords->offset_right = 0;
         }
-    } 
+    }
 }
 
 void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side) {

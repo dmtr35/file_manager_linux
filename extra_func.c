@@ -27,14 +27,16 @@ int is_directory(const char *path)
 }
 
 
-void remove_first_char(char *str) {
+void remove_first_char(char *str)
+{
     if (str != NULL && *str != '\0') {
         memmove(str, str + 1, strlen(str));
     }
 }
 
 
-char *human_readable_size(uintmax_t size, char *buf) {
+char *human_readable_size(uintmax_t size, char *buf)
+{
     const char *suffixes[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
     int i;
 
@@ -51,7 +53,8 @@ char *human_readable_size(uintmax_t size, char *buf) {
 }
 
 
-char* format_last_modification_time(time_t time, char *buf) {
+char* format_last_modification_time(time_t time, char *buf)
+{
     struct tm *timeinfo = localtime(&time);
     strftime(buf, 20, "%y.%m.%d %H:%M", timeinfo);
 
@@ -59,7 +62,8 @@ char* format_last_modification_time(time_t time, char *buf) {
 }
 
 
-void removeDuplicates(int *arr, size_t size) {
+void removeDuplicates(int *arr, size_t size)
+{
     if (size <= 1) {
         return;  // Если в массиве нет элементов или только один элемент, дубликатов нет
     }
@@ -95,7 +99,8 @@ void removeDuplicates(int *arr, size_t size) {
     }
 }
 
-void addToArr(int *arr, size_t size, int value) {
+void addToArr(int *arr, size_t size, int value)
+{
     for (int i = 0; i < size; i++) {
         if (arr[i] == 0) {
             arr[i] = value;
@@ -105,7 +110,8 @@ void addToArr(int *arr, size_t size, int value) {
 }
 
 // Функция для удаления элемента из массива
-void removeFromArr(int *arr, size_t size, int value) {
+void removeFromArr(int *arr, size_t size, int value)
+{
     for (int i = 0; i < size; i++) {
         if (arr[i] == value) {
             arr[i] = 0;
@@ -114,7 +120,8 @@ void removeFromArr(int *arr, size_t size, int value) {
     }
 }
 
-bool containsElement(int *arr, size_t size, int value) {
+bool containsElement(int *arr, size_t size, int value)
+{
     for (int i = 0; i < size; i++) {
         if (arr[i] == value) {
             return true;  // Элемент найден, возвращаем true
@@ -123,6 +130,34 @@ bool containsElement(int *arr, size_t size, int value) {
     return false;  // Элемент не найден, возвращаем false
 }
 
-void fillWithZeros(int *arr, size_t size) {
+void fillWithZeros(int *arr, struct coordinates *coords, size_t size)
+{
     memset(arr, 0, size * sizeof(int));
+    coords->leng_arr_coorsor = 0;
+}
+
+// проверка массива, есть ли в нем элементы
+int check_int_arr(int *arr, size_t size)
+{
+int is_empty = 1;                                    // Предполагаем, что массив пустой (заполнен нулями)
+    for (int i = 0; i < size; i++) {
+        if (arr[i] != 0) {
+            is_empty = 0;                           // Массив не пустой, так как найден ненулевой элемент
+            return is_empty;
+        }
+    }
+return is_empty;
+}
+
+int count_non_zero_elements(int *arr, size_t size)
+{
+    int non_zero_count = 0;
+
+    for (int i = 0; i < size; i++) {
+        if (arr[i] != 0) {
+            non_zero_count++;
+        }
+    }
+
+    return non_zero_count;
 }

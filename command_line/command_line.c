@@ -18,7 +18,8 @@ char screen_buffer[10000] = {0};
 int buffer_pos = 0;
 int count_row = 0;
 
-void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, size_t leng_arr_coorsor, WINDOW *win_left, WINDOW *win_right)
+
+void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win_left, WINDOW *win_right)
 {
     char screen_buffer[10000] = {0};
     int buffer_pos = 0;
@@ -72,7 +73,7 @@ void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_fil
                     save_to_buffer(":", screen_buffer, &buffer_pos);
                     save_to_buffer(current_path_comm, screen_buffer, &buffer_pos);
                     save_to_buffer("$ ", screen_buffer, &buffer_pos);
-                    render_ls(ptr_user_data->right_path, all_files, coords, set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor, win_right);
+                    render_ls(ptr_user_data->right_path, all_files, coords, set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
                     row++;
                     // wattron(win_left, A_BOLD);
                     // wprintw(win_left, "\n%s:%s$ ", ptr_user_data->user, current_path_comm);
@@ -93,7 +94,7 @@ void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_fil
                 } else if (ch == KEY_BACKSPACE || ch == 127) {
                     remove_char_from_command_line(win_left, cursor_coords, screen_buffer, &buffer_pos);
                 } else if (ch == KEY_RESIZE) {
-                    render_ls(ptr_user_data->right_path, all_files, coords, set_bool, !active, check_side, arr_coorsor, leng_arr_coorsor, win_right);                                                                                           // Обновление окна
+                    render_ls(ptr_user_data->right_path, all_files, coords, set_bool, !active, check_side, arr_coorsor, leng_arr_coorsor_full, win_right);                                                                                           // Обновление окна
                     getmaxyx(stdscr, coords->height, coords->width);
                     win_left = newwin(coords->height, coords->width / 2, 0, 0);                    
                     restore_from_buffer(win_left, screen_buffer);
@@ -115,5 +116,4 @@ void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_fil
     }
     wrefresh(win_left);
 }
-
 
