@@ -72,6 +72,8 @@ int main()
     while (1)
     {
         int coords_cursor_y_menu = 3;
+        int *offset = active ? &coords.offset_left : &coords.offset_right;
+        int *quantity_lines = (active ? &coords.quantity_lines_left : &coords.quantity_lines_right);
         int i = coords.cursor_y + (active ? coords.offset_left : coords.offset_right) - 1;
         int leng_arr_coorsor_full = sizeof(arr_coorsor) / sizeof(*arr_coorsor);
         removeDuplicates(arr_coorsor, leng_arr_coorsor_full);
@@ -151,18 +153,33 @@ int main()
         }
 
         int ch;
-        if (active)
-        {
+        if (active) {
             ch = wgetch(win_left);
-        }
-        else
-        {
+        } else {
             ch = wgetch(win_right);
         }
 
-        if (ch == 'q')
-        {
+        if (ch == 'q') {
             break;
+        } 
+        else if (ch == 'r' || ch == KEY_RESIZE) {
+            int new_height, new_width;
+            getmaxyx(stdscr, new_height, new_width);
+            int cursor_position = coords.cursor_y + *offset;
+            if (new_height > coords.height) {
+                if (*offset > 0) {
+                    (*offset)--;
+                    coords.cursor_y++;
+                }
+            } else if(new_height < coords.height){
+                if (*offset <= 0 && coords.cursor_y == coords.height_win - 4) {
+                    (*offset)++;
+                    coords.cursor_y--;
+                } else if (*offset > 0 && coords.cursor_y == coords.height_win - 4) {
+                    (*offset)++;
+                    coords.cursor_y--;
+                } 
+            } 
         }
         else if (ch == '\t') {
             // if (set_bool.help_bool && check_side) {
@@ -202,73 +219,51 @@ int main()
         {
             int next1 = wgetch(stdscr);
             int next2 = wgetch(stdscr);
-            if (next1 == '[' && next2 == 'A')
-            {
+            if (next1 == '[' && next2 == 'A') {
                 int offset_to_increment = active ? coords.offset_left : coords.offset_right; // вверх
                 int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
                 int hidden_row = quantity_lines - coords.cursor_y;
-                if (coords.cursor_y > 1)
-                {
+                if (coords.cursor_y > 1) {
                     coords.cursor_y--;
-                }
-                else if (coords.cursor_y == 1 && offset_to_increment > 0)
-                {
-                    if (active)
-                    {
+                } else if (coords.cursor_y == 1 && offset_to_increment > 0) {
+                    if (active) {
                         coords.offset_left--;
-                    }
-                    else
-                    {
+                    } else {
                         coords.offset_right--;
                     }
                 }
             }
-            else if (next1 == '[' && next2 == 'B')
-            {
+            else if (next1 == '[' && next2 == 'B') {
                 int offset_to_increment = active ? coords.offset_left : coords.offset_right; // вниз
                 int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
                 int hidden_row = quantity_lines - coords.cursor_y;
-                if (coords.cursor_y < quantity_lines && coords.cursor_y < coords.height_win - 4)
-                {
+                if (coords.cursor_y < quantity_lines && coords.cursor_y < coords.height_win - 4) {
                     coords.cursor_y++;
-                }
-                else if ((coords.cursor_y >= coords.height_win - 4) && hidden_row > offset_to_increment)
-                {
+                } else if ((coords.cursor_y >= coords.height_win - 4) && hidden_row > offset_to_increment) {
                     active ? coords.offset_left++ : coords.offset_right++;
                 }
-            }
-            else if (next1 == '[' && next2 == 'C')
-            {
+            } else if (next1 == '[' && next2 == 'C') {
                 int offset_to_increment = active ? coords.offset_left : coords.offset_right;
                 int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
                 int hidden_row = quantity_lines - (coords.height_win - 4) - offset_to_increment;
-                if (quantity_lines <= coords.height_win - 4)
-                {
+                if (quantity_lines <= coords.height_win - 4) {
                     coords.cursor_y = quantity_lines;
-                }
-                else
-                {
-                    if (active)
-                    {
+                } 
+                else {
+                    if (active) {
                         coords.offset_left += hidden_row;
-                    }
-                    else
-                    {
+                    } else {
                         coords.offset_right += hidden_row;
-                    }
+                    } 
                     coords.cursor_y = coords.height_win - 4;
                 }
             }
-            else if (next1 == '[' && next2 == 'D')
-            {
+            else if (next1 == '[' && next2 == 'D') {
                 int offset_to_increment = active ? coords.offset_left : coords.offset_right;
 
-                if (active)
-                {
+                if (active) {
                     coords.offset_left = 0;
-                }
-                else
-                {
+                } else {
                     coords.offset_right = 0;
                 }
                 coords.cursor_y = 1;
@@ -355,3 +350,6 @@ int main()
     free(all_files_right);
     return 0;
 }
+
+
+
