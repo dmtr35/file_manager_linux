@@ -73,8 +73,8 @@ int main()
     {
         int coords_cursor_y_menu = 3;
         int *offset = active ? &coords.offset_left : &coords.offset_right;
-        int *quantity_lines = (active ? &coords.quantity_lines_left : &coords.quantity_lines_right);
-        int i = coords.cursor_y + (active ? coords.offset_left : coords.offset_right) - 1;
+        int *quantity_lines = active ? &coords.quantity_lines_left : &coords.quantity_lines_right;
+        int i = coords.cursor_y + *offset - 1;
         int leng_arr_coorsor_full = sizeof(arr_coorsor) / sizeof(*arr_coorsor);
         removeDuplicates(arr_coorsor, leng_arr_coorsor_full);
         active ? strcpy(ptr_user_data->coorsor_file, all_files_left[i].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[i].name);
@@ -182,9 +182,6 @@ int main()
             } 
         }
         else if (ch == '\t') {
-            // if (set_bool.help_bool && check_side) {
-            //     continue;
-            // } 
             if (active) {
                 cursor_left = coords.cursor_y;
             } else {
@@ -220,52 +217,32 @@ int main()
             int next1 = wgetch(stdscr);
             int next2 = wgetch(stdscr);
             if (next1 == '[' && next2 == 'A') {
-                int offset_to_increment = active ? coords.offset_left : coords.offset_right; // вверх
-                int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
-                int hidden_row = quantity_lines - coords.cursor_y;
+                int hidden_row = *quantity_lines - coords.cursor_y;
                 if (coords.cursor_y > 1) {
                     coords.cursor_y--;
-                } else if (coords.cursor_y == 1 && offset_to_increment > 0) {
-                    if (active) {
-                        coords.offset_left--;
-                    } else {
-                        coords.offset_right--;
-                    }
+                } else if (coords.cursor_y == 1 && *offset > 0) {
+                    (*offset)--;
                 }
             }
             else if (next1 == '[' && next2 == 'B') {
-                int offset_to_increment = active ? coords.offset_left : coords.offset_right; // вниз
-                int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
-                int hidden_row = quantity_lines - coords.cursor_y;
-                if (coords.cursor_y < quantity_lines && coords.cursor_y < coords.height_win - 4) {
+                int hidden_row = *quantity_lines - coords.cursor_y;
+                if (coords.cursor_y < *quantity_lines && coords.cursor_y < coords.height_win - 4) {
                     coords.cursor_y++;
-                } else if ((coords.cursor_y >= coords.height_win - 4) && hidden_row > offset_to_increment) {
-                    active ? coords.offset_left++ : coords.offset_right++;
+                } else if ((coords.cursor_y >= coords.height_win - 4) && hidden_row > *offset) {
+                    (*offset)++;
                 }
             } else if (next1 == '[' && next2 == 'C') {
-                int offset_to_increment = active ? coords.offset_left : coords.offset_right;
-                int quantity_lines = (active ? coords.quantity_lines_left : coords.quantity_lines_right);
-                int hidden_row = quantity_lines - (coords.height_win - 4) - offset_to_increment;
-                if (quantity_lines <= coords.height_win - 4) {
-                    coords.cursor_y = quantity_lines;
+                int hidden_row = *quantity_lines - (coords.height_win - 4) - *offset;
+                if (*quantity_lines <= coords.height_win - 4) {
+                    coords.cursor_y = *quantity_lines;
                 } 
                 else {
-                    if (active) {
-                        coords.offset_left += hidden_row;
-                    } else {
-                        coords.offset_right += hidden_row;
-                    } 
+                    *offset += hidden_row;
                     coords.cursor_y = coords.height_win - 4;
                 }
             }
             else if (next1 == '[' && next2 == 'D') {
-                int offset_to_increment = active ? coords.offset_left : coords.offset_right;
-
-                if (active) {
-                    coords.offset_left = 0;
-                } else {
-                    coords.offset_right = 0;
-                }
+                *offset = 0;
                 coords.cursor_y = 1;
             }
         }
@@ -321,12 +298,9 @@ int main()
         // }
         else if (ch == 'w')
         { // ctrl + a   терминал, приостановлено
-            int quantity_lines = active ? coords.quantity_lines_left : coords.quantity_lines_right;
-
             set_bool.hidden_files_bool = !set_bool.hidden_files_bool;
 
-            coords.offset_left = 0;
-            coords.offset_right = 0;
+            *offset = 0;
             coords.cursor_y = 1;
         }
         if (ch == ' ') {
