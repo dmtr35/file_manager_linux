@@ -16,7 +16,8 @@ struct user_data {
 };
 
 struct set_bool {
-    _Bool hidden_files_bool;
+    _Bool hidden_left_bool;
+    _Bool hidden_right_bool;
     _Bool command_bool;
     _Bool menu_bool;
     _Bool help_bool;
@@ -74,7 +75,7 @@ int count_non_zero_elements(int *arr, size_t size);                     // ск�
 
 
 // list_builder.c
-int ls_list(char *path, struct file_data *directories, _Bool flag_hidden_files, int *quantity_lines);
+int ls_list(char *path, struct file_data *directories, _Bool *flag_hidden_files, int *quantity_lines);
 void file_data(struct file_data *current_file, char *file_name, struct stat *file_info, char *symb, int file_id);
 void strtrim(char *str);
 
@@ -91,7 +92,7 @@ void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int len
 
 
 // button_processing
-void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side);
+void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side, _Bool active);
 void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, _Bool check_side);
 void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, _Bool check_side, WINDOW *win);
 

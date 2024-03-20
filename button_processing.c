@@ -56,7 +56,8 @@ void click_on_file(char *path, struct file_data *all_files, struct coordinates *
     }
 }
 
-void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side) {
+void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side, _Bool active)
+{
     if (check_side) {
         coords->offset_left = 0;
     } else {
@@ -73,7 +74,8 @@ void backspace(char *path, struct file_data *all_files, struct coordinates *coor
     const char *dirname = basename(path_copy);
 
     struct file_data *backspace_files = (struct file_data *)malloc(500 * sizeof(struct file_data));
-    ls_list(path, backspace_files, set_bool->hidden_files_bool, &quantity_lines);
+    _Bool *hidden_files = active ? &set_bool->hidden_left_bool : &set_bool->hidden_right_bool;
+    ls_list(path, backspace_files, hidden_files, &quantity_lines);
 
     int count = 0;
     for(; count < quantity_lines; ++count){

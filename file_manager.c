@@ -31,7 +31,8 @@ int main()
     curs_set(0);
 
     struct set_bool set_bool;
-    set_bool.hidden_files_bool = 1;
+    set_bool.hidden_left_bool = 1;
+    set_bool.hidden_right_bool = 1;
     set_bool.command_bool = 0;
     set_bool.menu_bool = 0;
     set_bool.help_bool = 0;
@@ -72,6 +73,7 @@ int main()
 
     while (1)
     {
+        
         int coords_cursor_y_menu = 3;
         int *offset = active ? &coords.offset_left : &coords.offset_right;
         int *quantity_lines = active ? &coords.quantity_lines_left : &coords.quantity_lines_right;
@@ -249,10 +251,10 @@ int main()
         }
         else if (ch == 127 || ch == KEY_BACKSPACE) {
             if (active) {
-                backspace(ptr_user_data->left_path, all_files_left, &coords, &set_bool, previous_path_left, check_side);
+                backspace(ptr_user_data->left_path, all_files_left, &coords, &set_bool, previous_path_left, check_side, active);
                 fillWithZeros(arr_coorsor, &coords, leng_arr_coorsor_full);                   // очистить массив с отметками строк
             } else {
-                backspace(ptr_user_data->right_path, all_files_right, &coords, &set_bool, previous_path_right, !check_side);
+                backspace(ptr_user_data->right_path, all_files_right, &coords, &set_bool, previous_path_right, !check_side, active);
                 fillWithZeros(arr_coorsor, &coords, leng_arr_coorsor_full);                   // очистить массив с отметками строк
             }
         }
@@ -299,7 +301,11 @@ int main()
         // }
         else if (ch == 'w')
         { // ctrl + a   терминал, приостановлено
-            set_bool.hidden_files_bool = !set_bool.hidden_files_bool;
+            if(active) {
+                set_bool.hidden_left_bool = !set_bool.hidden_left_bool;
+            } else {
+                set_bool.hidden_right_bool = !set_bool.hidden_right_bool;
+            }
 
             *offset = 0;
             coords.cursor_y = 1;

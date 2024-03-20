@@ -22,7 +22,8 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
 
     int offset = 0;
     int quantity_lines = 0;
-    ls_list(path, all_files, set_bool->hidden_files_bool, &quantity_lines);
+    _Bool *hidden_files = check_side ? &set_bool->hidden_left_bool : &set_bool->hidden_right_bool;
+    ls_list(path, all_files, hidden_files, &quantity_lines);
     if (check_side) {
         coords->quantity_lines_left = quantity_lines;
         offset = coords->offset_left;

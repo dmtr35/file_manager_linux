@@ -16,7 +16,7 @@
 #include "func.h"
 
 
-int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files, int *quantity_lines)
+int ls_list(char *path, struct file_data *all_files, _Bool *flag_hidden_files, int *quantity_lines)
 {
     // *quantity_lines = 0;
     // for (int i = 0; i < *quantity_lines; ++i) {
@@ -55,7 +55,7 @@ int ls_list(char *path, struct file_data *all_files, _Bool flag_hidden_files, in
         if ((strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)){
             continue;
         }
-        if ((strchr(entry->d_name, '.') == entry->d_name) && flag_hidden_files){
+        if ((strchr(entry->d_name, '.') == entry->d_name) && *flag_hidden_files){
             continue;
         }
 
