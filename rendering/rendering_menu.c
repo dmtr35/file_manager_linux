@@ -47,6 +47,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 
     int *offset = active ? &coords->offset_left : &coords->offset_right;
     int *quantity_lines = active ? &coords->quantity_lines_left : &coords->quantity_lines_right;
+    struct file_data *all_files_ptr = active ? all_files_left : all_files_right;
     bool is_enter_pressed = true;
     int row;
 
@@ -59,17 +60,18 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
         wborder(win_menu, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
         snprintf(new_path, size_new_path, "%s/%s", path, file_name);
         // printf("%s\n", screen_buffer);
-        wattron(win_menu, A_BOLD);
-        mvwprintw(win_menu, 1, 1, new_path);
-        mvwprintw(win_menu, 3, width_win / 2 - 2, "Copy");
-        mvwprintw(win_menu, 4, width_win / 2 - 2, "Move");
-        mvwprintw(win_menu, 5, width_win / 2 - 3, "Delete");
-        wattroff(win_menu, A_BOLD);
+        // wattron(win_menu, A_BOLD);
+        // mvwprintw(win_menu, 1, 1, new_path);
+        // mvwprintw(win_menu, 3, width_win / 2 - 2, "Copy");
+        // mvwprintw(win_menu, 4, width_win / 2 - 2, "Move");
+        // mvwprintw(win_menu, 5, width_win / 2 - 3, "Delete");
+        // mvwprintw(win_menu, 6, width_win / 2 - 6, "Delete & save");
+        // wattroff(win_menu, A_BOLD);
 
         int offset_menu = 0;
         int i = 0 + offset_menu;
         int row = 3;
-        for (; i < 3 && row <= 5; ++i, ++row) {
+        for (; i < 4 && row <= 6; ++i, ++row) {
             if (row == *coords_cursor_y_menu) {
                 wattron(win_menu, A_BOLD);
                 wattron(win_menu, COLOR_PAIR(22));                       // Включаем цветовую пару для всей строки
@@ -79,6 +81,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 mvwprintw(win_menu, 3, width_win / 2 - 2, "Copy");
                 mvwprintw(win_menu, 4, width_win / 2 - 2, "Move");
                 mvwprintw(win_menu, 5, width_win / 2 - 3, "Delete");
+                mvwprintw(win_menu, 6, width_win / 2 - 6, "Delete & save");
 
                 wattroff(win_menu, COLOR_PAIR(22)); // Отключаем цветовую пару
                 wattroff(win_menu, A_BOLD);
@@ -107,34 +110,21 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                     printf("here1");
                 } else if (*coords_cursor_y_menu == 4) {
                     printf("here2");
-                } else if (*coords_cursor_y_menu == 5) {
-                    int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
-                    int count_item_arr = count_non_zero_elements(arr_coorsor, leng_arr_coorsor_full);
-                    if(check_empty) {
-                        remove_directory_recursive(path, file_name);
-                        if(*quantity_lines == (coords->cursor_y + *offset)) {
-                            coords->cursor_y--;
-                        }
-                    } else {
-                        remove_files(path, arr_coorsor, active, active ? all_files_left : all_files_right, coords);
-                        fillWithZeros(arr_coorsor, coords, leng_arr_coorsor_full);
-                        if(coords->cursor_y  + *offset > *quantity_lines - count_item_arr && *offset != 0) {
-                            *offset -= count_item_arr;
-                        } else if(coords->cursor_y  + *offset > *quantity_lines - count_item_arr && *offset == 0){
-                            coords->cursor_y = *quantity_lines - count_item_arr - *offset;
-                        }
+                } else if (*coords_cursor_y_menu == 5) {                                    // Delete
+                    remote_or_remove_save(arr_coorsor, coords, leng_arr_coorsor_full, path, file_name, quantity_lines, offset, active, all_files_ptr, set_bool, ptr_user_data);
+
+                    if(offset < 0){
+                        offset = 0;
                     }
-                if(offset < 0){
-                    offset = 0;
+                } else if (*coords_cursor_y_menu == 6) {                                    // Delete & save
+                    set_bool->save_files = 1;
+                    remote_or_remove_save(arr_coorsor, coords, leng_arr_coorsor_full, path, file_name, quantity_lines, offset, active, all_files_ptr, set_bool, ptr_user_data);
+                    set_bool->save_files = 0;
                 }
 
 
 
 
-
-
-
-                }
                 is_enter_pressed = false;
                 set_bool->menu_bool = false;
             } else if (ch == 'r' || ch == KEY_RESIZE) {
@@ -162,7 +152,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 is_enter_pressed = false;
                 } 
                 else if (next1 == '[' && next2 == 'B') {
-                    if (*coords_cursor_y_menu < 5) {
+                    if (*coords_cursor_y_menu < 6) {
                         (*coords_cursor_y_menu)++;
                     }
                 getmaxyx(stdscr, coords->height, coords->width);
@@ -179,3 +169,26 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
     wrefresh(win_menu);
 }
 
+
+void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int leng_arr_coorsor_full, char *path, char *file_name, int *quantity_lines, int *offset, _Bool active, struct file_data *all_files_ptr, struct set_bool *set_bool, struct user_data *ptr_user_data)
+{
+    int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
+    int count_item_arr = count_non_zero_elements(arr_coorsor, leng_arr_coorsor_full);
+    if (check_empty) {
+        if(!(strcmp(file_name, "..") == 0)) {
+            remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
+            if (*quantity_lines == (coords->cursor_y + *offset)) {
+                coords->cursor_y--;
+            }
+        }
+    } 
+    else {
+        remove_files(path, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data);
+        fillWithZeros(arr_coorsor, coords, leng_arr_coorsor_full);
+        if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset != 0) {
+            *offset -= count_item_arr;
+        } else if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset == 0) {
+            coords->cursor_y = *quantity_lines - count_item_arr - *offset;
+        }
+    }
+}

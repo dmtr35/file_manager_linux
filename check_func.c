@@ -35,17 +35,28 @@ int check_func(struct user_data *ptr_user_data)
         }
     }
     
+
     // получаем домашнюю директорию
     struct passwd *pw;
 
     if((pw = getpwnam(ptr_user_data->user)) != NULL) {
         strcpy(ptr_user_data->right_path, pw->pw_dir);
         strcpy(ptr_user_data->home_path, pw->pw_dir);
-    } else {
-        fprintf(stderr, "Unable to determine right_path directory\n");
-        return 1;
-    }
 
+        snprintf(ptr_user_data->trash_directory, strlen(ptr_user_data->home_path) + 11, "%s/.my_trash", ptr_user_data->home_path);
+        
+        struct stat st = {0};
+        if(stat(ptr_user_data->trash_directory, &st) == -1) {   // получение инфо из файла/директории ptr_user_data->trash_directory; &st - куда сохранится результат
+            if(mkdir(ptr_user_data->trash_directory, 0700) != 0) {
+                perror("Error crating .my_trash directory");
+                return 1;
+            } else {
+                // printf("Directory %s created\n", ptr_user_data->trash_directory);
+            }
+        } else {
+            // printf("Directory %s already exists\n", ptr_user_data->trash_directory);
+        }
+    }
 
     // получаем текущюю директорию
     if (getcwd(ptr_user_data->left_path, 1024) == NULL) {

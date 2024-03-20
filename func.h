@@ -12,6 +12,7 @@ struct user_data {
     char right_path[1024];
     char home_path[1024];
     char coorsor_file[1024];
+    char trash_directory[1024];
 };
 
 struct set_bool {
@@ -20,6 +21,7 @@ struct set_bool {
     _Bool menu_bool;
     _Bool help_bool;
     _Bool out_bool;
+    _Bool save_files;
 };
 
 struct file_data {
@@ -57,6 +59,8 @@ int check_func(struct user_data *ptr_user_data);
 
 // extra_func.c
 int is_directory(const char *path);
+char *get_current_datatime(void);
+char *replace_slashes_dash(char *path);
 char *human_readable_size(uintmax_t size, char *buf);
 char *format_last_modification_time(time_t time, char *buf);
 void remove_first_char(char *str);
@@ -82,6 +86,7 @@ void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_fil
 void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win);
 void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
+void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int leng_arr_coorsor_full, char *path, char *file_name, int *quantity_line, int *offset, _Bool activ, struct file_data *all_files_ptr, struct set_bool *set_bool, struct user_data *ptr_user_data);
 
 
 
@@ -104,12 +109,11 @@ void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
 // rendering_help
 
 
-// rendering_menu
-// void render_menu(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, _Bool active, _Bool *menu_bool, WINDOW *win);
 
 // remove_file
-void remove_directory_recursive(char *path, char *file_name);
+void remove_directory_recursive(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data);
 void remove_one_file(char *path);
-void remove_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords);
+void remove_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data);
+void save_file(char *path, char *file_name, struct user_data *ptr_user_data);
 
 #endif

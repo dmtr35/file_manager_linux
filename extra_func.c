@@ -26,6 +26,50 @@ int is_directory(const char *path)
     }
 }
 
+char* get_current_datatime(void)
+{
+    time_t rawtime;
+    struct tm *timeinfo;
+    char *buffer = (char *)malloc(20 * sizeof(char));
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, 20, "%d-%m-%Y_%H-%M-%S", timeinfo);
+
+    return buffer;
+}
+
+char *replace_slashes_dash(char *path)
+{
+    size_t length_dir_file = strlen(path) + 1;
+    char slash_or_dash[2];
+    char first_symbol[2];
+    char second_symbol[2];
+    strncpy(slash_or_dash, path, 1);
+
+
+    if(strstr(slash_or_dash, "/")){
+        first_symbol[0] = '/';
+        second_symbol[0] = '-';
+    } else {
+        first_symbol[0] = '-';
+        second_symbol[0] = '/';
+    }
+
+    char *result = (char *)malloc(length_dir_file);
+
+    for (int i = 0, j = 0; i < length_dir_file; ++i) {
+        if (path[i] == first_symbol[0]) {
+            result[j++] = second_symbol[0];
+        } else {
+            result[j++] = path[i];
+        }
+    }
+    result[length_dir_file] = '\0';
+    return result;
+}
+
 
 void remove_first_char(char *str)
 {

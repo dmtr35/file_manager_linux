@@ -36,6 +36,7 @@ int main()
     set_bool.menu_bool = 0;
     set_bool.help_bool = 0;
     set_bool.out_bool = 0;
+    set_bool.save_files = 0;
     _Bool active = 1;
     _Bool check_side = 1;
 
