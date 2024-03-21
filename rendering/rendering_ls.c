@@ -66,8 +66,8 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
 
     int max_length = coords->width_win - 35;
     trim_filename(all_files_ls, quantity_lines, max_length);
-    char qqq[256];
-    strcpy(qqq, all_files_ls[2].name);
+    // char qqq[256];
+    // strcpy(qqq, all_files_ls[2].name);
 
     if(check_side) {
         mvwvline(win, 1, coords->width_win - 34, ACS_VLINE, coords->height - 4);
@@ -92,8 +92,8 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
     int row = 1;
     for (; i < quantity_lines && i < (coords->height_win - 4) + offset; ++i, ++row) {
         wattron(win, A_BOLD);
-        if (strstr(all_files_ls[i].permissions, "d") != NULL || strcmp(all_files_ls[i].name, "..") == 0) {
-            if (all_files_ls[i].name[0] == '.' || strcmp(all_files_ls[i].name, "..") == 0) {
+        if (strstr(all_files[i].permissions, "d") != NULL || strcmp(all_files[i].name, "..") == 0) {
+            if (all_files[i].name[0] == '.' || strcmp(all_files[i].name, "..") == 0) {
                 wattroff(win, A_BOLD);
                 active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
                 mvwprintw(win, row, 1, all_files_ls[i].name);
@@ -103,7 +103,7 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
                 mvwprintw(win, row, 1, all_files_ls[i].name);
                 active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
             }
-        } else if((strstr(all_files_ls[i].permissions, "l") != NULL)) {
+        } else if((strstr(all_files[i].permissions, "l") != NULL)) {
             char target_name[1024];
             char target_path[1024];
             char full_target_path[1024];
@@ -175,16 +175,16 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
             }
 
             
-        } else if((strstr(all_files_ls[i].name, ".zip") != NULL) || (strstr(all_files_ls[i].name, ".gz") != NULL) || (strstr(all_files_ls[i].name, ".tar") != NULL)) {
+        } else if((strstr(all_files[i].name, ".zip") != NULL) || (strstr(all_files[i].name, ".gz") != NULL) || (strstr(all_files[i].name, ".tar") != NULL)) {
             active ? wattron(win, COLOR_PAIR(5)) : wattron(win, COLOR_PAIR(15));
             mvwprintw(win, row, 1, all_files_ls[i].name);
             active ? wattroff(win, COLOR_PAIR(5)) : wattroff(win, COLOR_PAIR(15));
-        } else if (all_files_ls[i].name[0] == '.'){
+        } else if (all_files[i].name[0] == '.'){
             wattroff(win, A_BOLD);
             active ? wattron(win, COLOR_PAIR(2)) : wattron(win, COLOR_PAIR(12));  
             mvwprintw(win, row, 1, all_files_ls[i].name);
             active ? wattroff(win, COLOR_PAIR(2)) : wattroff(win, COLOR_PAIR(12));
-        } else if (all_files_ls[i].permissions[9] == 'x'){
+        } else if (all_files[i].permissions[9] == 'x'){
             active ? wattron(win, COLOR_PAIR(4)) : wattron(win, COLOR_PAIR(14));
             mvwprintw(win, row, 1, all_files_ls[i].name);
             active ? wattroff(win, COLOR_PAIR(4)) : wattroff(win, COLOR_PAIR(14));
