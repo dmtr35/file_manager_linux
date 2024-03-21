@@ -14,7 +14,7 @@
 
 
 
-void remove_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data)
+void processing_list_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data)
 {
     int quantity_lines = active ? coords->quantity_lines_left : coords->quantity_lines_right;
 
@@ -26,7 +26,11 @@ void remove_files(char *path, int *arr_coorsor, _Bool active, struct file_data *
                 size_t leng_file_name = strlen(all_files[i].name) + 1;
                 char file_name[leng_file_name];
                 strcpy(file_name, all_files[i].name);
-                remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
+                if (set_bool->restore_files) {
+                    restore(path, file_name, ptr_user_data, coords, active);
+                } else {
+                    remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
+                }
             }
         }
     }
@@ -40,9 +44,10 @@ void remove_directory_recursive(char *path, char *file_name, struct set_bool *se
     char full_path[size_new_path];
     snprintf(full_path, size_new_path, "%s/%s", path, file_name);
 
-    if (set_bool->save_files) {
+    if (set_bool->save_files && strcmp(file_name, ".my_trash") != 0) {
         save_file(path, file_name, ptr_user_data);                      // save_fi
     }
+    set_bool->save_files = 0;
     
     struct stat statbuf;
     if (lstat(full_path, &statbuf) == -1) {
@@ -138,27 +143,25 @@ void save_file(char *path, char *file_name, struct user_data *ptr_user_data)
 
 
 
-// void restore(char *arr_files, struct user_data *ptr_user_data, _Bool flag_v, _Bool flag_s)
-// {
-//     char *token = strtok(arr_files, " ");
+void restore(char *path, char *file_name, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active)
+{
+    int quantity_lines = active ? coords->quantity_lines_left : coords->quantity_lines_right;
+    extractFileNameAndPath(file_name, path);
+    char *restore_path = replace_slashes_dash(path);
+    size_t len_absolute_path = strlen(ptr_user_data->trash_directory) + strlen(file_name) + 2;
+    char absolute_path[len_absolute_path];
 
-//     while (token != NULL) {
-//         char *file_name = token;
-//         char file_path[strlen(token)];
-//         extractFileNameAndPath(file_name, file_path);
-//         char *new_path = replace_slashes_dash(file_path);
+    snprintf(absolute_path, len_absolute_path, "%s/%s", ptr_user_data->trash_directory, file_name);
 
-//         size_t len_absolute_path = strlen(ptr_user_data->trash_directory) + strlen(file_name) + 2;
-//         char *absolute_path = malloc(len_absolute_path);
-//         snprintf(absolute_path, len_absolute_path, "%s/%s", ptr_user_data->trash_directory, file_name);
+    size_t lenCommand = strlen(ptr_user_data->trash_directory) + strlen(file_name) + strlen(restore_path) + 32;
+    char command[lenCommand];
 
-//         size_t length = strlen(ptr_user_data->trash_directory) + strlen(file_name) + strlen(new_path) + 32;
-//         char command[length];
-//         snprintf(command, length, "tar -xzf %s/%s --absolute-names -C %s", ptr_user_data->trash_directory, file_name, new_path);
-//         if(system(command) == 0) {
-//             remove_one_file(absolute_path, file_name, flag_v, flag_s);
-//         }
+    snprintf(command, lenCommand, "tar -xzf %s/%s --absolute-names -C %s", ptr_user_data->trash_directory, file_name, restore_path);
+
+
+
+    if(system(command) == 0) {
+        remove_one_file(absolute_path);
+    }
         
-//         token = strtok(NULL, " ");
-//     };
-// }
+}

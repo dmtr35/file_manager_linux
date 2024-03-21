@@ -23,6 +23,7 @@ struct set_bool {
     _Bool help_bool;
     _Bool out_bool;
     _Bool save_files;
+    _Bool restore_files;
 };
 
 struct file_data {
@@ -57,11 +58,13 @@ struct coordinates {
 
 // check_func.c
 int check_func(struct user_data *ptr_user_data);
+void check_and_create_trash(struct user_data *ptr_user_data);
 
 // extra_func.c
 int is_directory(const char *path);
 char *get_current_datatime(void);
 char *replace_slashes_dash(char *path);
+void extractFileNameAndPath(char *fullFileName, char *path);
 char *human_readable_size(uintmax_t size, char *buf);
 char *format_last_modification_time(time_t time, char *buf);
 void remove_first_char(char *str);
@@ -88,7 +91,7 @@ void render_help(char *path, struct file_data *all_files, struct coordinates *co
 void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int leng_arr_coorsor_full, char *path, char *file_name, int *quantity_line, int *offset, _Bool activ, struct file_data *all_files_ptr, struct set_bool *set_bool, struct user_data *ptr_user_data);
-
+void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct coordinates *coords, struct set_bool *set_bool, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *arr_coorsor, int leng_arr_coorsor_full, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 
 // button_processing
@@ -98,9 +101,7 @@ void open_in_vim(char *path, struct file_data *all_files, struct coordinates *co
 
 
 // command_line.c
-// buffer_save.c
 void add_char_to_command_line(WINDOW *win_left, char c, char *screen_buffer, int *buffer_pos);
-// void add_char_to_command_line(WINDOW *win, char c, int x, int y);
 void remove_char_from_command_line(WINDOW *win_left, size_t cursor_coords, char *screen_buffer, int *buffer_pos);
 void save_to_buffer(const char *text, char *screen_buffer, int *buffer_pos);
 void restore_from_buffer(WINDOW *win, char *screen_buffer);
@@ -114,7 +115,8 @@ void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
 // remove_file
 void remove_directory_recursive(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data);
 void remove_one_file(char *path);
-void remove_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data);
+void processing_list_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data);
 void save_file(char *path, char *file_name, struct user_data *ptr_user_data);
+void restore(char *path, char *file_name, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active);
 
 #endif

@@ -38,6 +38,7 @@ int main()
     set_bool.help_bool = 0;
     set_bool.out_bool = 0;
     set_bool.save_files = 0;
+    set_bool.restore_files = 0;
     _Bool active = 1;
     _Bool check_side = 1;
 
@@ -215,8 +216,7 @@ int main()
                 fillWithZeros(arr_coorsor, &coords, leng_arr_coorsor_full);                   // очистить массив с отметками строк
             }
         }
-        else if (ch == 27)
-        {
+        else if (ch == 27) {
             int next1 = wgetch(stdscr);
             int next2 = wgetch(stdscr);
             if (next1 == '[' && next2 == 'A') {

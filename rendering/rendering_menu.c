@@ -59,19 +59,11 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 
         wborder(win_menu, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
         snprintf(new_path, size_new_path, "%s/%s", path, file_name);
-        // printf("%s\n", screen_buffer);
-        // wattron(win_menu, A_BOLD);
-        // mvwprintw(win_menu, 1, 1, new_path);
-        // mvwprintw(win_menu, 3, width_win / 2 - 2, "Copy");
-        // mvwprintw(win_menu, 4, width_win / 2 - 2, "Move");
-        // mvwprintw(win_menu, 5, width_win / 2 - 3, "Delete");
-        // mvwprintw(win_menu, 6, width_win / 2 - 6, "Delete & save");
-        // wattroff(win_menu, A_BOLD);
 
         int offset_menu = 0;
         int i = 0 + offset_menu;
         int row = 3;
-        for (; i < 4 && row <= 6; ++i, ++row) {
+        for (; i < 5 && row <= 7; ++i, ++row) {
             if (row == *coords_cursor_y_menu) {
                 wattron(win_menu, A_BOLD);
                 wattron(win_menu, COLOR_PAIR(22));                       // Включаем цветовую пару для всей строки
@@ -82,6 +74,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 mvwprintw(win_menu, 4, width_win / 2 - 2, "Move");
                 mvwprintw(win_menu, 5, width_win / 2 - 3, "Delete");
                 mvwprintw(win_menu, 6, width_win / 2 - 6, "Delete & save");
+                mvwprintw(win_menu, 7, width_win / 2 - 3, "Restore");
 
                 wattroff(win_menu, COLOR_PAIR(22)); // Отключаем цветовую пару
                 wattroff(win_menu, A_BOLD);
@@ -117,51 +110,54 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                         offset = 0;
                     }
                 } else if (*coords_cursor_y_menu == 6) {                                    // Delete & save
-                    set_bool->save_files = 1;
+                    if(strcmp(path, ptr_user_data->trash_directory) != 0) {
+                        set_bool->save_files = 1;
+                    }
                     remote_or_remove_save(arr_coorsor, coords, leng_arr_coorsor_full, path, file_name, quantity_lines, offset, active, all_files_ptr, set_bool, ptr_user_data);
-                    set_bool->save_files = 0;
-                }
+                    
+                } else if (*coords_cursor_y_menu == 7 && strcmp(path, ptr_user_data->trash_directory) == 0) {      // Restore
+                    int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
+                    set_bool->restore_files = 1;
 
+                    if (check_empty) {
+                        restore(path, file_name, ptr_user_data, coords, active);
+                    } else {
+                        processing_list_files(path, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data);
+                    }
+
+                    set_bool->restore_files = 0;
+                }
 
 
 
                 is_enter_pressed = false;
                 set_bool->menu_bool = false;
             } else if (ch == 'r' || ch == KEY_RESIZE) {
-                getmaxyx(stdscr, coords->height, coords->width);
-                win_left = newwin(coords->height, coords->width / 2, 0, 0);
-                win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
-                is_enter_pressed = false;
-            }
-            else if (ch == 27) {
+                render_all_windows(ptr_user_data, all_files_left, all_files_right, coords, set_bool, turn_render_ls, active, check_side, &is_enter_pressed, arr_coorsor, leng_arr_coorsor_full, coords_cursor_y_menu, win_menu, win_right, win_left);
+            } else if (ch == 27) {
                 int next1 = wgetch(stdscr);
                 int next2 = wgetch(stdscr);
                 if (next1 == '[' && next2 == 'A') {
                     if (*coords_cursor_y_menu > 3) {
                         (*coords_cursor_y_menu)--;
+                    } else if (*coords_cursor_y_menu == 3) {
+                        *coords_cursor_y_menu = 7;
                     }
-                getmaxyx(stdscr, coords->height, coords->width);
-                win_left = newwin(coords->height, coords->width / 2, 0, 0);
-                win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
-                is_enter_pressed = false;
-                } 
-                else if (next1 == '[' && next2 == 'B') {
-                    if (*coords_cursor_y_menu < 6) {
+                    render_all_windows(ptr_user_data, all_files_left, all_files_right, coords, set_bool, turn_render_ls, active, check_side, &is_enter_pressed, arr_coorsor, leng_arr_coorsor_full, coords_cursor_y_menu, win_menu, win_right, win_left);
+                } else if (next1 == '[' && next2 == 'B') {
+                    if (*coords_cursor_y_menu < 7) {
                         (*coords_cursor_y_menu)++;
+                    } else if (*coords_cursor_y_menu == 7) {
+                        *coords_cursor_y_menu = 3;
                     }
-                getmaxyx(stdscr, coords->height, coords->width);
-                win_left = newwin(coords->height, coords->width / 2, 0, 0);
-                win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-                render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-                render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
-                is_enter_pressed = false;
+                    render_all_windows(ptr_user_data, all_files_left, all_files_right, coords, set_bool, turn_render_ls, active, check_side, &is_enter_pressed, arr_coorsor, leng_arr_coorsor_full, coords_cursor_y_menu, win_menu, win_right, win_left);
+                } 
+                else if (next1 == '[' && next2 == 'C') {                                      // -> на последнюю
+                    *coords_cursor_y_menu = 7;
+                    render_all_windows(ptr_user_data, all_files_left, all_files_right, coords, set_bool, turn_render_ls, active, check_side, &is_enter_pressed, arr_coorsor, leng_arr_coorsor_full, coords_cursor_y_menu, win_menu, win_right, win_left);
+                } else if (next1 == '[' && next2 == 'D') {                                    // <- на первую
+                    *coords_cursor_y_menu = 3;
+                    render_all_windows(ptr_user_data, all_files_left, all_files_right, coords, set_bool, turn_render_ls, active, check_side, &is_enter_pressed, arr_coorsor, leng_arr_coorsor_full, coords_cursor_y_menu, win_menu, win_right, win_left);
                 }
             }
         }
@@ -172,6 +168,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 
 void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int leng_arr_coorsor_full, char *path, char *file_name, int *quantity_lines, int *offset, _Bool active, struct file_data *all_files_ptr, struct set_bool *set_bool, struct user_data *ptr_user_data)
 {
+    check_and_create_trash(ptr_user_data);
     int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
     int count_item_arr = count_non_zero_elements(arr_coorsor, leng_arr_coorsor_full);
     if (check_empty) {
@@ -183,7 +180,7 @@ void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int len
         }
     } 
     else {
-        remove_files(path, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data);
+        processing_list_files(path, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data);
         fillWithZeros(arr_coorsor, coords, leng_arr_coorsor_full);
         if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset != 0) {
             *offset -= count_item_arr;
@@ -191,4 +188,16 @@ void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int len
             coords->cursor_y = *quantity_lines - count_item_arr - *offset;
         }
     }
+}
+
+
+void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct coordinates *coords, struct set_bool *set_bool, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *arr_coorsor, int leng_arr_coorsor_full, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
+{
+    getmaxyx(stdscr, coords->height, coords->width);
+    win_left = newwin(coords->height, coords->width / 2, 0, 0);
+    win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
+    render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
+    render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
+    render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
+    *is_enter_pressed = false;
 }

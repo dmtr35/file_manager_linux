@@ -71,6 +71,21 @@ char *replace_slashes_dash(char *path)
 }
 
 
+void extractFileNameAndPath(char *fullFileName, char *path)
+{
+    const char *pattern = "____";
+    char *position = strstr(fullFileName, pattern);
+
+    size_t length = strlen(position);
+    char *start = position + 24;
+    char *end = position + length - 11;
+
+    size_t len_file_path = end - start;
+    strncpy(path, start, len_file_path);
+    path[len_file_path] = '\0';
+}
+
+
 void remove_first_char(char *str)
 {
     if (str != NULL && *str != '\0') {
@@ -192,6 +207,7 @@ int is_empty = 1;                                    // Предполагаем
     }
 return is_empty;
 }
+
 
 int count_non_zero_elements(int *arr, size_t size)
 {
