@@ -22,8 +22,13 @@ struct set_bool {
     _Bool menu_bool;
     _Bool help_bool;
     _Bool out_bool;
+
     _Bool save_files;
+    
     _Bool restore_files;
+    _Bool move_files;
+    _Bool copy_files;
+    _Bool delete_files;
 };
 
 struct file_data {
@@ -115,8 +120,12 @@ void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
 // remove_file
 void remove_directory_recursive(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data);
 void remove_one_file(char *path);
-void processing_list_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data);
+// void processing_list_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data);
 void save_file(char *path, char *file_name, struct user_data *ptr_user_data);
 void restore(char *path, char *file_name, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active);
+
+// form_list.c
+void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data, int leng_arr_coorsor_full, int *quantity_lines, int *offset);
+void select_way(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, int *offset);
 
 #endif

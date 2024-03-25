@@ -39,6 +39,9 @@ int main()
     set_bool.out_bool = 0;
     set_bool.save_files = 0;
     set_bool.restore_files = 0;
+    set_bool.move_files = 0;
+    set_bool.copy_files = 0;
+    set_bool.delete_files = 0;
     _Bool active = 1;
     _Bool check_side = 1;
 

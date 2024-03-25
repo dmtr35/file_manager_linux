@@ -14,27 +14,27 @@
 
 
 
-void processing_list_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data)
-{
-    int quantity_lines = active ? coords->quantity_lines_left : coords->quantity_lines_right;
+// void processing_list_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data)
+// {
+//     int quantity_lines = active ? coords->quantity_lines_left : coords->quantity_lines_right;
 
-    for(int i = 0; i < quantity_lines; ++i) {
-        for(int j = 0; j < coords->leng_arr_coorsor; ++j) {
-            if(all_files[i].file_id == arr_coorsor[j]) {
-                int tt;
-                tt = all_files[i].file_id;
-                size_t leng_file_name = strlen(all_files[i].name) + 1;
-                char file_name[leng_file_name];
-                strcpy(file_name, all_files[i].name);
-                if (set_bool->restore_files) {
-                    restore(path, file_name, ptr_user_data, coords, active);
-                } else {
-                    remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
-                }
-            }
-        }
-    }
-}
+//     for(int i = 0; i < quantity_lines; ++i) {
+//         for(int j = 0; j < coords->leng_arr_coorsor; ++j) {
+//             if(all_files[i].file_id == arr_coorsor[j]) {
+//                 int tt;
+//                 tt = all_files[i].file_id;
+//                 size_t leng_file_name = strlen(all_files[i].name) + 1;
+//                 char file_name[leng_file_name];
+//                 strcpy(file_name, all_files[i].name);
+//                 if (set_bool->restore_files) {
+//                     restore(path, file_name, ptr_user_data, coords, active);
+//                 } else {
+//                     remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
+//                 }
+//             }
+//         }
+//     }
+// }
 
 
 void remove_directory_recursive(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data)
@@ -44,10 +44,10 @@ void remove_directory_recursive(char *path, char *file_name, struct set_bool *se
     char full_path[size_new_path];
     snprintf(full_path, size_new_path, "%s/%s", path, file_name);
 
-    if (set_bool->save_files && strcmp(file_name, ".my_trash") != 0) {
-        save_file(path, file_name, ptr_user_data);                      // save_fi
-    }
-    set_bool->save_files = 0;
+    // if (set_bool->save_files && strcmp(file_name, ".my_trash") != 0) {
+    //     save_file(path, file_name, ptr_user_data);                      // save_fi
+    // }
+    // set_bool->save_files = 0;
     
     struct stat statbuf;
     if (lstat(full_path, &statbuf) == -1) {

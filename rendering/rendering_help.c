@@ -55,7 +55,7 @@ void render_help(char *path, struct file_data *all_files, struct coordinates *co
 
     wattron(win, A_BOLD);
     wattron(win, COLOR_PAIR(6));
-    mvwprintw(win, 0, 1, title);
+    mvwprintw(win, 0, 1, "%s", title);
     wattroff(win, COLOR_PAIR(6));
     wattroff(win, A_BOLD);
 
