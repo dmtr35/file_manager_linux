@@ -198,10 +198,10 @@ void fillWithZeros(int *arr, struct coordinates *coords, size_t size)
 // проверка массива, есть ли в нем элементы
 int check_int_arr(int *arr, size_t size)
 {
-int is_empty = 1;                                    // Предполагаем, что массив пустой (заполнен нулями)
+int is_empty = 0;                                    // Предполагаем, что массив пустой (заполнен нулями)
     for (int i = 0; i < size; i++) {
         if (arr[i] != 0) {
-            is_empty = 0;                           // Массив не пустой, так как найден ненулевой элемент
+            is_empty = 1;                           // Массив не пустой, так как найден ненулевой элемент
             return is_empty;
         }
     }
@@ -220,4 +220,17 @@ int count_non_zero_elements(int *arr, size_t size)
     }
 
     return non_zero_count;
+}
+
+void check_offset_less_zero(int *offset)                       
+{
+    if (*offset < 0) {
+        *offset = 0;
+    }
+}
+void check_cursor_y_less_zero(int *cursor_y)                      
+{
+    if (*cursor_y < 1) {
+        *cursor_y = 1;
+    }
 }

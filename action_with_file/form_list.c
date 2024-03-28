@@ -16,21 +16,11 @@
 
 
 
-void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data, int leng_arr_coorsor_full, int *quantity_lines, int *offset)
+void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data, int leng_arr_coorsor_full, int *quantity_lines, int *offset, int *check_empty)
 {
-    int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
+    // int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
     
-    if (check_empty) {
-        if(!(strcmp(file_name, "..") == 0)) {
-            select_way(path, file_name, set_bool, ptr_user_data, coords, active, arr_coorsor, leng_arr_coorsor_full, quantity_lines, offset);
-            // if (*quantity_lines == (coords->cursor_y + *offset)) {
-            //     coords->cursor_y--;
-            // }
-        }
-        if (offset < 0) {
-           offset = 0;
-        }
-    } else {
+    if (*check_empty) {
         for(int i = 0; i < *quantity_lines; ++i) {
             for(int j = 0; j < coords->leng_arr_coorsor; ++j) {
                 if(all_files[i].file_id == arr_coorsor[j]) {
@@ -44,9 +34,15 @@ void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool 
                 }
             }
         }
+    } else {
+        if(!(strcmp(file_name, "..") == 0)) {
+            select_way(path, file_name, set_bool, ptr_user_data, coords, active, arr_coorsor, leng_arr_coorsor_full, quantity_lines, offset);
+        }
+    }
+    if (offset < 0) {
+        offset = 0;
     }
     fillWithZeros(arr_coorsor, coords, leng_arr_coorsor_full);
-
 }
 
 
@@ -62,10 +58,5 @@ void select_way(char *path, char *file_name, struct set_bool *set_bool, struct u
         // remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
     } else if (set_bool->delete_files){
         remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
-        // if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset != 0) {
-        //     *offset -= count_item_arr;
-        // } else if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset == 0) {
-        //     coords->cursor_y = *quantity_lines - count_item_arr - *offset;
-        // }
     }
 }

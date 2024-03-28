@@ -106,31 +106,21 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                     printf("here2");
                 } else if (*coords_cursor_y_menu == 5) {                                    // Delete
                     set_bool->delete_files = 1;
-                    processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset);
+                    processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty);
                     set_bool->delete_files = 0;
-                    if(check_empty) {
-                        if (all_files_ptr[*quantity_lines - 1].file_id >= (coords->cursor_y + *offset) - 1 && *offset > 0) {
-                            (*offset)--;
-                        }
-                    } else {
-                        if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset > 0) {
-                            *offset -= count_item_arr;
-                        } else if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset == 0) {
-                            coords->cursor_y = *quantity_lines - count_item_arr - *offset;
-                        }
-                    }
-                    if (offset < 0) {
-                       offset = 0;
-                    }
+                    check_arr_coorsor_for_delete(all_files_ptr, arr_coorsor, leng_arr_coorsor_full, quantity_lines, coords, offset, count_item_arr, &check_empty);
                     
                 } else if (*coords_cursor_y_menu == 6) {                                    // Delete & save
                     if(strcmp(path, ptr_user_data->trash_directory) != 0) {
                         set_bool->save_files = 1;
                     }
-                    processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset);
-                    
+                    set_bool->delete_files = 1;
+                    processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty);
+                    set_bool->delete_files = 0;
+                    check_arr_coorsor_for_delete(all_files_ptr, arr_coorsor, leng_arr_coorsor_full, quantity_lines, coords, offset, count_item_arr, &check_empty);
+
                 } else if (*coords_cursor_y_menu == 7 && strcmp(path, ptr_user_data->trash_directory) == 0) {      // Restore
-                    int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
+                    // int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
                     set_bool->restore_files = 1;
 
                     if (check_empty) {
@@ -180,29 +170,32 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 }
 
 
-// void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int leng_arr_coorsor_full, char *path, char *file_name, int *quantity_lines, int *offset, _Bool active, struct file_data *all_files_ptr, struct set_bool *set_bool, struct user_data *ptr_user_data)
-// {
-//     check_and_create_trash(ptr_user_data);
-//     int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
-//     int count_item_arr = count_non_zero_elements(arr_coorsor, leng_arr_coorsor_full);
-//     if (check_empty) {
-//         if(!(strcmp(file_name, "..") == 0)) {
-//             remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
-//             if (*quantity_lines == (coords->cursor_y + *offset)) {
-//                 coords->cursor_y--;
-//             }
-//         }
-//     } 
-//     else {
-//         processing_list_files(path, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data);
-//         fillWithZeros(arr_coorsor, coords, leng_arr_coorsor_full);
-//         if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset != 0) {
-//             *offset -= count_item_arr;
-//         } else if (coords->cursor_y + *offset > *quantity_lines - count_item_arr && *offset == 0) {
-//             coords->cursor_y = *quantity_lines - count_item_arr - *offset;
-//         }
-//     }
-// }
+void check_arr_coorsor_for_delete(struct file_data *all_files, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, struct coordinates *coords, int *offset, int count_item_arr, int *check_empty)
+{
+    if (*check_empty && count_item_arr > 1) {
+        if (*offset == 0) {
+            if (coords->cursor_y > *quantity_lines - count_item_arr) {
+                coords->cursor_y = *quantity_lines - count_item_arr;
+            } 
+        }
+        else if (*offset > 0) {
+            if (coords->cursor_y + *offset > *quantity_lines - count_item_arr) {
+                coords->cursor_y = coords->height_win - 4;
+            }
+            *offset -= count_item_arr;
+        } 
+    }
+    else {
+        if (*offset > 0) {
+            (*offset)--;
+        } 
+        else if (all_files[*quantity_lines - 1].file_id == (coords->cursor_y + *offset) - 1 && *offset == 0) {
+            coords->cursor_y--;
+        }
+    }
+    check_offset_less_zero(offset);
+    check_cursor_y_less_zero(&coords->cursor_y);
+}
 
 
 void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct coordinates *coords, struct set_bool *set_bool, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *arr_coorsor, int leng_arr_coorsor_full, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)

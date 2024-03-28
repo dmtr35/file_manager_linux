@@ -80,6 +80,8 @@ bool containsElement(int *arr, size_t size, int value);
 void fillWithZeros(int *arr, struct coordinates *coords, size_t size);
 int check_int_arr(int *arr, size_t size);                               // проверка массива, есть ли в нем элементы
 int count_non_zero_elements(int *arr, size_t size);                     // сколько элементов в массиве
+void check_offset_less_zero(int *offset);
+void check_cursor_y_less_zero(int *cursor_y);
 
 
 // list_builder.c
@@ -95,9 +97,8 @@ void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_fil
 void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win);
 void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
-void remote_or_remove_save(int *arr_coorsor, struct coordinates *coords, int leng_arr_coorsor_full, char *path, char *file_name, int *quantity_line, int *offset, _Bool activ, struct file_data *all_files_ptr, struct set_bool *set_bool, struct user_data *ptr_user_data);
 void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct coordinates *coords, struct set_bool *set_bool, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *arr_coorsor, int leng_arr_coorsor_full, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
-
+void check_arr_coorsor_for_delete(struct file_data *all_files, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, struct coordinates *coords, int *offset, int count_item_arr, int *check_empty);
 
 // button_processing
 void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side, _Bool active);
@@ -125,7 +126,7 @@ void save_file(char *path, char *file_name, struct user_data *ptr_user_data);
 void restore(char *path, char *file_name, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active);
 
 // form_list.c
-void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data, int leng_arr_coorsor_full, int *quantity_lines, int *offset);
+void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data, int leng_arr_coorsor_full, int *quantity_lines, int *offset, int *check_empty);
 void select_way(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, int *offset);
 
 #endif
