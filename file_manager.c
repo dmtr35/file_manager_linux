@@ -37,13 +37,14 @@ int main()
     set_bool.menu_bool = 0;
     set_bool.help_bool = 0;
     set_bool.out_bool = 0;
-    set_bool.save_files = 0;
+    // set_bool.save_files = 0;
     set_bool.restore_files = 0;
     set_bool.move_files = 0;
     set_bool.copy_files = 0;
     set_bool.delete_files = 0;
     _Bool active = 1;
     _Bool check_side = 1;
+    
 
     char previous_path_left[1024];
     char previous_path_right[1024];
@@ -66,7 +67,7 @@ int main()
     int cursor_left = 1;
     int cursor_right = 1;
 
-    int arr_coorsor[20] = {0};
+    int arr_coorsor[100] = {0};
 
     struct file_data *all_files_left = (struct file_data *)malloc(500 * sizeof(struct file_data));
     struct file_data *all_files_right = (struct file_data *)malloc(500 * sizeof(struct file_data));
@@ -317,11 +318,15 @@ int main()
             if (strcmp(ptr_user_data->coorsor_file, "..") != 0) {
                 bool contains = containsElement(arr_coorsor, leng_arr_coorsor_full, i);
                 if(contains) {
-                    removeFromArr(arr_coorsor, leng_arr_coorsor_full, i);
-                    coords.leng_arr_coorsor--;
+                    if (coords.leng_arr_coorsor > 0) {
+                        removeFromArr(arr_coorsor, leng_arr_coorsor_full, i);
+                        coords.leng_arr_coorsor--;
+                    }
                 } else {
-                    addToArr(arr_coorsor, leng_arr_coorsor_full, i);
-                    coords.leng_arr_coorsor++;
+                    if (coords.leng_arr_coorsor < leng_arr_coorsor_full - 1) {
+                        addToArr(arr_coorsor, leng_arr_coorsor_full, i);
+                        coords.leng_arr_coorsor++;
+                    }
                 }
             }
 
