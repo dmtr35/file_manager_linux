@@ -100,18 +100,25 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                 set_bool->menu_bool = false;
                 set_bool->out_bool = true;
             break;
-            } else if (ch == '\n') {
+            } else if (ch == '\n') {                                                                                        // Copy
                 if (*coords_cursor_y_menu == 3) {
-                    printf("here1");
-                } else if (*coords_cursor_y_menu == 4) {
+                    set_bool->copy_files = 1;
+                    processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty, &save_files);
+
+
+
+                    set_bool->copy_files = 0;
+                } else if (*coords_cursor_y_menu == 4) {                                                                    // Move
                     printf("here2");
-                } else if (*coords_cursor_y_menu == 5) {                                    // Delete
+
+
+                } else if (*coords_cursor_y_menu == 5) {                                                                    // Delete
                     set_bool->delete_files = 1;
                     processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty, &save_files);
                     set_bool->delete_files = 0;
-                    check_arr_coorsor_for_delete(all_files_ptr, arr_coorsor, leng_arr_coorsor_full, quantity_lines, coords, offset, count_item_arr, &check_empty);
+                    select_coorsor(all_files_ptr, arr_coorsor, leng_arr_coorsor_full, quantity_lines, coords, offset, count_item_arr, &check_empty);
                     
-                } else if (*coords_cursor_y_menu == 6) {                                    // Delete & save
+                } else if (*coords_cursor_y_menu == 6) {                                                                    // Delete & save
                     if(strcmp(path, ptr_user_data->trash_directory) != 0) {
                         save_files = 1;
                     }
@@ -119,19 +126,18 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                     processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty, &save_files);
                     set_bool->delete_files = 0;
                     save_files = 0;
-                    check_arr_coorsor_for_delete(all_files_ptr, arr_coorsor, leng_arr_coorsor_full, quantity_lines, coords, offset, count_item_arr, &check_empty);
+                    select_coorsor(all_files_ptr, arr_coorsor, leng_arr_coorsor_full, quantity_lines, coords, offset, count_item_arr, &check_empty);
 
-                } else if (*coords_cursor_y_menu == 7 && strcmp(path, ptr_user_data->trash_directory) == 0) {      // Restore
-                    // int check_empty = check_int_arr(arr_coorsor, leng_arr_coorsor_full);
+                } else if (*coords_cursor_y_menu == 7 && strcmp(path, ptr_user_data->trash_directory) == 0) {               // Restore
                     set_bool->restore_files = 1;
 
-                    if (check_empty) {
+                    if (!check_empty || count_item_arr == 1) {
                         restore(path, file_name, ptr_user_data, coords, active);
                     } else {
-                        // processing_list_files(path, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data);
+                        processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty, &save_files);
                     }
-
                     set_bool->restore_files = 0;
+                    select_coorsor(all_files_ptr, arr_coorsor, leng_arr_coorsor_full, quantity_lines, coords, offset, count_item_arr, &check_empty);
                 }
 
 
@@ -172,7 +178,7 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 }
 
 
-void check_arr_coorsor_for_delete(struct file_data *all_files, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, struct coordinates *coords, int *offset, int count_item_arr, int *check_empty)
+void select_coorsor(struct file_data *all_files, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, struct coordinates *coords, int *offset, int count_item_arr, int *check_empty)
 {
     if (*check_empty && count_item_arr > 1) {
         if (*offset == 0) {

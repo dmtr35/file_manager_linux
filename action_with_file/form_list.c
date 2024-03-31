@@ -23,8 +23,6 @@ void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool 
         for(int i = 0; i < *quantity_lines; ++i) {
             for(int j = 0; j < coords->leng_arr_coorsor; ++j) {
                 if(all_files[i].file_id == arr_coorsor[j]) {
-                    // int tt;
-                    // tt = all_files[i].file_id;
                     size_t leng_file_name = strlen(all_files[i].name) + 1;
                     char file_name[leng_file_name];
                     strcpy(file_name, all_files[i].name);
@@ -54,7 +52,7 @@ void select_way(char *path, char *file_name, struct set_bool *set_bool, struct u
     } else if (set_bool->move_files){
         // remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
     } else if (set_bool->copy_files){
-        // remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
+        copy_file(path, file_name, set_bool, ptr_user_data);
     } else if (set_bool->delete_files){
         remove_directory_recursive(path, file_name, set_bool, ptr_user_data, save_files);
     }

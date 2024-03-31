@@ -16,6 +16,7 @@
                 "${fileDirname}/command_line/command_line.c",
                 "${fileDirname}/command_line/buffer_save.c",
                 "${fileDirname}/action_with_file/remove_files.c",
+                "${fileDirname}/action_with_file/cp_mv.c",
                 "${fileDirname}/action_with_file/form_list.c",
                 
                 "${fileDirname}/rendering/rendering_ls.c",
