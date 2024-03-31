@@ -49,10 +49,8 @@ void select_way(char *path, char *file_name, struct set_bool *set_bool, struct u
     int count_item_arr = count_non_zero_elements(arr_coorsor, leng_arr_coorsor_full);
     if (set_bool->restore_files) {
         restore(path, file_name, ptr_user_data, coords, active);
-    } else if (set_bool->move_files){
-        // remove_directory_recursive(path, file_name, set_bool, ptr_user_data);
-    } else if (set_bool->copy_files){
-        copy_file(path, file_name, set_bool, ptr_user_data);
+    } else if (set_bool->copy_files || set_bool->move_files){
+        cp_mv_file(path, file_name, set_bool, ptr_user_data, active);
     } else if (set_bool->delete_files){
         remove_directory_recursive(path, file_name, set_bool, ptr_user_data, save_files);
     }

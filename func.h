@@ -121,9 +121,11 @@ void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
 // remove_file
 void remove_directory_recursive(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, _Bool *save_files);
 void remove_one_file(char *path);
-// void processing_list_files(char *path, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data);
 void save_file(char *path, char *file_name, struct user_data *ptr_user_data);
 void restore(char *path, char *file_name, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active);
+void cp_mv_file(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, _Bool active);
+void copy_file(const char *source_directory, const char *destination_directory);
+void copy_directory(const char *source_directory, const char *destination_directory);
 
 // form_list.c
 void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data, int leng_arr_coorsor_full, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files);
