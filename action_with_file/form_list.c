@@ -51,6 +51,9 @@ void select_way(char *path, char *file_name, struct set_bool *set_bool, struct u
         restore(path, file_name, ptr_user_data, coords, active);
     } else if (set_bool->copy_files || set_bool->move_files){
         cp_mv_file(path, file_name, set_bool, ptr_user_data, active);
+        if (set_bool->move_files) {
+            remove_directory_recursive(path, file_name, set_bool, ptr_user_data, save_files);
+        }
     } else if (set_bool->delete_files){
         remove_directory_recursive(path, file_name, set_bool, ptr_user_data, save_files);
     }

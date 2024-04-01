@@ -105,13 +105,13 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
                     set_bool->copy_files = 1;
                     processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty, &save_files);
 
-
-
                     set_bool->copy_files = 0;
                 } else if (*coords_cursor_y_menu == 4) {                                                                    // Move
-                    printf("here2");
+                    set_bool->move_files = 1;
+                    processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty, &save_files);
 
-
+                    set_bool->move_files = 0;
+                    select_coorsor(all_files_ptr, arr_coorsor, leng_arr_coorsor_full, quantity_lines, coords, offset, count_item_arr, &check_empty);
                 } else if (*coords_cursor_y_menu == 5) {                                                                    // Delete
                     set_bool->delete_files = 1;
                     processing_list_files(path, file_name, arr_coorsor, active, all_files_ptr, coords, set_bool, ptr_user_data, leng_arr_coorsor_full, quantity_lines, offset, &check_empty, &save_files);

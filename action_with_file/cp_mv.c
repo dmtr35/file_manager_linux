@@ -74,20 +74,21 @@ void copy_directory(const char *source_directory, const char *destination_direct
             continue;
         }
 
-        size_t size_absolute_path = strlen(source_directory) + strlen(entry->d_name) + 2;
-        char absolute_path[size_absolute_path];
-        snprintf(absolute_path, size_absolute_path, "%s/%s", source_directory, entry->d_name);
+        size_t size_absolute_path_source = strlen(source_directory) + strlen(entry->d_name) + 2;
+        size_t size_absolute_path_destination = strlen(destination_directory) + strlen(entry->d_name) + 2;
+        char absolute_path_source[size_absolute_path_source];
+        char absolute_path_destination[size_absolute_path_destination];
+        snprintf(absolute_path_source, size_absolute_path_source, "%s/%s", source_directory, entry->d_name);
+        snprintf(absolute_path_destination, size_absolute_path_destination, "%s/%s", destination_directory, entry->d_name);
 
-        if (is_directory(absolute_path)) {
-            copy_directory(source_directory, entry->d_name);
+        if (is_directory(absolute_path_source)) {
+            copy_directory(absolute_path_source, absolute_path_destination);
         } else {
-            copy_file(source_file, destination_file);
+            copy_file(absolute_path_source, absolute_path_destination);
         }
     }
 
     closedir(dir);
-    // remove_one_file(full_path);
-
 }
 
 void copy_file(const char *source_file, const char *destination_file)
