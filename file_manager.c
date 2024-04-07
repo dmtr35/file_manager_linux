@@ -78,7 +78,7 @@ int main()
 
     while (1)
     {
-        
+        struct file_data *all_files_ptr = active ? all_files_left : all_files_right;
         int coords_cursor_y_menu = 3;
         int *offset = active ? &coords.offset_left : &coords.offset_right;
         int *quantity_lines = active ? &coords.quantity_lines_left : &coords.quantity_lines_right;
@@ -173,7 +173,7 @@ int main()
         else if (ch == 'r' || ch == KEY_RESIZE) {
             int new_height, new_width;
             getmaxyx(stdscr, new_height, new_width);
-            int cursor_position = coords.cursor_y + *offset;
+            int cursor_position = all_files_ptr[i].file_id;
             if (new_height > coords.height) {
                 if (*offset > 0) {
                     (*offset)--;
@@ -182,10 +182,10 @@ int main()
             } else if(new_height < coords.height){
                 if (*offset <= 0 && coords.cursor_y == coords.height_win - 4) {
                     (*offset)++;
-                    coords.cursor_y--;
+                    coords.cursor_y = cursor_position - *offset + 1;
                 } else if (*offset > 0 && coords.cursor_y == coords.height_win - 4) {
                     (*offset)++;
-                    coords.cursor_y--;
+                    coords.cursor_y = cursor_position - *offset + 1;
                 } 
             } 
         }
