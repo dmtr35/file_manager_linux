@@ -5,14 +5,17 @@
 #include <time.h>
 #include <ncurses.h>
 
+#define MAX_ARR_SIZE 100
 
-struct user_data {
-    char user[1024];
-    char left_path[1024];
-    char right_path[1024];
-    char home_path[1024];
-    char coorsor_file[1024];
-    char trash_directory[1024];
+
+
+struct file_data {
+    int file_id;
+    int leng_all_files;
+    char name[1024];
+    char size[7];
+    char time[15];
+    char permissions[11];
 };
 
 struct set_bool {
@@ -22,22 +25,10 @@ struct set_bool {
     _Bool menu_bool;
     _Bool help_bool;
     _Bool out_bool;
-
-    // _Bool save_files;
-    
     _Bool restore_files;
     _Bool move_files;
     _Bool copy_files;
     _Bool delete_files;
-};
-
-struct file_data {
-    int file_id;
-    int leng_all_files;
-    char name[1024];
-    char size[7];
-    char time[15];
-    char permissions[11];
 };
 
 struct coordinates {
@@ -49,17 +40,31 @@ struct coordinates {
     int width_menu;
     int cursor_x;
     int cursor_y;
-
     int quantity_lines_left;
     int quantity_lines_right;
     int leng_arr_coorsor;
-
     int offset_left;
     int offset_right;
 };
 
+struct IntArray {
+    int arr[MAX_ARR_SIZE];
+    size_t size;
+};
 
-
+struct user_data {
+    char user[1024];
+    char left_path[1024];
+    char right_path[1024];
+    char previous_path_left[1024];
+    char previous_path_right[1024];
+    char home_path[1024];
+    char coorsor_file[1024];
+    char trash_directory[1024];
+    struct set_bool set_bool;
+    struct coordinates coordinates;
+    struct IntArray arr_coorsor_struct;
+};
 
 // check_func.c
 int check_func(struct user_data *ptr_user_data);
@@ -77,7 +82,7 @@ void removeDuplicates(int *arr, size_t size);
 void addToArr(int *arr, size_t size, int value);
 void removeFromArr(int *arr, size_t size, int value);
 bool containsElement(int *arr, size_t size, int value);
-void fillWithZeros(int *arr, struct coordinates *coords, size_t size);
+void fillWithZeros(struct user_data *ptr_user_data);
 int check_int_arr(int *arr, size_t size);                               // проверка массива, есть ли в нем элементы
 int count_non_zero_elements(int *arr, size_t size);                     // сколько элементов в массиве
 void check_offset_less_zero(int *offset);
@@ -91,7 +96,8 @@ void strtrim(char *str);
 
 
 // rendering_ls
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win);
+void render_ls(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win);
+// void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win);
 void trim_filename(struct file_data *all_files, int number_lines, int max_length);
 void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win_left, WINDOW *win_right);
 void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win);
@@ -101,9 +107,9 @@ void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_f
 void select_coorsor(struct file_data *all_files, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, struct coordinates *coords, int *offset, int count_item_arr, int *check_empty);
 
 // button_processing
-void backspace(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, char *previous_path, _Bool check_side, _Bool active);
-void click_on_file(char *path, struct file_data *all_files, struct coordinates *coords, char *previous_path, _Bool check_side);
-void open_in_vim(char *path, struct file_data *all_files, struct coordinates *coords, _Bool check_side, WINDOW *win);
+void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side);
+void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side);
+void open_in_vim(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win);
 
 
 // command_line.c

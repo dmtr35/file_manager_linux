@@ -39,7 +39,7 @@ void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool 
     if (offset < 0) {
         offset = 0;
     }
-    fillWithZeros(arr_coorsor, coords, leng_arr_coorsor_full);
+    fillWithZeros(ptr_user_data);
 }
 
 

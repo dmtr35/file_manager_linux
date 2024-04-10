@@ -209,8 +209,10 @@ void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_f
     getmaxyx(stdscr, coords->height, coords->width);
     win_left = newwin(coords->height, coords->width / 2, 0, 0);
     win_right = newwin(coords->height, coords->width % 2 ? (coords->width / 2) + 1 : coords->width / 2, 0, coords->width / 2);
-    render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-    render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
+    render_ls(ptr_user_data, all_files_left, turn_render_ls ? 1 : 0, check_side, win_left);
+    render_ls(ptr_user_data, all_files_right, turn_render_ls ? 0 : 1, !check_side, win_right);
+    // render_ls(ptr_user_data->left_path, all_files_left, coords, set_bool, turn_render_ls ? 1 : 0, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
+    // render_ls(ptr_user_data->right_path, all_files_right, coords, set_bool, turn_render_ls ? 0 : 1, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
     render_menu(ptr_user_data, all_files_left, all_files_right, set_bool, coords_cursor_y_menu, coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
     *is_enter_pressed = false;
 }

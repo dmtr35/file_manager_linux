@@ -15,21 +15,24 @@
 
 #include "../func.h"
 
-
-void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win)
+void render_ls(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win)
 {
-    getmaxyx(win, coords->height_win, coords->width_win);
+    getmaxyx(win, ptr_user_data->coordinates.height_win, ptr_user_data->coordinates.width_win);
+    char path[256];
+    strcpy(path, check_side ? ptr_user_data->left_path : ptr_user_data->right_path);
 
     int offset = 0;
     int quantity_lines = 0;
-    _Bool *hidden_files = check_side ? &set_bool->hidden_left_bool : &set_bool->hidden_right_bool;
+    _Bool *hidden_files = check_side ? &(ptr_user_data->set_bool.hidden_left_bool) : &(ptr_user_data->set_bool.hidden_right_bool);
+
     ls_list(path, all_files, hidden_files, &quantity_lines);
+
     if (check_side) {
-        coords->quantity_lines_left = quantity_lines;
-        offset = coords->offset_left;
+        ptr_user_data->coordinates.quantity_lines_left = quantity_lines;
+        offset = ptr_user_data->coordinates.offset_left;
     } else {
-        coords->quantity_lines_right = quantity_lines;
-        offset = coords->offset_right;
+        ptr_user_data->coordinates.quantity_lines_right = quantity_lines;
+        offset = ptr_user_data->coordinates.offset_right;
     }
 
     struct file_data *all_files_ls = (struct file_data *)malloc(500 * sizeof(struct file_data));
@@ -64,21 +67,21 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
 
 
 
-    int max_length = coords->width_win - 35;
+    int max_length = ptr_user_data->coordinates.width_win - 35;
     trim_filename(all_files_ls, quantity_lines, max_length);
     // char qqq[256];
     // strcpy(qqq, all_files_ls[2].name);
 
     if(check_side) {
-        mvwvline(win, 1, coords->width_win - 34, ACS_VLINE, coords->height - 4);
-        mvwvline(win, 1, coords->width_win - 27, ACS_VLINE, coords->height - 4);
-        mvwvline(win, 1, coords->width_win - 12, ACS_VLINE, coords->height - 4);
+        mvwvline(win, 1, ptr_user_data->coordinates.width_win - 34, ACS_VLINE, ptr_user_data->coordinates.height - 4);
+        mvwvline(win, 1, ptr_user_data->coordinates.width_win - 27, ACS_VLINE, ptr_user_data->coordinates.height - 4);
+        mvwvline(win, 1, ptr_user_data->coordinates.width_win - 12, ACS_VLINE, ptr_user_data->coordinates.height - 4);
     } else {
-        mvwvline(win, 1, (coords->width_win - 33) - 1, ACS_VLINE, coords->height - 4);
-        mvwvline(win, 1, (coords->width_win - 26) - 1, ACS_VLINE, coords->height - 4);
-        mvwvline(win, 1, (coords->width_win - 11) - 1, ACS_VLINE, coords->height - 4);
+        mvwvline(win, 1, (ptr_user_data->coordinates.width_win - 33) - 1, ACS_VLINE, ptr_user_data->coordinates.height - 4);
+        mvwvline(win, 1, (ptr_user_data->coordinates.width_win - 26) - 1, ACS_VLINE, ptr_user_data->coordinates.height - 4);
+        mvwvline(win, 1, (ptr_user_data->coordinates.width_win - 11) - 1, ACS_VLINE, ptr_user_data->coordinates.height - 4);
     }
-    mvwhline(win, coords->height_win - 3, 1, ACS_HLINE, coords->width_win - 2);
+    mvwhline(win, ptr_user_data->coordinates.height_win - 3, 1, ACS_HLINE, ptr_user_data->coordinates.width_win - 2);
     wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
 
     wattron(win, A_BOLD);
@@ -88,10 +91,10 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
     wattroff(win, COLOR_PAIR(6));
     wattroff(win, A_BOLD);
 
-    int last_line = (coords->height_win - 4);
+    int last_line = (ptr_user_data->coordinates.height_win - 4);
     int i = 0 + offset;
     int row = 1;
-    for (; i < quantity_lines && i < (coords->height_win - 4) + offset; ++i, ++row) {
+    for (; i < quantity_lines && i < (ptr_user_data->coordinates.height_win - 4) + offset; ++i, ++row) {
         wattron(win, A_BOLD);
         if (strstr(all_files[i].permissions, "d") != NULL || strcmp(all_files[i].name, "..") == 0) {
             if (all_files[i].name[0] == '.' || strcmp(all_files[i].name, "..") == 0) {
@@ -195,18 +198,18 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
             active ? wattroff(win, COLOR_PAIR(2)) : wattroff(win, COLOR_PAIR(12));
         }
         if(check_side) {
-            mvwprintw(win, row, coords->width / 2 - 33, "%s", all_files_ls[i].size);
-            mvwprintw(win, row, coords->width / 2 - 26, "%s", all_files_ls[i].time);
-            mvwprintw(win, row, coords->width / 2 - 11, "%s", all_files_ls[i].permissions);
+            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 33, "%s", all_files_ls[i].size);
+            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 26, "%s", all_files_ls[i].time);
+            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 11, "%s", all_files_ls[i].permissions);
         } else {
-            if (coords->width_win % 2 == 0 && coords->width % 2 == 0 || coords->width_win % 2 != 0 && coords->width % 2 == 0) {
-                mvwprintw(win, row, coords->width / 2 - 33, "%s", all_files_ls[i].size);
-                mvwprintw(win, row, coords->width / 2 - 26, "%s", all_files_ls[i].time);
-                mvwprintw(win, row, coords->width / 2 - 11, "%s", all_files_ls[i].permissions);
-            } else if (coords->width_win % 2 != 0 && coords->width % 2 != 0 || coords->width_win % 2 == 0 && coords->width % 2 != 0) {
-                mvwprintw(win, row, coords->width / 2 - 32, "%s", all_files_ls[i].size);
-                mvwprintw(win, row, coords->width / 2 - 25, "%s", all_files_ls[i].time);
-                mvwprintw(win, row, coords->width / 2 - 10, "%s", all_files_ls[i].permissions);
+            if (ptr_user_data->coordinates.width_win % 2 == 0 && ptr_user_data->coordinates.width % 2 == 0 || ptr_user_data->coordinates.width_win % 2 != 0 && ptr_user_data->coordinates.width % 2 == 0) {
+                mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 33, "%s", all_files_ls[i].size);
+                mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 26, "%s", all_files_ls[i].time);
+                mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 11, "%s", all_files_ls[i].permissions);
+            } else if (ptr_user_data->coordinates.width_win % 2 != 0 && ptr_user_data->coordinates.width % 2 != 0 || ptr_user_data->coordinates.width_win % 2 == 0 && ptr_user_data->coordinates.width % 2 != 0) {
+                mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 32, "%s", all_files_ls[i].size);
+                mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 25, "%s", all_files_ls[i].time);
+                mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 10, "%s", all_files_ls[i].permissions);
             } 
         }
         wattroff(win, A_BOLD);
@@ -220,73 +223,73 @@ void render_ls(char *path, struct file_data *all_files, struct coordinates *coor
     int j = 0;
     if (active) {
         for(row = 1, i = 0 + offset; i < quantity_lines && row <= last_line; ++i, ++row) {
-            for(int j = 0; j < coords->leng_arr_coorsor; ++j) {
-                int item_arr = arr_coorsor[j];
+            for(int j = 0; j < ptr_user_data->coordinates.leng_arr_coorsor; ++j) {
+                int item_arr = ptr_user_data->arr_coorsor_struct.arr[j];
                 int file_id = all_files[i].file_id;
                 if(file_id == item_arr && item_arr > 0) {
                     wattron(win, A_BOLD);
                     wattron(win, COLOR_PAIR(11));                       // Включаем цветовую пару для всей строки
-                    mvwhline(win, row, 1, ' ', coords->width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
+                    mvwhline(win, row, 1, ' ', ptr_user_data->coordinates.width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
                     if (check_side) {
                         mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
-                        mvwprintw(win, row, (coords->width / 2 - 33), "%s", all_files_ls[i].size);
-                        mvwprintw(win, row, (coords->width / 2 - 26), "%s", all_files_ls[i].time);
-                        mvwprintw(win, row, (coords->width / 2 - 11), "%s", all_files_ls[i].permissions);
+                        mvwprintw(win, row, (ptr_user_data->coordinates.width / 2 - 33), "%s", all_files_ls[i].size);
+                        mvwprintw(win, row, (ptr_user_data->coordinates.width / 2 - 26), "%s", all_files_ls[i].time);
+                        mvwprintw(win, row, (ptr_user_data->coordinates.width / 2 - 11), "%s", all_files_ls[i].permissions);
                     } else {
-                        if (coords->width_win % 2 == 0 && coords->width % 2 == 0 || coords->width_win % 2 != 0 && coords->width % 2 == 0) {
+                        if (ptr_user_data->coordinates.width_win % 2 == 0 && ptr_user_data->coordinates.width % 2 == 0 || ptr_user_data->coordinates.width_win % 2 != 0 && ptr_user_data->coordinates.width % 2 == 0) {
                             mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
-                            mvwprintw(win, row, coords->width / 2 - 33, "%s", all_files_ls[i].size);
-                            mvwprintw(win, row, coords->width / 2 - 26, "%s", all_files_ls[i].time);
-                            mvwprintw(win, row, coords->width / 2 - 11, "%s", all_files_ls[i].permissions);
-                        } else if (coords->width_win % 2 != 0 && coords->width % 2 != 0 || coords->width_win % 2 == 0 && coords->width % 2 != 0) {
+                            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 33, "%s", all_files_ls[i].size);
+                            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 26, "%s", all_files_ls[i].time);
+                            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 11, "%s", all_files_ls[i].permissions);
+                        } else if (ptr_user_data->coordinates.width_win % 2 != 0 && ptr_user_data->coordinates.width % 2 != 0 || ptr_user_data->coordinates.width_win % 2 == 0 && ptr_user_data->coordinates.width % 2 != 0) {
                             mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
-                            mvwprintw(win, row, coords->width / 2 - 32, "%s", all_files_ls[i].size);
-                            mvwprintw(win, row, coords->width / 2 - 25, "%s", all_files_ls[i].time);
-                            mvwprintw(win, row, coords->width / 2 - 10, "%s", all_files_ls[i].permissions);
+                            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 32, "%s", all_files_ls[i].size);
+                            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 25, "%s", all_files_ls[i].time);
+                            mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 10, "%s", all_files_ls[i].permissions);
                         }
                     }
                 }
             }
         }
         for (row = 1, i = 0 + offset; i < quantity_lines && row <= last_line; ++i, ++row) {
-            if (row == coords->cursor_y) {
+            if (row == ptr_user_data->coordinates.cursor_y) {
                 wattron(win, A_BOLD);
                 wattron(win, COLOR_PAIR(6));                       // Включаем цветовую пару для всей строки
-                mvwhline(win, row, 1, ' ', coords->width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
+                mvwhline(win, row, 1, ' ', ptr_user_data->coordinates.width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
                 if (check_side) {
                     mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
-                    mvwprintw(win, row, (coords->width / 2 - 33), "%s", all_files_ls[i].size);
-                    mvwprintw(win, row, (coords->width / 2 - 26), "%s", all_files_ls[i].time);
-                    mvwprintw(win, row, (coords->width / 2 - 11), "%s", all_files_ls[i].permissions);
+                    mvwprintw(win, row, (ptr_user_data->coordinates.width / 2 - 33), "%s", all_files_ls[i].size);
+                    mvwprintw(win, row, (ptr_user_data->coordinates.width / 2 - 26), "%s", all_files_ls[i].time);
+                    mvwprintw(win, row, (ptr_user_data->coordinates.width / 2 - 11), "%s", all_files_ls[i].permissions);
 
                     if (strcmp(all_files[i].name, "..") == 0) {
 
                     } else {
-                        mvwprintw(win, coords->height_win - 2, 1, "%s", all_files[i].name);
+                        mvwprintw(win, ptr_user_data->coordinates.height_win - 2, 1, "%s", all_files[i].name);
                     }
                 } else {
-                    if (coords->width_win % 2 == 0 && coords->width % 2 == 0 || coords->width_win % 2 != 0 && coords->width % 2 == 0) {
+                    if (ptr_user_data->coordinates.width_win % 2 == 0 && ptr_user_data->coordinates.width % 2 == 0 || ptr_user_data->coordinates.width_win % 2 != 0 && ptr_user_data->coordinates.width % 2 == 0) {
                         mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
-                        mvwprintw(win, row, coords->width / 2 - 33, "%s", all_files_ls[i].size);
-                        mvwprintw(win, row, coords->width / 2 - 26, "%s", all_files_ls[i].time);
-                        mvwprintw(win, row, coords->width / 2 - 11, "%s", all_files_ls[i].permissions);
-                    } else if (coords->width_win % 2 != 0 && coords->width % 2 != 0 || coords->width_win % 2 == 0 && coords->width % 2 != 0) {
+                        mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 33, "%s", all_files_ls[i].size);
+                        mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 26, "%s", all_files_ls[i].time);
+                        mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 11, "%s", all_files_ls[i].permissions);
+                    } else if (ptr_user_data->coordinates.width_win % 2 != 0 && ptr_user_data->coordinates.width % 2 != 0 || ptr_user_data->coordinates.width_win % 2 == 0 && ptr_user_data->coordinates.width % 2 != 0) {
                         mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
-                        mvwprintw(win, row, coords->width / 2 - 32, "%s", all_files_ls[i].size);
-                        mvwprintw(win, row, coords->width / 2 - 25, "%s", all_files_ls[i].time);
-                        mvwprintw(win, row, coords->width / 2 - 10, "%s", all_files_ls[i].permissions);
+                        mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 32, "%s", all_files_ls[i].size);
+                        mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 25, "%s", all_files_ls[i].time);
+                        mvwprintw(win, row, ptr_user_data->coordinates.width / 2 - 10, "%s", all_files_ls[i].permissions);
                     } 
 
                     if (strcmp(all_files[i].name, "..") == 0) {
 
                     } else {
-                        mvwprintw(win, coords->height_win - 2, 1, "%s", all_files[i].name);
+                        mvwprintw(win, ptr_user_data->coordinates.height_win - 2, 1, "%s", all_files[i].name);
                     }
                 }
                 wattroff(win, COLOR_PAIR(6)); // Отключаем цветовую пару
                 wattroff(win, A_BOLD);
 
-                wmove(win, coords->cursor_y, coords->cursor_x); // Возвращаем курсор на его предыдущее местоположение
+                wmove(win, ptr_user_data->coordinates.cursor_y, ptr_user_data->coordinates.cursor_x); // Возвращаем курсор на его предыдущее местоположение
             } 
         }
     }
