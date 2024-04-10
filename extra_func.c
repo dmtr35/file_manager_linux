@@ -189,10 +189,9 @@ bool containsElement(int *arr, size_t size, int value)
     return false;  // Элемент не найден, возвращаем false
 }
 
-void fillWithZeros(struct user_data *ptr_user_data)
+void fillWithZeros(int *arr, size_t size)
 {
-    memset(ptr_user_data->arr_coorsor_struct.arr, 0, ptr_user_data->arr_coorsor_struct.size * sizeof(int));
-    ptr_user_data->coordinates.leng_arr_coorsor = 0;
+    memset(arr, 0, size * sizeof(int));
 }
 
 // проверка массива, есть ли в нем элементы

@@ -60,6 +60,7 @@ int main()
     ptr_user_data->coordinates.leng_arr_coorsor = 0;
     ptr_user_data->coordinates.offset_left = 0;
     ptr_user_data->coordinates.offset_right = 0;
+    ptr_user_data->coordinates.coords_cursor_y_menu = 3;
 
     int arr_coorsor[MAX_ARR_SIZE] = {0};                                                                                    // Инициализация массива
     ptr_user_data->arr_coorsor_struct.size = sizeof(arr_coorsor) / sizeof(*arr_coorsor);                                   // Размер массива
@@ -81,7 +82,6 @@ int main()
     while (1)
     {
         struct file_data *all_files_ptr = active ? all_files_left : all_files_right;
-        int coords_cursor_y_menu = 3;
         int *offset = active ? &(ptr_user_data->coordinates.offset_left) : &(ptr_user_data->coordinates.offset_right);
         int *quantity_lines = active ? &(ptr_user_data->coordinates.quantity_lines_left) : &(ptr_user_data->coordinates.quantity_lines_right);
         int i = ptr_user_data->coordinates.cursor_y + *offset - 1;
@@ -95,69 +95,45 @@ int main()
         win_right = newwin(ptr_user_data->coordinates.height, ptr_user_data->coordinates.width % 2 ? (ptr_user_data->coordinates.width / 2) + 1 : ptr_user_data->coordinates.width / 2, 0, ptr_user_data->coordinates.width / 2);
         win_menu = newwin(10, width_menu, (ptr_user_data->coordinates.height / 2) - 5, ptr_user_data->coordinates.width / 2 - width_menu / 2);
 
-        if (!ptr_user_data->set_bool.command_bool && !ptr_user_data->set_bool.help_bool && !ptr_user_data->set_bool.menu_bool)
-        {
-            if (active)
-            {
+        if (!ptr_user_data->set_bool.command_bool && !ptr_user_data->set_bool.help_bool && !ptr_user_data->set_bool.menu_bool) {
+            if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
-
-                // render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
-                // render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-            }
-            else
-            {
+            } else {
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
-                // render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-                // render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
             }
-        }
-        else if (ptr_user_data->set_bool.command_bool)
-        {
-            if (active)
-            {
-                // render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
-                // render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor_full, win_left, win_right);
-            }
-            else
-            {
-                // render_comm_line(ptr_user_data, all_files_right, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor_full, win_left, win_right);
-                // render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
+        } else if (ptr_user_data->set_bool.command_bool) {
+            if (active) {
+                render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
+                render_comm_line(ptr_user_data, all_files_right, active, check_side, win_left, win_right);
+            } else {
+                render_comm_line(ptr_user_data, all_files_right, active, check_side, win_left, win_right);
+                render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
             }
 
-            if (active && !ptr_user_data->set_bool.command_bool)
-            {
+            if (active && !ptr_user_data->set_bool.command_bool) {
                 continue;
             }
         }
-        else if (ptr_user_data->set_bool.help_bool)
-        {
-            if (active)
-            {
-                // render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, arr_coorsor, leng_arr_coorsor_full, win_right);
-                // render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
+        else if (ptr_user_data->set_bool.help_bool) {
+            if (active) {
+                render_help(ptr_user_data, all_files_right, !active, win_right);
+                render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
+            } else {
+                render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
+                render_help(ptr_user_data, all_files_right, !active, win_right);
             }
-            else
-            {
-                // render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-                // render_help(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, arr_coorsor, leng_arr_coorsor_full, win_right);
-            }
-        }
-        else if (ptr_user_data->set_bool.menu_bool)
-        {
+        } else if (ptr_user_data->set_bool.menu_bool) {
             _Bool turn_render_ls = true;
-            if (active)
-            {
-                // render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
-                // render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-                // render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, &coords_cursor_y_menu, &coords, active, check_side, turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
-            }
-            else
-            {
-                // render_ls(ptr_user_data->left_path, all_files_left, &coords, &set_bool, active, check_side, arr_coorsor, leng_arr_coorsor_full, win_left);
-                // render_ls(ptr_user_data->right_path, all_files_right, &coords, &set_bool, !active, !check_side, arr_coorsor, leng_arr_coorsor_full, win_right);
-                // render_menu(ptr_user_data, all_files_left, all_files_right, &set_bool, &coords_cursor_y_menu, &coords, active, check_side, !turn_render_ls, arr_coorsor, leng_arr_coorsor_full, win_menu, win_right, win_left);
+            if (active) {
+                render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
+                render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
+                render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+            } else {
+                render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
+                render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
+                render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
             }
             if (ptr_user_data->set_bool.out_bool) {
                 break;
@@ -202,7 +178,8 @@ int main()
                 cursor_right = ptr_user_data->coordinates.cursor_y;
             }
             active = !active;
-            fillWithZeros(ptr_user_data);                   // очистить массив с отметками строк
+            fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
+            ptr_user_data->coordinates.leng_arr_coorsor = 0;
             if (active) {
                 if (cursor_left <= (ptr_user_data->coordinates.height_win - 4)) {
                     ptr_user_data->coordinates.cursor_y = cursor_left;
@@ -220,11 +197,12 @@ int main()
         else if (ch == '\n') {
             if (active) {
                 click_on_file(ptr_user_data, all_files_left, active, check_side);
-                fillWithZeros(ptr_user_data);                   // очистить массив с отметками строк
+                fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
             } else {
                 click_on_file(ptr_user_data, all_files_right, !active, !check_side);
-                fillWithZeros(ptr_user_data);                   // очистить массив с отметками строк
+                fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
             }
+            ptr_user_data->coordinates.leng_arr_coorsor = 0;
         }
         else if (ch == 27) {
             int next1 = wgetch(stdscr);
@@ -262,11 +240,12 @@ int main()
         else if (ch == 127 || ch == KEY_BACKSPACE) {
             if (active) {
                 backspace(ptr_user_data, all_files_left, active, check_side);
-                fillWithZeros(ptr_user_data);                   // очистить массив с отметками строк
+                fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
             } else {
                 backspace(ptr_user_data, all_files_right, !active, !check_side);
-                fillWithZeros(ptr_user_data);                   // очистить массив с отметками строк
+                fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
             }
+            ptr_user_data->coordinates.leng_arr_coorsor = 0;
         }
         else if (ch == 16) { // Ctrl + p - переход на сохраненный ранее путь
             // else if (ch == 'p') {                                      // Ctrl + p - переход на сохраненный ранее путь
@@ -282,7 +261,8 @@ int main()
                 strcpy(ptr_user_data->right_path, ptr_user_data->previous_path_right);
                 strcpy(ptr_user_data->previous_path_right, temp);
             }
-            fillWithZeros(ptr_user_data);                   // очистить массив с отметками строк
+            fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
+            ptr_user_data->coordinates.leng_arr_coorsor = 0;
         }
         else if (ch == ('V' & 0x1F)) { // Обработка нажатия Ctrl + V
             // // else if (ch == 'v') {                            // Обработка нажатия Ctrl + V
@@ -292,7 +272,8 @@ int main()
             } else {
                 open_in_vim(ptr_user_data, all_files_right, !active, !check_side, win_right);
             }
-            fillWithZeros(ptr_user_data);                   // очистить массив с отметками строк
+            fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
+            ptr_user_data->coordinates.leng_arr_coorsor = 0;
         }
 
         else if (ch == '\b' || ch == 'h')
@@ -305,10 +286,10 @@ int main()
             // else if (ch == 'a') {
             ptr_user_data->set_bool.menu_bool = !ptr_user_data->set_bool.menu_bool;
         }
-        // else if (ch == 1) {                                           // ch == 1 -> ctrl + a   терминал, приостановлено
-        // // else if (ch == 'a') {
-        //     set_bool.command_bool = !set_bool.command_bool;
-        // }
+        else if (ch == 1) {                                           // ch == 1 -> ctrl + a   терминал, приостановлено
+        // else if (ch == 'a') {
+            ptr_user_data->set_bool.command_bool = !ptr_user_data->set_bool.command_bool;
+        }
         else if (ch == 'w')
         { // ctrl + a   терминал, приостановлено
             if(active) {

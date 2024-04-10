@@ -15,7 +15,7 @@
 
 
 
-void cp_mv_file(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, _Bool active)
+void cp_mv_file(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active)
 {
     char first_path[512];
     char second_path[512];

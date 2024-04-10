@@ -45,6 +45,7 @@ struct coordinates {
     int leng_arr_coorsor;
     int offset_left;
     int offset_right;
+    int coords_cursor_y_menu;
 };
 
 struct IntArray {
@@ -82,7 +83,7 @@ void removeDuplicates(int *arr, size_t size);
 void addToArr(int *arr, size_t size, int value);
 void removeFromArr(int *arr, size_t size, int value);
 bool containsElement(int *arr, size_t size, int value);
-void fillWithZeros(struct user_data *ptr_user_data);
+void fillWithZeros(int *arr, size_t size);
 int check_int_arr(int *arr, size_t size);                               // проверка массива, есть ли в нем элементы
 int count_non_zero_elements(int *arr, size_t size);                     // сколько элементов в массиве
 void check_offset_less_zero(int *offset);
@@ -97,14 +98,13 @@ void strtrim(char *str);
 
 // rendering_ls
 void render_ls(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win);
-// void render_ls(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win);
 void trim_filename(struct file_data *all_files, int number_lines, int max_length);
-void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, _Bool check_side, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win_left, WINDOW *win_right);
-void render_help(char *path, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, _Bool active, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win);
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct set_bool *set_bool, int *coords_cursor_y_menu, struct coordinates *coords, _Bool active, _Bool check_side, _Bool turn_render_ls, int *arr_coorsor, int leng_arr_coorsor_full, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win_left, WINDOW *win_right);
+void render_help(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, WINDOW *win);
+void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
-void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, struct coordinates *coords, struct set_bool *set_bool, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *arr_coorsor, int leng_arr_coorsor_full, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
-void select_coorsor(struct file_data *all_files, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, struct coordinates *coords, int *offset, int count_item_arr, int *check_empty);
+void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void select_coorsor(struct user_data *ptr_user_data, struct file_data *all_files, int *quantity_lines, int *offset, int count_item_arr, int *check_empty);
 
 // button_processing
 void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side);
@@ -125,16 +125,16 @@ void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
 
 
 // remove_file
-void remove_directory_recursive(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, _Bool *save_files);
+void remove_directory_recursive(struct user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files);
 void remove_one_file(char *path);
 void save_file(char *path, char *file_name, struct user_data *ptr_user_data);
-void restore(char *path, char *file_name, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active);
-void cp_mv_file(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, _Bool active);
+void restore(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active);
+void cp_mv_file(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active);
 void copy_file(const char *source_directory, const char *destination_directory);
 void copy_directory(const char *source_directory, const char *destination_directory);
 
 // form_list.c
-void processing_list_files(char *path, char *file_name, int *arr_coorsor, _Bool active, struct file_data *all_files, struct coordinates *coords, struct set_bool *set_bool, struct user_data *ptr_user_data, int leng_arr_coorsor_full, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files);
-void select_way(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active, int *arr_coorsor, int leng_arr_coorsor_full, int *quantity_lines, int *offset, _Bool *save_files);
+void processing_list_files(struct user_data *ptr_user_data, struct file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files);
+void select_way(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files);
 
 #endif

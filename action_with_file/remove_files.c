@@ -15,7 +15,7 @@
 
 
 
-void remove_directory_recursive(char *path, char *file_name, struct set_bool *set_bool, struct user_data *ptr_user_data, _Bool *save_files)
+void remove_directory_recursive(struct user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files)
 {
     _Bool save_files_value = false;
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
@@ -68,7 +68,7 @@ void remove_directory_recursive(char *path, char *file_name, struct set_bool *se
         snprintf(absolute_path, size_absolute_path, "%s/%s", full_path, entry->d_name);
 
         if (is_directory(absolute_path)) {
-            remove_directory_recursive(full_path, entry->d_name, set_bool, ptr_user_data, &save_files_value);
+            remove_directory_recursive(ptr_user_data, full_path, entry->d_name, &save_files_value);
         } else {
             remove_one_file(absolute_path);
         }
@@ -118,9 +118,9 @@ void save_file(char *path, char *file_name, struct user_data *ptr_user_data)
 
 
 
-void restore(char *path, char *file_name, struct user_data *ptr_user_data, struct coordinates *coords, _Bool active)
+void restore(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active)
 {
-    int quantity_lines = active ? coords->quantity_lines_left : coords->quantity_lines_right;
+    int quantity_lines = active ? ptr_user_data->coordinates.quantity_lines_left : ptr_user_data->coordinates.quantity_lines_right;
     extractFileNameAndPath(file_name, path);
     char *restore_path = replace_slashes_dash(path);
     size_t len_absolute_path = strlen(ptr_user_data->trash_directory) + strlen(file_name) + 2;
