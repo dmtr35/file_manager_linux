@@ -14,10 +14,6 @@
 
 #include "../func.h"
 
-// char screen_buffer[10000] = {0};
-// int buffer_pos = 0;
-// int coord_x;
-// int coord_y;
 
 void add_char_to_command_line(WINDOW *win_left, char c, char *screen_buffer, int *buffer_pos) {
 // void add_char_to_command_line(WINDOW *win_left, char c, int x, int y) {

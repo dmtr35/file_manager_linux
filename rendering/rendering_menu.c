@@ -36,15 +36,29 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 
     char path[256];
     strcpy(path, active ? ptr_user_data->left_path : ptr_user_data->right_path);
-    char *file_name = ptr_user_data->coorsor_file;
 
-    size_t size_new_path = strlen(path) + strlen(file_name) + 3;
-    char new_path[size_new_path];
 
     int check_empty = check_int_arr(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
     int count_item_arr = count_non_zero_elements(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
     int *offset = active ? &ptr_user_data->coordinates.offset_left : &ptr_user_data->coordinates.offset_right;
     int *quantity_lines = active ? &ptr_user_data->coordinates.quantity_lines_left : &ptr_user_data->coordinates.quantity_lines_right;
+    int *height = &ptr_user_data->coordinates.height;
+    int *width = &ptr_user_data->coordinates.width;
+
+    char *file_name = ptr_user_data->coorsor_file;
+    char *right_path = ptr_user_data->right_path;
+    char *left_path = ptr_user_data->left_path;
+    char *trash_directory = ptr_user_data->trash_directory;
+
+    _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
+    _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
+    _Bool *delete_files = &ptr_user_data->set_bool.delete_files;
+    _Bool *restore_files = &ptr_user_data->set_bool.restore_files;
+    _Bool *copy_files = &ptr_user_data->set_bool.copy_files;
+    _Bool *move_files = &ptr_user_data->set_bool.move_files;
+
+    size_t size_new_path = strlen(path) + strlen(file_name) + 3;
+    char new_path[size_new_path];
     struct file_data *all_files_ptr = active ? all_files_left : all_files_right;
     _Bool is_enter_pressed = true;
     _Bool save_files = 0;
@@ -52,10 +66,11 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
 
     while (is_enter_pressed) {
         int *coords_cursor_y_menu = &(ptr_user_data->coordinates.coords_cursor_y_menu);
+
         getmaxyx(win_menu, height_win, width_win);
-        size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
-        size_t width_menu = leng_path < ptr_user_data->coordinates.width / 3 ? ptr_user_data->coordinates.width / 3 : leng_path;
-        win_menu = newwin(10, width_menu, (ptr_user_data->coordinates.height / 2) - 5, ptr_user_data->coordinates.width / 2 - width_menu / 2);
+        size_t leng_path = active ? strlen(left_path) + strlen(file_name) + 4 : strlen(right_path) + strlen(file_name) + 4;
+        size_t width_menu = leng_path < *width / 3 ? *width / 3 : leng_path;
+        win_menu = newwin(10, width_menu, (*height / 2) - 5, *width / 2 - width_menu / 2);
 
         wborder(win_menu, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
         snprintf(new_path, size_new_path, "%s/%s", path, file_name);
@@ -89,59 +104,60 @@ void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_le
         if (ch != ERR) {
             if (ch == 1 || ch == 'm') {                 
                 is_enter_pressed = false;
-                ptr_user_data->set_bool.menu_bool = false;
+                *menu_bool = false;
+                *coords_cursor_y_menu = 3;
             } else if (ch == 'z') {
                 // restore_from_buffer(win_left, screen_buffer);
 
             } else if (ch == 'q') {
                 is_enter_pressed = false;
-                ptr_user_data->set_bool.menu_bool = false;
-                ptr_user_data->set_bool.out_bool = true;
+                *menu_bool = false;
+                *out_bool = true;
             break;
             } else if (ch == '\n') {                                                                                        // Copy
                 if (*coords_cursor_y_menu == 3) {
-                    ptr_user_data->set_bool.copy_files = 1;
+                    *copy_files = 1;
                     processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
 
-                    ptr_user_data->set_bool.copy_files = 0;
+                    *copy_files = 0;
                 } else if (*coords_cursor_y_menu == 4) {                                                                    // Move
-                    ptr_user_data->set_bool.move_files = 1;
+                    *move_files = 1;
                     processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
 
-                    ptr_user_data->set_bool.move_files = 0;
+                    *move_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
                 } else if (*coords_cursor_y_menu == 5) {                                                                    // Delete
-                    ptr_user_data->set_bool.delete_files = 1;
+                    *delete_files = 1;
                     processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
-                    ptr_user_data->set_bool.delete_files = 0;
+                    *delete_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
                     
                 } else if (*coords_cursor_y_menu == 6) {                                                                    // Delete & save
-                    if(strcmp(path, ptr_user_data->trash_directory) != 0) {
+                    if(strcmp(path, trash_directory) != 0) {
                         save_files = 1;
                     }
-                    ptr_user_data->set_bool.delete_files = 1;
+                    *delete_files = 1;
                     processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
-                    ptr_user_data->set_bool.delete_files = 0;
+                    *delete_files = 0;
                     save_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
 
-                } else if (*coords_cursor_y_menu == 7 && strcmp(path, ptr_user_data->trash_directory) == 0) {               // Restore
-                    ptr_user_data->set_bool.restore_files = 1;
+                } else if (*coords_cursor_y_menu == 7 && strcmp(path, trash_directory) == 0) {               // Restore
+                    *restore_files = 1;
 
                     if (!check_empty || count_item_arr == 1) {
                         restore(ptr_user_data, path, file_name, active);
                     } else {
                         processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
                     }
-                    ptr_user_data->set_bool.restore_files = 0;
+                    *restore_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
                 }
 
 
 
                 is_enter_pressed = false;
-                ptr_user_data->set_bool.menu_bool = false;
+                *menu_bool = false;
             } else if (ch == 'r' || ch == KEY_RESIZE) {
                 render_all_windows(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
             } else if (ch == 27) {

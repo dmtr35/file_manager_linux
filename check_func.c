@@ -12,14 +12,16 @@
 
 int check_func(struct user_data *ptr_user_data)
 {
-    uid_t euid = geteuid();               // Получаем UID
+    char *ptr_user = ptr_user_data->user;
+    char *ptr_home_path = ptr_user_data->home_path;
 
+    uid_t euid = geteuid();               // Получаем UID
 
     if(euid == 0) {
         const char *sudo_user = getenv("SUDO_USER");
 
         if(sudo_user != NULL) {
-            strcpy(ptr_user_data->user, sudo_user);
+            strcpy(ptr_user, sudo_user);
         }else{
             printf("%s not determined\n", sudo_user);
             return 1;
@@ -28,7 +30,7 @@ int check_func(struct user_data *ptr_user_data)
     } else {
         const char *user = getenv("USER");
         if(user != NULL) {
-            strcpy(ptr_user_data->user, user);
+            strcpy(ptr_user, user);
         } else {
             printf("%s not determined\n", user);
             return 1;
@@ -39,11 +41,11 @@ int check_func(struct user_data *ptr_user_data)
     // получаем домашнюю директорию
     struct passwd *pw;
 
-    if((pw = getpwnam(ptr_user_data->user)) != NULL) {
+    if((pw = getpwnam(ptr_user)) != NULL) {
         strcpy(ptr_user_data->right_path, pw->pw_dir);
-        strcpy(ptr_user_data->home_path, pw->pw_dir);
+        strcpy(ptr_home_path, pw->pw_dir);
 
-        snprintf(ptr_user_data->trash_directory, strlen(ptr_user_data->home_path) + 11, "%s/.my_trash", ptr_user_data->home_path);
+        snprintf(ptr_user_data->trash_directory, strlen(ptr_home_path) + 11, "%s/.my_trash", ptr_home_path);
         check_and_create_trash(ptr_user_data);
     }
 

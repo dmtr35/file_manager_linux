@@ -89,7 +89,8 @@ void remove_one_file(char *path)
 
 
 void save_file(char *path, char *file_name, struct user_data *ptr_user_data)
-{
+{   
+    char *trash_directory = ptr_user_data->trash_directory;
     char dir_or_file[4];
     size_t size_absolute_path = strlen(path) + strlen(file_name) + 2;
     char absolute_path[size_absolute_path];
@@ -108,9 +109,9 @@ void save_file(char *path, char *file_name, struct user_data *ptr_user_data)
     size_t length_tar = strlen(file_name) + strlen(time) + strlen(new_path) + strlen(dir_or_file) + 14;
     char name_tar[length_tar];
     snprintf(name_tar, length_tar, "%s____%s_%s.%s.tar.gz", file_name, time, new_path, dir_or_file);
-    size_t length_command_tar = strlen(name_tar) + strlen(path) + strlen(ptr_user_data->trash_directory)+ strlen(file_name) + 45;
+    size_t length_command_tar = strlen(name_tar) + strlen(path) + strlen(trash_directory)+ strlen(file_name) + 45;
     char command_tar[length_command_tar];
-    snprintf(command_tar, length_command_tar, "tar -czf %s/%s --absolute-names -C %s %s 2>/dev/null", ptr_user_data->trash_directory, name_tar, path, file_name);
+    snprintf(command_tar, length_command_tar, "tar -czf %s/%s --absolute-names -C %s %s 2>/dev/null", trash_directory, name_tar, path, file_name);
 
     system(command_tar);
 }
@@ -120,18 +121,19 @@ void save_file(char *path, char *file_name, struct user_data *ptr_user_data)
 
 void restore(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active)
 {
+    char *trash_directory = ptr_user_data->trash_directory;
     int quantity_lines = active ? ptr_user_data->coordinates.quantity_lines_left : ptr_user_data->coordinates.quantity_lines_right;
     extractFileNameAndPath(file_name, path);
     char *restore_path = replace_slashes_dash(path);
-    size_t len_absolute_path = strlen(ptr_user_data->trash_directory) + strlen(file_name) + 2;
+    size_t len_absolute_path = strlen(trash_directory) + strlen(file_name) + 2;
     char absolute_path[len_absolute_path];
 
-    snprintf(absolute_path, len_absolute_path, "%s/%s", ptr_user_data->trash_directory, file_name);
+    snprintf(absolute_path, len_absolute_path, "%s/%s", trash_directory, file_name);
 
-    size_t lenCommand = strlen(ptr_user_data->trash_directory) + strlen(file_name) + strlen(restore_path) + 32;
+    size_t lenCommand = strlen(trash_directory) + strlen(file_name) + strlen(restore_path) + 32;
     char command[lenCommand];
 
-    snprintf(command, lenCommand, "tar -xzf %s/%s --absolute-names -C %s", ptr_user_data->trash_directory, file_name, restore_path);
+    snprintf(command, lenCommand, "tar -xzf %s/%s --absolute-names -C %s", trash_directory, file_name, restore_path);
 
 
 

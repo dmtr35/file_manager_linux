@@ -20,9 +20,10 @@
 
 void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active,_Bool check_side)
 {
+    int *cursor_y = &ptr_user_data->coordinates.cursor_y;
     char path[256];
     strcpy(path, check_side ? ptr_user_data->left_path : ptr_user_data->right_path);
-    int i = ptr_user_data->coordinates.cursor_y + (check_side ? ptr_user_data->coordinates.offset_left : ptr_user_data->coordinates.offset_right) - 1;
+    int i = *cursor_y + (check_side ? ptr_user_data->coordinates.offset_left : ptr_user_data->coordinates.offset_right) - 1;
     char *file_name = all_files[i].name;
 
 
@@ -35,7 +36,7 @@ void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files,
             remove_first_char(new_path);
         }
         strcpy(path, new_path);
-        ptr_user_data->coordinates.cursor_y = 1;
+        *cursor_y = 1;
 
         if (check_side) {
             ptr_user_data->coordinates.offset_left = 0;
@@ -46,7 +47,7 @@ void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files,
         strcpy(active ? ptr_user_data->previous_path_left : ptr_user_data->previous_path_right, path);
         char *parent_dir = dirname(path);
         strcpy(path, parent_dir);
-        ptr_user_data->coordinates.cursor_y = 1;
+        *cursor_y = 1;
 
         if (check_side) {
             ptr_user_data->coordinates.offset_left = 0;
@@ -57,8 +58,10 @@ void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files,
     strcpy(check_side ? ptr_user_data->left_path : ptr_user_data->right_path, path);
 }
 
+
 void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side)
 {
+    int *cursor_y = &ptr_user_data->coordinates.cursor_y;
     char path[256];
     if (check_side) {
         ptr_user_data->coordinates.offset_left = 0;
@@ -96,14 +99,15 @@ void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bo
         } else {
             ptr_user_data->coordinates.offset_right = (count + 1) - height_win;
         }
-        ptr_user_data->coordinates.cursor_y = height_win;
+        *cursor_y = height_win;
     } else {
-        ptr_user_data->coordinates.cursor_y = (count + 1);
+        *cursor_y = (count + 1);
     }
 
     strcpy(check_side ? ptr_user_data->left_path : ptr_user_data->right_path, path);
     free(backspace_files);
 }
+
 
 void open_in_vim(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win)
 {

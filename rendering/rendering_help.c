@@ -15,6 +15,8 @@
 
 void render_help(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, WINDOW *win)
 {
+    int *height_win = &ptr_user_data->coordinates.height_win;
+    int *width_win = &ptr_user_data->coordinates.width_win;
     char title[5] = "HELP";
 
     start_color();
@@ -37,9 +39,9 @@ void render_help(struct user_data *ptr_user_data, struct file_data *all_files, _
     init_pair(16, COLOR_BLACK, COLOR_MAGENTA); // Цветовая пара 1: Белый текст на темносинем фоне         // folder
     active ? wbkgd(win, COLOR_PAIR(1)) : wbkgd(win, COLOR_PAIR(11));
 
-    getmaxyx(win, ptr_user_data->coordinates.height_win, ptr_user_data->coordinates.width_win);
+    getmaxyx(win, *height_win, *width_win);
 
-    int max_length = ptr_user_data->coordinates.width_win - 35;
+    int max_length = *width_win - 35;
 
     // if(active) {
     //     mvwvline(win, 1, coords->width_win - 34, ACS_VLINE, coords->height - 4);
@@ -50,7 +52,7 @@ void render_help(struct user_data *ptr_user_data, struct file_data *all_files, _
     //     mvwvline(win, 1, coords->width % 2 ? (coords->width_win - 26) - 1 : (coords->width_win - 27), ACS_VLINE, coords->height - 4);
     //     mvwvline(win, 1, coords->width % 2 ? (coords->width_win - 11) - 1 : (coords->width_win - 12), ACS_VLINE, coords->height - 4);
     // }
-    mvwhline(win, ptr_user_data->coordinates.height_win - 3, 1, ACS_HLINE, ptr_user_data->coordinates.width_win - 2);
+    mvwhline(win, *height_win - 3, 1, ACS_HLINE, *width_win - 2);
     wborder(win, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
 
     wattron(win, A_BOLD);

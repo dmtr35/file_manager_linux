@@ -18,11 +18,13 @@
 
 void processing_list_files(struct user_data *ptr_user_data, struct file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files)
 {
+    int *arr_coorsorarr_coorsor = ptr_user_data->arr_coorsor_struct.arr;
     
+    size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;
     if (*check_empty) {
         for(int i = 0; i < *quantity_lines; ++i) {
             for(int j = 0; j < ptr_user_data->coordinates.leng_arr_coorsor; ++j) {
-                if(all_files[i].file_id == ptr_user_data->arr_coorsor_struct.arr[j]) {
+                if(all_files[i].file_id == arr_coorsorarr_coorsor[j]) {
                     size_t leng_file_name = strlen(all_files[i].name) + 1;
                     char file_name[leng_file_name];
                     strcpy(file_name, all_files[i].name);
@@ -39,7 +41,7 @@ void processing_list_files(struct user_data *ptr_user_data, struct file_data *al
     if (offset < 0) {
         offset = 0;
     }
-    fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
+    fillWithZeros(arr_coorsorarr_coorsor, *arr_coorsor_size);
     ptr_user_data->coordinates.leng_arr_coorsor = 0;
 }
 
@@ -47,15 +49,23 @@ void processing_list_files(struct user_data *ptr_user_data, struct file_data *al
 
 void select_way(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files)
 {   
-    int count_item_arr = count_non_zero_elements(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
-    if (ptr_user_data->set_bool.restore_files) {
+    int *arr_coorsorarr_coorsor = ptr_user_data->arr_coorsor_struct.arr;
+    size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;
+    
+    _Bool *delete_files = &ptr_user_data->set_bool.delete_files;
+    _Bool *restore_files = &ptr_user_data->set_bool.restore_files;
+    _Bool *copy_files = &ptr_user_data->set_bool.copy_files;
+    _Bool *move_files = &ptr_user_data->set_bool.move_files;
+
+    int count_item_arr = count_non_zero_elements(arr_coorsorarr_coorsor, *arr_coorsor_size);
+    if (*restore_files) {
         restore(ptr_user_data, path, file_name, active);
-    } else if (ptr_user_data->set_bool.copy_files || ptr_user_data->set_bool.move_files){
+    } else if (*copy_files || ptr_user_data->set_bool.move_files){
         cp_mv_file(ptr_user_data, path, file_name, active);
-        if (ptr_user_data->set_bool.move_files) {
+        if (*move_files) {
             remove_directory_recursive(ptr_user_data, path, file_name, save_files);
         }
-    } else if (ptr_user_data->set_bool.delete_files){
+    } else if (*delete_files){
         remove_directory_recursive(ptr_user_data, path, file_name, save_files);
     }
 }

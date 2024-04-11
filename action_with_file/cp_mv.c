@@ -17,14 +17,17 @@
 
 void cp_mv_file(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active)
 {
+    char *left_path = ptr_user_data->left_path;
+    char *right_path = ptr_user_data->right_path;
+
     char first_path[512];
     char second_path[512];
     if (active) {
-        strcpy(first_path, ptr_user_data->left_path);
-        strcpy(second_path, ptr_user_data->right_path);
+        strcpy(first_path, left_path);
+        strcpy(second_path, right_path);
     } else {
-        strcpy(first_path, ptr_user_data->right_path);
-        strcpy(second_path, ptr_user_data->left_path);
+        strcpy(first_path, right_path);
+        strcpy(second_path, left_path);
     }
 
     size_t size_absolete_first_path = strlen(first_path) + strlen(file_name) + 2;
@@ -93,6 +96,19 @@ void copy_directory(const char *source_directory, const char *destination_direct
 
 void copy_file(const char *source_file, const char *destination_file)
 {
+    // struct stat statbuf;                                                     // копировать ссылку(буду создавать новую ссылку в нужном месте на нужный файл)
+    // if (lstat(source_file, &statbuf) == -1) {
+    //     char original_full_path[size_new_path];
+    //     strcpy(original_full_path, full_path);
+    //     char *ptr = strstr(original_full_path, " ->");
+    //         if (ptr != NULL) {
+    //         *ptr = '\0';
+    //     }
+    //     remove_one_file(original_full_path);
+    //     perror("Error getting file status");
+    //     return;
+    // }
+
     FILE *first_file = fopen(source_file, "rb");
     FILE *second_file = fopen(destination_file, "wb");
     if (first_file && second_file) {

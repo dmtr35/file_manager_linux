@@ -84,18 +84,35 @@ int main()
         struct file_data *all_files_ptr = active ? all_files_left : all_files_right;
         int *offset = active ? &(ptr_user_data->coordinates.offset_left) : &(ptr_user_data->coordinates.offset_right);
         int *quantity_lines = active ? &(ptr_user_data->coordinates.quantity_lines_left) : &(ptr_user_data->coordinates.quantity_lines_right);
-        int i = ptr_user_data->coordinates.cursor_y + *offset - 1;
-        removeDuplicates(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
+        int *height = &ptr_user_data->coordinates.height;
+        int *width = &ptr_user_data->coordinates.width;
+        int *height_win = &ptr_user_data->coordinates.height_win;
+        int *cursor_y = &ptr_user_data->coordinates.cursor_y;
+        int *leng_arr_coorsor = &ptr_user_data->coordinates.leng_arr_coorsor;
+
+        int *arr_coorsor_coorsor = ptr_user_data->arr_coorsor_struct.arr;
+        size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;
+
+        _Bool *command_bool = &ptr_user_data->set_bool.command_bool;
+        _Bool *help_bool = &ptr_user_data->set_bool.help_bool;
+        _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
+        _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
+        _Bool *hidden_left_bool = &ptr_user_data->set_bool.hidden_left_bool;
+        _Bool *hidden_right_bool = &ptr_user_data->set_bool.hidden_right_bool;
+
+        int i = *cursor_y + *offset - 1;
+
+        removeDuplicates(arr_coorsor_coorsor, *arr_coorsor_size);
         active ? strcpy(ptr_user_data->coorsor_file, all_files_left[i].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[i].name);
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
-        size_t width_menu = leng_path < ptr_user_data->coordinates.width / 3 ? ptr_user_data->coordinates.width / 3 : leng_path;
+        size_t width_menu = leng_path < *width / 3 ? *width / 3 : leng_path;
 
-        getmaxyx(stdscr, ptr_user_data->coordinates.height, ptr_user_data->coordinates.width);
-        win_left = newwin(ptr_user_data->coordinates.height, ptr_user_data->coordinates.width / 2, 0, 0);
-        win_right = newwin(ptr_user_data->coordinates.height, ptr_user_data->coordinates.width % 2 ? (ptr_user_data->coordinates.width / 2) + 1 : ptr_user_data->coordinates.width / 2, 0, ptr_user_data->coordinates.width / 2);
-        win_menu = newwin(10, width_menu, (ptr_user_data->coordinates.height / 2) - 5, ptr_user_data->coordinates.width / 2 - width_menu / 2);
+        getmaxyx(stdscr, *height, *width);
+        win_left = newwin(*height, *width / 2, 0, 0);
+        win_right = newwin(*height, *width % 2 ? (*width / 2) + 1 : *width / 2, 0, *width / 2);
+        win_menu = newwin(10, width_menu, (*height / 2) - 5, *width / 2 - width_menu / 2);
 
-        if (!ptr_user_data->set_bool.command_bool && !ptr_user_data->set_bool.help_bool && !ptr_user_data->set_bool.menu_bool) {
+        if (!*command_bool && !*help_bool && !*menu_bool) {
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
@@ -103,7 +120,7 @@ int main()
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
             }
-        } else if (ptr_user_data->set_bool.command_bool) {
+        } else if (*command_bool) {
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_comm_line(ptr_user_data, all_files_right, active, check_side, win_left, win_right);
@@ -112,11 +129,11 @@ int main()
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
             }
 
-            if (active && !ptr_user_data->set_bool.command_bool) {
+            if (active && !*command_bool) {
                 continue;
             }
         }
-        else if (ptr_user_data->set_bool.help_bool) {
+        else if (*help_bool) {
             if (active) {
                 render_help(ptr_user_data, all_files_right, !active, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
@@ -124,7 +141,7 @@ int main()
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
                 render_help(ptr_user_data, all_files_right, !active, win_right);
             }
-        } else if (ptr_user_data->set_bool.menu_bool) {
+        } else if (*menu_bool) {
             _Bool turn_render_ls = true;
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
@@ -135,9 +152,9 @@ int main()
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
             }
-            if (ptr_user_data->set_bool.out_bool) {
+            if (*out_bool) {
                 break;
-            } if (!ptr_user_data->set_bool.menu_bool) {
+            } if (!*menu_bool) {
                 continue;
             }
         }
@@ -156,96 +173,96 @@ int main()
             int new_height, new_width;
             getmaxyx(stdscr, new_height, new_width);
             int cursor_position = all_files_ptr[i].file_id;
-            if (new_height > ptr_user_data->coordinates.height) {
+            if (new_height > *height) {
                 if (*offset > 0) {
                     (*offset)--;
-                    ptr_user_data->coordinates.cursor_y++;
+                    *cursor_y++;
                 }
-            } else if(new_height < ptr_user_data->coordinates.height){
-                if (*offset <= 0 && ptr_user_data->coordinates.cursor_y == ptr_user_data->coordinates.height_win - 4) {
+            } else if(new_height < *height){
+                if (*offset <= 0 && *cursor_y == *height_win - 4) {
                     (*offset)++;
-                    ptr_user_data->coordinates.cursor_y = cursor_position - *offset + 1;
-                } else if (*offset > 0 && ptr_user_data->coordinates.cursor_y == ptr_user_data->coordinates.height_win - 4) {
+                    *cursor_y = cursor_position - *offset + 1;
+                } else if (*offset > 0 && *cursor_y == *height_win - 4) {
                     (*offset)++;
-                    ptr_user_data->coordinates.cursor_y = cursor_position - *offset + 1;
+                    *cursor_y = cursor_position - *offset + 1;
                 } 
             } 
         }
         else if (ch == '\t') {
             if (active) {
-                cursor_left = ptr_user_data->coordinates.cursor_y;
+                cursor_left = *cursor_y;
             } else {
-                cursor_right = ptr_user_data->coordinates.cursor_y;
+                cursor_right = *cursor_y;
             }
             active = !active;
-            fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
-            ptr_user_data->coordinates.leng_arr_coorsor = 0;
+            fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
+            *leng_arr_coorsor = 0;
             if (active) {
-                if (cursor_left <= (ptr_user_data->coordinates.height_win - 4)) {
-                    ptr_user_data->coordinates.cursor_y = cursor_left;
+                if (cursor_left <= (*height_win - 4)) {
+                    *cursor_y = cursor_left;
                 } else {
-                    ptr_user_data->coordinates.cursor_y = ptr_user_data->coordinates.height_win - 4;
+                    *cursor_y = *height_win - 4;
                 }
             } else {
-                if (cursor_right <= (ptr_user_data->coordinates.height_win - 4)) {
-                    ptr_user_data->coordinates.cursor_y = cursor_right;
+                if (cursor_right <= (*height_win - 4)) {
+                    *cursor_y = cursor_right;
                 } else {
-                    ptr_user_data->coordinates.cursor_y = ptr_user_data->coordinates.height_win - 4;
+                    *cursor_y = *height_win - 4;
                 }
             }
         }
         else if (ch == '\n') {
             if (active) {
                 click_on_file(ptr_user_data, all_files_left, active, check_side);
-                fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
+                fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
             } else {
                 click_on_file(ptr_user_data, all_files_right, !active, !check_side);
-                fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
+                fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
             }
-            ptr_user_data->coordinates.leng_arr_coorsor = 0;
+            *leng_arr_coorsor = 0;
         }
         else if (ch == 27) {
             int next1 = wgetch(stdscr);
             int next2 = wgetch(stdscr);
             if (next1 == '[' && next2 == 'A') {
-                int hidden_row = *quantity_lines - ptr_user_data->coordinates.cursor_y;
-                if (ptr_user_data->coordinates.cursor_y > 1) {
-                    ptr_user_data->coordinates.cursor_y--;
-                } else if (ptr_user_data->coordinates.cursor_y == 1 && *offset > 0) {
+                int hidden_row = *quantity_lines - *cursor_y;
+                if (*cursor_y > 1) {
+                    (*cursor_y)--;
+                } else if (*cursor_y == 1 && *offset > 0) {
                     (*offset)--;
                 }
             }
             else if (next1 == '[' && next2 == 'B') {
-                int hidden_row = *quantity_lines - ptr_user_data->coordinates.cursor_y;
-                if (ptr_user_data->coordinates.cursor_y < *quantity_lines && ptr_user_data->coordinates.cursor_y < ptr_user_data->coordinates.height_win - 4) {
-                    ptr_user_data->coordinates.cursor_y++;
-                } else if ((ptr_user_data->coordinates.cursor_y >= ptr_user_data->coordinates.height_win - 4) && hidden_row > *offset) {
+                int hidden_row = *quantity_lines - *cursor_y;
+                if (*cursor_y < *quantity_lines && *cursor_y < *height_win - 4) {
+                    (*cursor_y)++;
+                } else if ((*cursor_y >= *height_win - 4) && hidden_row > *offset) {
                     (*offset)++;
                 }
             } else if (next1 == '[' && next2 == 'C') {
-                int hidden_row = *quantity_lines - (ptr_user_data->coordinates.height_win - 4) - *offset;
-                if (*quantity_lines <= ptr_user_data->coordinates.height_win - 4) {
-                    ptr_user_data->coordinates.cursor_y = *quantity_lines;
+                int hidden_row = *quantity_lines - (*height_win - 4) - *offset;
+                if (*quantity_lines <= *height_win - 4) {
+                    *cursor_y = *quantity_lines;
                 } 
                 else {
                     *offset += hidden_row;
-                    ptr_user_data->coordinates.cursor_y = ptr_user_data->coordinates.height_win - 4;
+                    *cursor_y = *height_win - 4;
                 }
             }
             else if (next1 == '[' && next2 == 'D') {
                 *offset = 0;
-                ptr_user_data->coordinates.cursor_y = 1;
+                *cursor_y = 1;
             }
         }
         else if (ch == 127 || ch == KEY_BACKSPACE) {
             if (active) {
                 backspace(ptr_user_data, all_files_left, active, check_side);
-                fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
+                fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
             } else {
                 backspace(ptr_user_data, all_files_right, !active, !check_side);
-                fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
+                fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
             }
-            ptr_user_data->coordinates.leng_arr_coorsor = 0;
+            *leng_arr_coorsor = 0;
         }
         else if (ch == 16) { // Ctrl + p - переход на сохраненный ранее путь
             // else if (ch == 'p') {                                      // Ctrl + p - переход на сохраненный ранее путь
@@ -261,8 +278,8 @@ int main()
                 strcpy(ptr_user_data->right_path, ptr_user_data->previous_path_right);
                 strcpy(ptr_user_data->previous_path_right, temp);
             }
-            fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
-            ptr_user_data->coordinates.leng_arr_coorsor = 0;
+            fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
+            *leng_arr_coorsor = 0;
         }
         else if (ch == ('V' & 0x1F)) { // Обработка нажатия Ctrl + V
             // // else if (ch == 'v') {                            // Обработка нажатия Ctrl + V
@@ -272,47 +289,47 @@ int main()
             } else {
                 open_in_vim(ptr_user_data, all_files_right, !active, !check_side, win_right);
             }
-            fillWithZeros(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);                   // очистить массив с отметками строк
-            ptr_user_data->coordinates.leng_arr_coorsor = 0;
+            fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
+            *leng_arr_coorsor = 0;
         }
 
         else if (ch == '\b' || ch == 'h')
         { // ctrl + h  // help_bool
             // else if (ch == 'a') {
-             ptr_user_data->set_bool.help_bool = !ptr_user_data->set_bool.help_bool;
+             *help_bool = !*help_bool;
         }
         else if (ch == 'm')
         { // ctrl + h  // help_bool
             // else if (ch == 'a') {
-            ptr_user_data->set_bool.menu_bool = !ptr_user_data->set_bool.menu_bool;
+            *menu_bool = !*menu_bool;
         }
         else if (ch == 1) {                                           // ch == 1 -> ctrl + a   терминал, приостановлено
         // else if (ch == 'a') {
-            ptr_user_data->set_bool.command_bool = !ptr_user_data->set_bool.command_bool;
+            *command_bool = !*command_bool;
         }
         else if (ch == 'w')
         { // ctrl + a   терминал, приостановлено
             if(active) {
-                ptr_user_data->set_bool.hidden_left_bool = !ptr_user_data->set_bool.hidden_left_bool;
+                *hidden_left_bool = !*hidden_left_bool;
             } else {
-                ptr_user_data->set_bool.hidden_right_bool = !ptr_user_data->set_bool.hidden_right_bool;
+                *hidden_right_bool = !*hidden_right_bool;
             }
 
             *offset = 0;
-            ptr_user_data->coordinates.cursor_y = 1;
+            *cursor_y = 1;
         }
         if (ch == ' ') {
             if (strcmp(ptr_user_data->coorsor_file, "..") != 0) {
-                bool contains = containsElement(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size, i);
+                bool contains = containsElement(arr_coorsor_coorsor, *arr_coorsor_size, i);
                 if(contains) {
-                    if (ptr_user_data->coordinates.leng_arr_coorsor > 0) {
-                        removeFromArr(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size, i);
-                        ptr_user_data->coordinates.leng_arr_coorsor--;
+                    if (*leng_arr_coorsor > 0) {
+                        removeFromArr(arr_coorsor_coorsor, *arr_coorsor_size, i);
+                        (*leng_arr_coorsor)--;
                     }
                 } else {
-                    if (ptr_user_data->coordinates.leng_arr_coorsor < ptr_user_data->arr_coorsor_struct.size - 1) {
-                        addToArr(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size, i);
-                        ptr_user_data->coordinates.leng_arr_coorsor++;
+                    if (*leng_arr_coorsor < *arr_coorsor_size - 1) {
+                        addToArr(arr_coorsor_coorsor, *arr_coorsor_size, i);
+                        (*leng_arr_coorsor)++;
                     }
                 }
             }
