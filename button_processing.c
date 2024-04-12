@@ -109,7 +109,7 @@ void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bo
 }
 
 
-void open_in_vim(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win)
+void open_in_vim(struct user_data *ptr_user_data, struct file_data *all_files, _Bool check_side, WINDOW *win)
 {
     int i = ptr_user_data->coordinates.cursor_y + (check_side ? ptr_user_data->coordinates.offset_left : ptr_user_data->coordinates.offset_right) - 1;
     

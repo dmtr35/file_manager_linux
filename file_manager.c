@@ -52,9 +52,15 @@ int main()
     ptr_user_data->coordinates.height_win = 0;
     ptr_user_data->coordinates.width_win = 0;
     ptr_user_data->coordinates.height_menu = 0;
+
+
+
+
     ptr_user_data->coordinates.width_menu = 0;
     ptr_user_data->coordinates.cursor_x = 1;
     ptr_user_data->coordinates.cursor_y = 1;
+    ptr_user_data->coordinates.cursor_left = 1;
+    ptr_user_data->coordinates.cursor_right = 1;
     ptr_user_data->coordinates.quantity_lines_left = 0;
     ptr_user_data->coordinates.quantity_lines_right = 0;
     ptr_user_data->coordinates.leng_arr_coorsor = 0;
@@ -69,13 +75,11 @@ int main()
 
     _Bool active = 1;
     _Bool check_side = 1;
-    // char previous_path_left[1024];
-    // char previous_path_right[1024];
     int cursor_left = 1;
     int cursor_right = 1;
 
-
     int res_check = check_func(ptr_user_data);
+
     strcpy(ptr_user_data->previous_path_left, ptr_user_data->left_path);
     strcpy(ptr_user_data->previous_path_right, ptr_user_data->right_path);
 
@@ -89,6 +93,8 @@ int main()
         int *height_win = &ptr_user_data->coordinates.height_win;
         int *cursor_y = &ptr_user_data->coordinates.cursor_y;
         int *leng_arr_coorsor = &ptr_user_data->coordinates.leng_arr_coorsor;
+        int *cursor_left = &ptr_user_data->coordinates.cursor_left;
+        int *cursor_right = &ptr_user_data->coordinates.cursor_right;
 
         int *arr_coorsor_coorsor = ptr_user_data->arr_coorsor_struct.arr;
         size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;
@@ -146,11 +152,11 @@ int main()
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
-                render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                active = render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
             } else {
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
-                render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
+                active = render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
             }
             if (*out_bool) {
                 break;
@@ -190,22 +196,22 @@ int main()
         }
         else if (ch == '\t') {
             if (active) {
-                cursor_left = *cursor_y;
+                *cursor_left = *cursor_y;
             } else {
-                cursor_right = *cursor_y;
+                *cursor_right = *cursor_y;
             }
             active = !active;
             fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
             *leng_arr_coorsor = 0;
             if (active) {
-                if (cursor_left <= (*height_win - 4)) {
-                    *cursor_y = cursor_left;
+                if (*cursor_left <= (*height_win - 4)) {
+                    *cursor_y = *cursor_left;
                 } else {
                     *cursor_y = *height_win - 4;
                 }
             } else {
-                if (cursor_right <= (*height_win - 4)) {
-                    *cursor_y = cursor_right;
+                if (*cursor_right <= (*height_win - 4)) {
+                    *cursor_y = *cursor_right;
                 } else {
                     *cursor_y = *height_win - 4;
                 }
@@ -285,9 +291,9 @@ int main()
             // // else if (ch == 'v') {                            // Обработка нажатия Ctrl + V
 
             if (active) {
-                open_in_vim(ptr_user_data, all_files_left, active, check_side, win_left);
+                open_in_vim(ptr_user_data, all_files_left, check_side, win_left);
             } else {
-                open_in_vim(ptr_user_data, all_files_right, !active, !check_side, win_right);
+                open_in_vim(ptr_user_data, all_files_right, !check_side, win_right);
             }
             fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
             *leng_arr_coorsor = 0;

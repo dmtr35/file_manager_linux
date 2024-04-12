@@ -6,6 +6,8 @@
 #include <ncurses.h>
 
 #define MAX_ARR_SIZE 100
+#define MAX_ARR_SIZE_PREVIOUS 10
+#define MAX_PATH_LENGTH 1024
 
 
 
@@ -40,6 +42,8 @@ struct coordinates {
     int width_menu;
     int cursor_x;
     int cursor_y;
+    int cursor_left;
+    int cursor_right;
     int quantity_lines_left;
     int quantity_lines_right;
     int leng_arr_coorsor;
@@ -51,6 +55,11 @@ struct coordinates {
 struct IntArray {
     int arr[MAX_ARR_SIZE];
     size_t size;
+};
+
+struct PreviousIntArray {
+    char previous_arr[MAX_ARR_SIZE_PREVIOUS][MAX_PATH_LENGTH];          // MAX_PATH_LENGTH - максимальная длина пути
+    size_t size;                                                        // Количество элементов в массиве
 };
 
 struct user_data {
@@ -65,6 +74,7 @@ struct user_data {
     struct set_bool set_bool;
     struct coordinates coordinates;
     struct IntArray arr_coorsor_struct;
+    struct PreviousIntArray previous_paths;
 };
 
 // check_func.c
@@ -101,7 +111,7 @@ void render_ls(struct user_data *ptr_user_data, struct file_data *all_files, _Bo
 void trim_filename(struct file_data *all_files, int number_lines, int max_length);
 void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win_left, WINDOW *win_right);
 void render_help(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, WINDOW *win);
-void render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+int render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 void select_coorsor(struct user_data *ptr_user_data, struct file_data *all_files, int *quantity_lines, int *offset, int count_item_arr, int *check_empty);
@@ -109,7 +119,7 @@ void select_coorsor(struct user_data *ptr_user_data, struct file_data *all_files
 // button_processing
 void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side);
 void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side);
-void open_in_vim(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win);
+void open_in_vim(struct user_data *ptr_user_data, struct file_data *all_files, _Bool check_side, WINDOW *win);
 
 
 // command_line.c
