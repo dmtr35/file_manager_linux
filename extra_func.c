@@ -207,6 +207,20 @@ int is_empty = 0;                                    // Предполагаем
 return is_empty;
 }
 
+int longest(struct user_data *ptr_user_data, size_t leng_path) {                               // определяем какой размер самой длинной строки в массиве
+    int max_length = 0;
+
+    for (int i = 0; i < MAX_ARR_SIZE_SAVE_PATH; ++i) {
+        int current_length = strlen(ptr_user_data->save_paths.save_paths_arr[i]);
+        if (current_length > max_length) {
+            max_length = current_length;
+        }
+    }
+
+    return max_length > leng_path ? max_length + 8 : leng_path + 8;
+}
+
+
 
 int count_non_zero_elements(int *arr, size_t size)
 {
@@ -227,6 +241,7 @@ void check_offset_less_zero(int *offset)
         *offset = 0;
     }
 }
+
 void check_cursor_y_less_zero(int *cursor_y)                      
 {
     if (*cursor_y < 1) {

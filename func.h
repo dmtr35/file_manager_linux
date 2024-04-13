@@ -6,7 +6,7 @@
 #include <ncurses.h>
 
 #define MAX_ARR_SIZE 100
-#define MAX_ARR_SIZE_PREVIOUS 10
+#define MAX_ARR_SIZE_SAVE_PATH 5
 #define MAX_PATH_LENGTH 1024
 
 
@@ -25,6 +25,7 @@ struct set_bool {
     _Bool hidden_right_bool;
     _Bool command_bool;
     _Bool menu_bool;
+    _Bool save_path_bool;
     _Bool help_bool;
     _Bool out_bool;
     _Bool restore_files;
@@ -57,9 +58,8 @@ struct IntArray {
     size_t size;
 };
 
-struct PreviousIntArray {
-    char previous_arr[MAX_ARR_SIZE_PREVIOUS][MAX_PATH_LENGTH];          // MAX_PATH_LENGTH - максимальная длина пути
-    size_t size;                                                        // Количество элементов в массиве
+struct Save_Path_Array {
+    char save_paths_arr[MAX_ARR_SIZE_SAVE_PATH][MAX_PATH_LENGTH];
 };
 
 struct user_data {
@@ -74,7 +74,7 @@ struct user_data {
     struct set_bool set_bool;
     struct coordinates coordinates;
     struct IntArray arr_coorsor_struct;
-    struct PreviousIntArray previous_paths;
+    struct Save_Path_Array save_paths;
 };
 
 // check_func.c
@@ -95,6 +95,7 @@ void removeFromArr(int *arr, size_t size, int value);
 bool containsElement(int *arr, size_t size, int value);
 void fillWithZeros(int *arr, size_t size);
 int check_int_arr(int *arr, size_t size);                               // проверка массива, есть ли в нем элементы
+int longest(struct user_data *ptr_user_data, size_t leng_path);                           // определяем какой размер самой длинной строки в массиве
 int count_non_zero_elements(int *arr, size_t size);                     // сколько элементов в массиве
 void check_offset_less_zero(int *offset);
 void check_cursor_y_less_zero(int *cursor_y);
@@ -112,9 +113,12 @@ void trim_filename(struct file_data *all_files, int number_lines, int max_length
 void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win_left, WINDOW *win_right);
 void render_help(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, WINDOW *win);
 int render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+int render_save_path(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
-void render_all_windows(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_ls_and_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 void select_coorsor(struct user_data *ptr_user_data, struct file_data *all_files, int *quantity_lines, int *offset, int count_item_arr, int *check_empty);
+void render_ls_and_save_path(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+
 
 // button_processing
 void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side);

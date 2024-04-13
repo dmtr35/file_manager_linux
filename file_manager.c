@@ -35,11 +35,13 @@ int main()
     struct user_data *ptr_user_data = malloc(sizeof(struct user_data));
     struct file_data *all_files_left = (struct file_data *)malloc(500 * sizeof(struct file_data));
     struct file_data *all_files_right = (struct file_data *)malloc(500 * sizeof(struct file_data));
+    int res_check = check_func(ptr_user_data);
 
     ptr_user_data->set_bool.hidden_left_bool = 1;
     ptr_user_data->set_bool.hidden_right_bool = 1;
     ptr_user_data->set_bool.command_bool = 0;
     ptr_user_data->set_bool.menu_bool = 0;
+    ptr_user_data->set_bool.save_path_bool = 0;
     ptr_user_data->set_bool.help_bool = 0;
     ptr_user_data->set_bool.out_bool = 0;
     ptr_user_data->set_bool.restore_files = 0;
@@ -52,9 +54,6 @@ int main()
     ptr_user_data->coordinates.height_win = 0;
     ptr_user_data->coordinates.width_win = 0;
     ptr_user_data->coordinates.height_menu = 0;
-
-
-
 
     ptr_user_data->coordinates.width_menu = 0;
     ptr_user_data->coordinates.cursor_x = 1;
@@ -72,16 +71,19 @@ int main()
     ptr_user_data->arr_coorsor_struct.size = sizeof(arr_coorsor) / sizeof(*arr_coorsor);                                   // Размер массива
     memcpy(ptr_user_data->arr_coorsor_struct.arr, arr_coorsor, ptr_user_data->arr_coorsor_struct.size * sizeof(int));     // Копирование массива в структуру
 
+    strncpy(ptr_user_data->save_paths.save_paths_arr[0], ptr_user_data->home_path, MAX_PATH_LENGTH - 1);
+    ptr_user_data->save_paths.save_paths_arr[0][MAX_PATH_LENGTH - 1] = '\0';
+    for(int i = 1; i < MAX_ARR_SIZE_SAVE_PATH; ++i){
+        strncpy(ptr_user_data->save_paths.save_paths_arr[i], "/", MAX_PATH_LENGTH - 1);
+        ptr_user_data->save_paths.save_paths_arr[i][MAX_PATH_LENGTH - 1] = '\0';
+    }
+
 
     _Bool active = 1;
     _Bool check_side = 1;
     int cursor_left = 1;
     int cursor_right = 1;
 
-    int res_check = check_func(ptr_user_data);
-
-    strcpy(ptr_user_data->previous_path_left, ptr_user_data->left_path);
-    strcpy(ptr_user_data->previous_path_right, ptr_user_data->right_path);
 
     while (1)
     {
@@ -102,6 +104,7 @@ int main()
         _Bool *command_bool = &ptr_user_data->set_bool.command_bool;
         _Bool *help_bool = &ptr_user_data->set_bool.help_bool;
         _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
+        _Bool *save_path_bool = &ptr_user_data->set_bool.save_path_bool;
         _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
         _Bool *hidden_left_bool = &ptr_user_data->set_bool.hidden_left_bool;
         _Bool *hidden_right_bool = &ptr_user_data->set_bool.hidden_right_bool;
@@ -118,7 +121,7 @@ int main()
         win_right = newwin(*height, *width % 2 ? (*width / 2) + 1 : *width / 2, 0, *width / 2);
         win_menu = newwin(10, width_menu, (*height / 2) - 5, *width / 2 - width_menu / 2);
 
-        if (!*command_bool && !*help_bool && !*menu_bool) {
+        if (!*command_bool && !*help_bool && !*menu_bool && !*save_path_bool) {
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
@@ -147,7 +150,8 @@ int main()
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
                 render_help(ptr_user_data, all_files_right, !active, win_right);
             }
-        } else if (*menu_bool) {
+        } 
+        else if (*menu_bool) {
             _Bool turn_render_ls = true;
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
@@ -161,6 +165,23 @@ int main()
             if (*out_bool) {
                 break;
             } if (!*menu_bool) {
+                continue;
+            }
+        }
+        else if (*save_path_bool) {
+            _Bool turn_render_ls = true;
+            if (active) {
+                render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
+                render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
+                active = render_save_path(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+            } else {
+                render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
+                render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
+                active = render_save_path(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
+            }
+                if (*out_bool) {
+                break;
+            } if (!*save_path_bool) {
                 continue;
             }
         }
@@ -308,6 +329,11 @@ int main()
         { // ctrl + h  // help_bool
             // else if (ch == 'a') {
             *menu_bool = !*menu_bool;
+        }
+        else if (ch == 'p')
+        { // ctrl + h  // help_bool
+            // else if (ch == 'a') {
+            *save_path_bool = !*save_path_bool;
         }
         else if (ch == 1) {                                           // ch == 1 -> ctrl + a   терминал, приостановлено
         // else if (ch == 'a') {

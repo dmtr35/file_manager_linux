@@ -6,7 +6,7 @@
         "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
 
 
-        "c": "cd /home/dm/WebstormProjects/c/my_project/file_manager/ && gcc -std=c99 file_manager.c check_func.c list_builder.c extra_func.c button_processing.c command_line/command_line.c command_line/buffer_save.c rendering/rendering_ls.c rendering/rendering_help.c rendering/rendering_menu.c action_with_file/remove_files.c action_with_file/cp_mv.c action_with_file/form_list.c -o file_manager -lncursesw && ./file_manager",
+        "c": "cd /home/dm/WebstormProjects/c/my_project/file_manager/ && gcc -std=c99 file_manager.c check_func.c list_builder.c extra_func.c button_processing.c command_line/command_line.c command_line/buffer_save.c rendering/rendering_ls.c rendering/rendering_help.c rendering/rendering_menu.c rendering/rendering_save_path.c action_with_file/remove_files.c action_with_file/cp_mv.c action_with_file/form_list.c -o file_manager -lncursesw && ./file_manager",
                 
 
         "zig": "zig run",
