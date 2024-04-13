@@ -20,7 +20,7 @@ int is_directory(const char *path)
     DIR *dir = opendir(path);
     if(dir != NULL) {
         closedir(dir);
-        return 1;           // Это директория
+        return 1;                   // Это директория
     } else {
         return 0;
     }
@@ -76,6 +76,11 @@ void extractFileNameAndPath(char *fullFileName, char *path)
     const char *pattern = "____";
     char *position = strstr(fullFileName, pattern);
 
+    if (position == NULL) {
+        // Шаблон не найден, выходим из функции
+        return;
+    }
+    
     size_t length = strlen(position);
     char *start = position + 24;
     char *end = position + length - 11;

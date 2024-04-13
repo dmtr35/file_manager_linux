@@ -14,16 +14,15 @@
 
 
 
-
 void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files)
 {
+    check_and_create_trash(ptr_user_data);
     _Bool save_files_value = false;
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
-    char full_path[size_new_path];
+    char *full_path = malloc(size_new_path * sizeof(char));
     snprintf(full_path, size_new_path, "%s/%s", path, file_name);
-
     if (*save_files && strcmp(file_name, ".my_trash") != 0) {
-        save_file(path, file_name, ptr_user_data);                                   // save_file
+        save_file(path, file_name, full_path, ptr_user_data);                                   // save_file
     }
     
     struct stat statbuf;
@@ -76,6 +75,7 @@ void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file
 
     closedir(dir);
     remove_one_file(full_path);
+    free(full_path);
 }
 
 
@@ -88,15 +88,12 @@ void remove_one_file(char *path)
 
 
 
-void save_file(char *path, char *file_name, user_data *ptr_user_data)
+void save_file(char *path, char *file_name, char *ptr_full_path, user_data *ptr_user_data)
 {   
     char *trash_directory = ptr_user_data->trash_directory;
     char dir_or_file[4];
-    size_t size_absolute_path = strlen(path) + strlen(file_name) + 2;
-    char absolute_path[size_absolute_path];
-    snprintf(absolute_path, size_absolute_path, "%s/%s", path, file_name);
 
-    int res = is_directory(absolute_path);
+    int res = is_directory(ptr_full_path);
     if (res) {
         strcpy(dir_or_file, "dir");
     } else {
@@ -107,13 +104,14 @@ void save_file(char *path, char *file_name, user_data *ptr_user_data)
     char *new_path = replace_slashes_dash(path);
 
     size_t length_tar = strlen(file_name) + strlen(time) + strlen(new_path) + strlen(dir_or_file) + 14;
-    char name_tar[length_tar];
+    char *name_tar = malloc(length_tar * sizeof(char));
     snprintf(name_tar, length_tar, "%s____%s_%s.%s.tar.gz", file_name, time, new_path, dir_or_file);
-    size_t length_command_tar = strlen(name_tar) + strlen(path) + strlen(trash_directory)+ strlen(file_name) + 45;
+    size_t length_command_tar = strlen(name_tar) + strlen(path) + strlen(trash_directory)+ strlen(file_name) + 51;
     char command_tar[length_command_tar];
-    snprintf(command_tar, length_command_tar, "tar -czf %s/%s --absolute-names -C %s %s 2>/dev/null", trash_directory, name_tar, path, file_name);
-
+    snprintf(command_tar, length_command_tar, "tar -czf \"%s/%s\" --absolute-names -C \"%s\" \"%s\" 2>/dev/null", trash_directory, name_tar, path, file_name);
+    
     system(command_tar);
+    free(name_tar);
 }
 
 
@@ -124,21 +122,27 @@ void restore(user_data *ptr_user_data, char *path, char *file_name, _Bool active
     char *trash_directory = ptr_user_data->trash_directory;
     int quantity_lines = active ? ptr_user_data->coordinates.quantity_lines_left : ptr_user_data->coordinates.quantity_lines_right;
     extractFileNameAndPath(file_name, path);
+
     char *restore_path = replace_slashes_dash(path);
-    size_t len_absolute_path = strlen(trash_directory) + strlen(file_name) + 2;
-    char absolute_path[len_absolute_path];
+    if (is_directory(restore_path)){
+        size_t len_absolute_path = strlen(trash_directory) + strlen(file_name) + 2;
+        char *absolute_path = malloc(len_absolute_path * sizeof(char));
+        if (absolute_path == NULL) {
+            exit(EXIT_FAILURE);
+        }
 
-    snprintf(absolute_path, len_absolute_path, "%s/%s", trash_directory, file_name);
+        snprintf(absolute_path, len_absolute_path, "%s/%s", trash_directory, file_name);
 
-    size_t lenCommand = strlen(trash_directory) + strlen(file_name) + strlen(restore_path) + 32;
-    char command[lenCommand];
+        size_t lenCommand = strlen(trash_directory) + strlen(file_name) + strlen(restore_path) + 36;
+        char command[lenCommand];
 
-    snprintf(command, lenCommand, "tar -xzf %s/%s --absolute-names -C %s", trash_directory, file_name, restore_path);
+        snprintf(command, lenCommand, "tar -xzf \"%s/%s\" --absolute-names -C \"%s\"", trash_directory, file_name, restore_path);
 
-
-
-    if(system(command) == 0) {
-        remove_one_file(absolute_path);
+        if(system(command) == 0) {
+            remove_one_file(absolute_path);
+        }
+        free(absolute_path);
     }
+
         
 }

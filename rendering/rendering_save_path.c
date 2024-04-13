@@ -38,25 +38,16 @@ int render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_d
     strcpy(path, active ? ptr_user_data->left_path : ptr_user_data->right_path);
 
 
-    int check_empty = check_int_arr(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
-    int count_item_arr = count_non_zero_elements(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
-    int *offset = active ? &ptr_user_data->coordinates.offset_left : &ptr_user_data->coordinates.offset_right;
-    int *quantity_lines = active ? &ptr_user_data->coordinates.quantity_lines_left : &ptr_user_data->coordinates.quantity_lines_right;
     int *height = &ptr_user_data->coordinates.height;
     int *width = &ptr_user_data->coordinates.width;
 
     char *file_name = ptr_user_data->coorsor_file;
     char *right_path = ptr_user_data->right_path;
     char *left_path = ptr_user_data->left_path;
-    char *trash_directory = ptr_user_data->trash_directory;
     char *current_directory = active ? ptr_user_data->left_path : ptr_user_data->right_path;
 
     _Bool *save_path_bool = &ptr_user_data->set_bool.save_path_bool;
     _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
-    _Bool *delete_files = &ptr_user_data->set_bool.delete_files;
-    _Bool *restore_files = &ptr_user_data->set_bool.restore_files;
-    _Bool *copy_files = &ptr_user_data->set_bool.copy_files;
-    _Bool *move_files = &ptr_user_data->set_bool.move_files;
 
     int *arr_coorsor_coorsor = ptr_user_data->arr_coorsor_struct.arr;
     size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;
@@ -67,10 +58,7 @@ int render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_d
 
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
     char new_path[size_new_path];
-    file_data *all_files_ptr = active ? all_files_left : all_files_right;
     _Bool is_enter_pressed = true;
-    _Bool save_files = 0;
-    int row;
 
     while (is_enter_pressed) {
         int *coords_cursor_y_menu = &(ptr_user_data->coordinates.coords_cursor_y_menu);
@@ -96,6 +84,7 @@ int render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_d
                 current_row = getcury(win_menu);
 
                 mvwprintw(win_menu, 1, 1, "%s", current_directory);
+
                 for(int i = 0; i < MAX_ARR_SIZE_SAVE_PATH; ++i) {
                     mvwprintw(win_menu, i+3, 1, "%s", ptr_user_data->save_paths.save_paths_arr[i]);
                 }

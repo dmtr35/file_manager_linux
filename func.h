@@ -141,7 +141,7 @@ void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
 // remove_file
 void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files);
 void remove_one_file(char *path);
-void save_file(char *path, char *file_name, user_data *ptr_user_data);
+void save_file(char *path, char *file_name, char *ptr_full_path, user_data *ptr_user_data);
 void restore(user_data *ptr_user_data, char *path, char *file_name, _Bool active);
 void cp_mv_file(user_data *ptr_user_data, char *path, char *file_name, _Bool active);
 void copy_file(const char *source_directory, const char *destination_directory);
