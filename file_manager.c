@@ -32,9 +32,9 @@ int main()
     // printw ("%i\n%i\n%i\n", getch (), getch (), getch ());
     curs_set(0);
     
-    struct user_data *ptr_user_data = malloc(sizeof(struct user_data));
-    struct file_data *all_files_left = (struct file_data *)malloc(500 * sizeof(struct file_data));
-    struct file_data *all_files_right = (struct file_data *)malloc(500 * sizeof(struct file_data));
+    user_data *ptr_user_data = malloc(sizeof(user_data));
+    file_data *all_files_left = (file_data *)malloc(500 * sizeof(file_data));
+    file_data *all_files_right = (file_data *)malloc(500 * sizeof(file_data));
     int res_check = check_func(ptr_user_data);
 
     ptr_user_data->set_bool.hidden_left_bool = 1;
@@ -87,7 +87,7 @@ int main()
 
     while (1)
     {
-        struct file_data *all_files_ptr = active ? all_files_left : all_files_right;
+        file_data *all_files_ptr = active ? all_files_left : all_files_right;
         int *offset = active ? &(ptr_user_data->coordinates.offset_left) : &(ptr_user_data->coordinates.offset_right);
         int *quantity_lines = active ? &(ptr_user_data->coordinates.quantity_lines_left) : &(ptr_user_data->coordinates.quantity_lines_right);
         int *height = &ptr_user_data->coordinates.height;

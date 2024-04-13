@@ -11,7 +11,7 @@
 
 #include "../func.h"
 
-int render_save_path(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
+int render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
     start_color();
 
@@ -67,7 +67,7 @@ int render_save_path(struct user_data *ptr_user_data, struct file_data *all_file
 
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
     char new_path[size_new_path];
-    struct file_data *all_files_ptr = active ? all_files_left : all_files_right;
+    file_data *all_files_ptr = active ? all_files_left : all_files_right;
     _Bool is_enter_pressed = true;
     _Bool save_files = 0;
     int row;
@@ -140,7 +140,7 @@ int render_save_path(struct user_data *ptr_user_data, struct file_data *all_file
                 is_enter_pressed = false;
                 *save_path_bool = false;
                 *coords_cursor_y_menu = 3;
-                return active;
+                
             } 
             else if (ch == 'q') {
                 is_enter_pressed = false;
@@ -189,11 +189,11 @@ int render_save_path(struct user_data *ptr_user_data, struct file_data *all_file
         } 
     }
     wrefresh(win_menu);
-    
+    return active;
 }
 
 
-void render_ls_and_save_path(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
+void render_ls_and_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
     int *height = &ptr_user_data->coordinates.height;
     int *width = &ptr_user_data->coordinates.width;

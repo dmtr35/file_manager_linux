@@ -207,7 +207,7 @@ int is_empty = 0;                                    // Предполагаем
 return is_empty;
 }
 
-int longest(struct user_data *ptr_user_data, size_t leng_path) {                               // определяем какой размер самой длинной строки в массиве
+int longest(user_data *ptr_user_data, size_t leng_path) {                               // определяем какой размер самой длинной строки в массиве
     int max_length = 0;
 
     for (int i = 0; i < MAX_ARR_SIZE_SAVE_PATH; ++i) {

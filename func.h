@@ -11,14 +11,14 @@
 
 
 
-struct file_data {
+typedef struct file_data {
     int file_id;
     int leng_all_files;
     char name[1024];
     char size[7];
     char time[15];
     char permissions[11];
-};
+} file_data;
 
 struct set_bool {
     _Bool hidden_left_bool;
@@ -62,7 +62,7 @@ struct Save_Path_Array {
     char save_paths_arr[MAX_ARR_SIZE_SAVE_PATH][MAX_PATH_LENGTH];
 };
 
-struct user_data {
+typedef struct user_data {
     char user[1024];
     char left_path[1024];
     char right_path[1024];
@@ -75,11 +75,11 @@ struct user_data {
     struct coordinates coordinates;
     struct IntArray arr_coorsor_struct;
     struct Save_Path_Array save_paths;
-};
+} user_data;
 
 // check_func.c
-int check_func(struct user_data *ptr_user_data);
-void check_and_create_trash(struct user_data *ptr_user_data);
+int check_func(user_data *ptr_user_data);
+void check_and_create_trash(user_data *ptr_user_data);
 
 // extra_func.c
 int is_directory(const char *path);
@@ -95,35 +95,35 @@ void removeFromArr(int *arr, size_t size, int value);
 bool containsElement(int *arr, size_t size, int value);
 void fillWithZeros(int *arr, size_t size);
 int check_int_arr(int *arr, size_t size);                               // проверка массива, есть ли в нем элементы
-int longest(struct user_data *ptr_user_data, size_t leng_path);                           // определяем какой размер самой длинной строки в массиве
+int longest(user_data *ptr_user_data, size_t leng_path);                           // определяем какой размер самой длинной строки в массиве
 int count_non_zero_elements(int *arr, size_t size);                     // сколько элементов в массиве
 void check_offset_less_zero(int *offset);
 void check_cursor_y_less_zero(int *cursor_y);
 
 
 // list_builder.c
-int ls_list(char *path, struct file_data *directories, _Bool *flag_hidden_files, int *quantity_lines);
-void file_data(struct file_data *current_file, char *file_name, struct stat *file_info, char *symb, int file_id);
+int ls_list(char *path, file_data *directories, _Bool *flag_hidden_files, int *quantity_lines);
+void form_current_file(file_data *current_file, char *file_name, struct stat *file_info, char *symb, int file_id);
 void strtrim(char *str);
 
 
 // rendering_ls
-void render_ls(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win);
-void trim_filename(struct file_data *all_files, int number_lines, int max_length);
-void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win_left, WINDOW *win_right);
-void render_help(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, WINDOW *win);
-int render_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
-int render_save_path(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side, WINDOW *win);
+void trim_filename(file_data *all_files, int number_lines, int max_length);
+void render_comm_line(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side, WINDOW *win_left, WINDOW *win_right);
+void render_help(user_data *ptr_user_data, file_data *all_files, _Bool active, WINDOW *win);
+int render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+int render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
-void render_ls_and_menu(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
-void select_coorsor(struct user_data *ptr_user_data, struct file_data *all_files, int *quantity_lines, int *offset, int count_item_arr, int *check_empty);
-void render_ls_and_save_path(struct user_data *ptr_user_data, struct file_data *all_files_left, struct file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_ls_and_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void select_coorsor(user_data *ptr_user_data, file_data *all_files, int *quantity_lines, int *offset, int count_item_arr, int *check_empty);
+void render_ls_and_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 
 // button_processing
-void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side);
-void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side);
-void open_in_vim(struct user_data *ptr_user_data, struct file_data *all_files, _Bool check_side, WINDOW *win);
+void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side);
+void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side);
+void open_in_vim(user_data *ptr_user_data, file_data *all_files, _Bool check_side, WINDOW *win);
 
 
 // command_line.c
@@ -139,16 +139,16 @@ void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
 
 
 // remove_file
-void remove_directory_recursive(struct user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files);
+void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files);
 void remove_one_file(char *path);
-void save_file(char *path, char *file_name, struct user_data *ptr_user_data);
-void restore(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active);
-void cp_mv_file(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active);
+void save_file(char *path, char *file_name, user_data *ptr_user_data);
+void restore(user_data *ptr_user_data, char *path, char *file_name, _Bool active);
+void cp_mv_file(user_data *ptr_user_data, char *path, char *file_name, _Bool active);
 void copy_file(const char *source_directory, const char *destination_directory);
 void copy_directory(const char *source_directory, const char *destination_directory);
 
 // form_list.c
-void processing_list_files(struct user_data *ptr_user_data, struct file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files);
-void select_way(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files);
+void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files);
+void select_way(user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files);
 
 #endif

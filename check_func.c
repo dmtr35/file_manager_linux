@@ -10,7 +10,7 @@
 #include "func.h"
 
 
-int check_func(struct user_data *ptr_user_data)
+int check_func(user_data *ptr_user_data)
 {
     char *ptr_user = ptr_user_data->user;
     char *ptr_home_path = ptr_user_data->home_path;
@@ -61,7 +61,7 @@ int check_func(struct user_data *ptr_user_data)
 }
 
 
-void check_and_create_trash(struct user_data *ptr_user_data)
+void check_and_create_trash(user_data *ptr_user_data)
 {
     struct stat st = {0};
     if(stat(ptr_user_data->trash_directory, &st) == -1) {   // получение инфо из файла/директории ptr_user_data->trash_directory; &st - куда сохранится результат

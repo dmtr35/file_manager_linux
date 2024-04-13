@@ -15,7 +15,7 @@
 
 #include "../func.h"
 
-void render_ls(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win)
+void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side, WINDOW *win)
 {
     int *height = &ptr_user_data->coordinates.height;
     int *width = &ptr_user_data->coordinates.width;
@@ -40,7 +40,7 @@ void render_ls(struct user_data *ptr_user_data, struct file_data *all_files, _Bo
         offset = ptr_user_data->coordinates.offset_right;
     }
 
-    struct file_data *all_files_ls = (struct file_data *)malloc(500 * sizeof(struct file_data));
+    file_data *all_files_ls = (file_data *)malloc(500 * sizeof(file_data));
     if (all_files_ls != NULL) {
         for (int i = 0; i < quantity_lines; i++) {
             strcpy(all_files_ls[i].name, all_files[i].name);
@@ -305,7 +305,7 @@ void render_ls(struct user_data *ptr_user_data, struct file_data *all_files, _Bo
 }
 
 
-void trim_filename(struct file_data *all_files_ls, int number_lines, int max_length) {
+void trim_filename(file_data *all_files_ls, int number_lines, int max_length) {
     for(int i = 0; i < number_lines; ++i) {
         int name_length = strlen(all_files_ls[i].name);
         all_files_ls[i].name[max_length] = '\0';

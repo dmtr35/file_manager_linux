@@ -13,7 +13,7 @@
 
 
 
-void render_help(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, WINDOW *win)
+void render_help(user_data *ptr_user_data, file_data *all_files, _Bool active, WINDOW *win)
 {
     int *height_win = &ptr_user_data->coordinates.height_win;
     int *width_win = &ptr_user_data->coordinates.width_win;

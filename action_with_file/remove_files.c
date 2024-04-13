@@ -15,7 +15,7 @@
 
 
 
-void remove_directory_recursive(struct user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files)
+void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files)
 {
     _Bool save_files_value = false;
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
@@ -56,7 +56,7 @@ void remove_directory_recursive(struct user_data *ptr_user_data, char *path, cha
         return;
     }
 
-    struct dirent *entry; // прочитать содержимое директории
+    struct dirent *entry;                                                       // прочитать содержимое директории
 
     while ((entry = readdir(dir)) != NULL) {
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
@@ -88,7 +88,7 @@ void remove_one_file(char *path)
 
 
 
-void save_file(char *path, char *file_name, struct user_data *ptr_user_data)
+void save_file(char *path, char *file_name, user_data *ptr_user_data)
 {   
     char *trash_directory = ptr_user_data->trash_directory;
     char dir_or_file[4];
@@ -119,7 +119,7 @@ void save_file(char *path, char *file_name, struct user_data *ptr_user_data)
 
 
 
-void restore(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active)
+void restore(user_data *ptr_user_data, char *path, char *file_name, _Bool active)
 {
     char *trash_directory = ptr_user_data->trash_directory;
     int quantity_lines = active ? ptr_user_data->coordinates.quantity_lines_left : ptr_user_data->coordinates.quantity_lines_right;

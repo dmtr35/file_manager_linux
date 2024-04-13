@@ -16,7 +16,7 @@
 #include "func.h"
 
 
-int ls_list(char *path, struct file_data *all_files, _Bool *flag_hidden_files, int *quantity_lines)
+int ls_list(char *path, file_data *all_files, _Bool *flag_hidden_files, int *quantity_lines)
 {
     // *quantity_lines = 0;
     // for (int i = 0; i < *quantity_lines; ++i) {
@@ -36,7 +36,7 @@ int ls_list(char *path, struct file_data *all_files, _Bool *flag_hidden_files, i
     struct dirent *entry;
     struct stat file_info;
 
-    struct file_data *files = (struct file_data *)malloc(500 * sizeof(struct file_data));
+    file_data *files = (file_data *)malloc(500 * sizeof(file_data));
     int file_count = 0;
 
     if (strlen(path) == 1) {
@@ -63,7 +63,7 @@ int ls_list(char *path, struct file_data *all_files, _Bool *flag_hidden_files, i
         char full_path[length_full_path];
         snprintf(full_path, length_full_path, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, entry->d_name);
 
-        struct file_data current_file;
+        file_data current_file;
         if (lstat(full_path, &file_info) == 0) {
             if (S_ISLNK(file_info.st_mode)) {
                 char link_target[1024];
@@ -75,13 +75,13 @@ int ls_list(char *path, struct file_data *all_files, _Bool *flag_hidden_files, i
                 snprintf(link_name, length_link_name, "%s -> %s\n", entry->d_name, link_target);
                 strcpy(symb, "l");
 
-                file_data(&current_file, link_name, &file_info, symb, file_id);
+                form_current_file(&current_file, link_name, &file_info, symb, file_id);
                 // file_id++;
 
                 files[file_count++] = current_file;
             } else {
                 strcpy(symb, (S_ISDIR(file_info.st_mode)) ? "d" : "-");
-                file_data(&current_file, entry->d_name, &file_info, symb, file_id);
+                form_current_file(&current_file, entry->d_name, &file_info, symb, file_id);
                 // file_id++;
 
                 if (S_ISDIR(file_info.st_mode)) {
@@ -114,11 +114,10 @@ int ls_list(char *path, struct file_data *all_files, _Bool *flag_hidden_files, i
 }
 
 
-void file_data(struct file_data *current_file, char *file_name, struct stat *file_info, char *symb, int file_id)
+void form_current_file(file_data *current_file, char *file_name, struct stat *file_info, char *symb, int file_id)
 {
     char buf[20];
 
-    // current_file->file_id = file_id;
     strncpy(current_file->name, file_name, sizeof(current_file->name));
     strncpy(current_file->size, human_readable_size(file_info->st_size, buf), sizeof(current_file->size));
     strncpy(current_file->time, format_last_modification_time(file_info->st_mtime, buf), sizeof(current_file->time));
@@ -135,14 +134,3 @@ void file_data(struct file_data *current_file, char *file_name, struct stat *fil
             (file_info->st_mode & S_IXOTH) ? (((file_info->st_mode & S_ISVTX) ? "t" : "x")) : ((file_info->st_mode & S_ISVTX) ? "T" : "-"));
 }
 
-
-// void ls_list_offset(char *str) {
-//     size_t len = strlen(str);
-//     while (len > 0 && isspace((unsigned char)str[len - 1])) {
-//         str[--len] = '\0';
-//     }
-//     while (*str && isspace((unsigned char)*str)) {
-//         ++str;
-//         --len;
-//     }
-// }

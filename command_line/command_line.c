@@ -19,7 +19,7 @@ int buffer_pos = 0;
 int count_row = 0;
 
 
-void render_comm_line(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side, WINDOW *win_left, WINDOW *win_right)
+void render_comm_line(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side, WINDOW *win_left, WINDOW *win_right)
 {
     int *height = &ptr_user_data->coordinates.height;
     int *width = &ptr_user_data->coordinates.width;

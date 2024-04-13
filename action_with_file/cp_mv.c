@@ -15,7 +15,7 @@
 
 
 
-void cp_mv_file(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active)
+void cp_mv_file(user_data *ptr_user_data, char *path, char *file_name, _Bool active)
 {
     char *left_path = ptr_user_data->left_path;
     char *right_path = ptr_user_data->right_path;

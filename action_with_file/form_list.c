@@ -16,7 +16,7 @@
 
 
 
-void processing_list_files(struct user_data *ptr_user_data, struct file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files)
+void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files)
 {
     int *arr_coorsorarr_coorsor = ptr_user_data->arr_coorsor_struct.arr;
     
@@ -47,7 +47,7 @@ void processing_list_files(struct user_data *ptr_user_data, struct file_data *al
 
 
 
-void select_way(struct user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files)
+void select_way(user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files)
 {   
     int *arr_coorsorarr_coorsor = ptr_user_data->arr_coorsor_struct.arr;
     size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;

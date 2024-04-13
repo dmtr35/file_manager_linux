@@ -18,7 +18,7 @@
 
 
 
-void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active,_Bool check_side)
+void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,_Bool check_side)
 {
     int *cursor_y = &ptr_user_data->coordinates.cursor_y;
     char path[256];
@@ -59,7 +59,7 @@ void click_on_file(struct user_data *ptr_user_data, struct file_data *all_files,
 }
 
 
-void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bool active, _Bool check_side)
+void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side)
 {
     int *cursor_y = &ptr_user_data->coordinates.cursor_y;
     char path[256];
@@ -80,7 +80,7 @@ void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bo
     char *parent_dir = dirname(path);
     const char *dirname = basename(path_copy);
 
-    struct file_data *backspace_files = (struct file_data *)malloc(500 * sizeof(struct file_data));
+    file_data *backspace_files = (file_data *)malloc(500 * sizeof(file_data));
     _Bool *hidden_files = active ? &ptr_user_data->set_bool.hidden_right_bool : &ptr_user_data->set_bool.hidden_right_bool;
     ls_list(path, backspace_files, hidden_files, &quantity_lines);
 
@@ -109,7 +109,7 @@ void backspace(struct user_data *ptr_user_data, struct file_data *all_files, _Bo
 }
 
 
-void open_in_vim(struct user_data *ptr_user_data, struct file_data *all_files, _Bool check_side, WINDOW *win)
+void open_in_vim(user_data *ptr_user_data, file_data *all_files, _Bool check_side, WINDOW *win)
 {
     int i = ptr_user_data->coordinates.cursor_y + (check_side ? ptr_user_data->coordinates.offset_left : ptr_user_data->coordinates.offset_right) - 1;
     
