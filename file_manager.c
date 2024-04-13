@@ -42,6 +42,7 @@ int main()
     ptr_user_data->set_bool.command_bool = 0;
     ptr_user_data->set_bool.menu_bool = 0;
     ptr_user_data->set_bool.save_path_bool = 0;
+    ptr_user_data->set_bool.create_bool = 0;
     ptr_user_data->set_bool.help_bool = 0;
     ptr_user_data->set_bool.out_bool = 0;
     ptr_user_data->set_bool.restore_files = 0;
@@ -107,6 +108,7 @@ int main()
         _Bool *help_bool = &ptr_user_data->set_bool.help_bool;
         _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
         _Bool *save_path_bool = &ptr_user_data->set_bool.save_path_bool;
+        _Bool *create_bool = &ptr_user_data->set_bool.create_bool;
         _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
         _Bool *hidden_left_bool = &ptr_user_data->set_bool.hidden_left_bool;
         _Bool *hidden_right_bool = &ptr_user_data->set_bool.hidden_right_bool;
@@ -123,7 +125,7 @@ int main()
         win_right = newwin(*height, *width % 2 ? (*width / 2) + 1 : *width / 2, 0, *width / 2);
         win_menu = newwin(10, width_menu, (*height / 2) - 5, *width / 2 - width_menu / 2);
 
-        if (!*command_bool && !*help_bool && !*menu_bool && !*save_path_bool) {
+        if (!*command_bool && !*help_bool && !*menu_bool && !*save_path_bool && !*create_bool) {
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
@@ -184,6 +186,23 @@ int main()
                 if (*out_bool) {
                 break;
             } if (!*save_path_bool) {
+                continue;
+            }
+        }
+        else if (*create_bool) {
+            _Bool turn_render_ls = true;
+            if (active) {
+                render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
+                render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
+                active = render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+            } else {
+                render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
+                render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
+                active = render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
+            }
+                if (*out_bool) {
+                break;
+            } if (!*save_path_bool || *save_path_bool || *menu_bool) {
                 continue;
             }
         }
@@ -322,20 +341,21 @@ int main()
             *leng_arr_coorsor = 0;
         }
 
-        else if (ch == '\b' || ch == 'h')
-        { // ctrl + h  // help_bool
+        else if (ch == '\b' || ch == 'h') { // ctrl + h  // help_bool
             // else if (ch == 'a') {
              *help_bool = !*help_bool;
         }
-        else if (ch == 'm')
-        { // ctrl + h  // help_bool
+        else if (ch == 'm') { // ctrl + h  // help_bool
             // else if (ch == 'a') {
             *menu_bool = !*menu_bool;
         }
-        else if (ch == 'p')
-        { // ctrl + h  // help_bool
+        else if (ch == 'p') { // ctrl + h  // help_bool
             // else if (ch == 'a') {
             *save_path_bool = !*save_path_bool;
+        }
+        else if (ch == 'c') { // ctrl + h  // help_bool
+            // else if (ch == 'a') {
+            *create_bool = !*create_bool;
         }
         else if (ch == 1) {                                           // ch == 1 -> ctrl + a   терминал, приостановлено
         // else if (ch == 'a') {

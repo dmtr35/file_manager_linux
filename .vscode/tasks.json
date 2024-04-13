@@ -23,6 +23,7 @@
                 "${fileDirname}/rendering/rendering_help.c",
                 "${fileDirname}/rendering/rendering_menu.c",
                 "${fileDirname}/rendering/rendering_save_path.c",
+                "${fileDirname}/rendering/rendering_create.c",
                 "-o",
                 "${fileDirname}/file_manager",
                 "-lncursesw"

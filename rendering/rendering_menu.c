@@ -52,6 +52,9 @@ int render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *
     
 
     _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
+    _Bool *save_path_bool = &ptr_user_data->set_bool.save_path_bool;
+    _Bool *create_bool = &ptr_user_data->set_bool.create_bool;
+
     _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
     _Bool *delete_files = &ptr_user_data->set_bool.delete_files;
     _Bool *restore_files = &ptr_user_data->set_bool.restore_files;
@@ -70,7 +73,6 @@ int render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *
     file_data *all_files_ptr = active ? all_files_left : all_files_right;
     _Bool is_enter_pressed = true;
     _Bool save_files = 0;
-    int row;
 
     while (is_enter_pressed) {
         int *coords_cursor_y_menu = &(ptr_user_data->coordinates.coords_cursor_y_menu);
@@ -113,6 +115,18 @@ int render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *
             if (ch == 1 || ch == 'm') {                 
                 is_enter_pressed = false;
                 *menu_bool = false;
+                *coords_cursor_y_menu = 3;
+            }
+            else if (ch == 1 || ch == 'p') {                 
+                is_enter_pressed = false;
+                *menu_bool = false;
+                *save_path_bool = true;
+                *coords_cursor_y_menu = 3;
+            } 
+            else if (ch == 1 || ch == 'c') {                 
+                is_enter_pressed = false;
+                *menu_bool = false;
+                *create_bool = true;
                 *coords_cursor_y_menu = 3;
             } 
             else if (ch == '\t') {
