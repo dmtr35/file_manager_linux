@@ -31,6 +31,11 @@ int main()
     // printw("%i\n", wgetch(curscr));
     // printw ("%i\n%i\n%i\n", getch (), getch (), getch ());
     curs_set(0);
+
+    _Bool active = 1;
+    _Bool check_side = 1;
+    int cursor_left = 1;
+    int cursor_right = 1;
     
     user_data *ptr_user_data = malloc(sizeof(user_data));
     file_data *all_files_left = (file_data *)malloc(500 * sizeof(file_data));
@@ -49,6 +54,7 @@ int main()
     ptr_user_data->set_bool.move_files = 0;
     ptr_user_data->set_bool.copy_files = 0;
     ptr_user_data->set_bool.delete_files = 0;
+    ptr_user_data->set_bool.check_active_tab_bool = 0;
 
     ptr_user_data->coordinates.height = 0;
     ptr_user_data->coordinates.width = 0;
@@ -82,10 +88,6 @@ int main()
     }
 
 
-    _Bool active = 1;
-    _Bool check_side = 1;
-    int cursor_left = 1;
-    int cursor_right = 1;
 
 
     while (1)
@@ -112,6 +114,7 @@ int main()
         _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
         _Bool *hidden_left_bool = &ptr_user_data->set_bool.hidden_left_bool;
         _Bool *hidden_right_bool = &ptr_user_data->set_bool.hidden_right_bool;
+        _Bool *check_active_tab_bool = &ptr_user_data->set_bool.check_active_tab_bool;
 
         int i = *cursor_y + *offset - 1;
 
@@ -160,15 +163,19 @@ int main()
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
-                active = render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
             } else {
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
-                active = render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
+                render_menu(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
             }
             if (*out_bool) {
                 break;
-            } if (!*menu_bool) {
+            } else if(*check_active_tab_bool){
+                active = !active;
+                *check_active_tab_bool = false;
+            }
+            if (!*menu_bool) {
                 continue;
             }
         }
@@ -177,15 +184,19 @@ int main()
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
-                active = render_save_path(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                render_save_path(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
             } else {
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
-                active = render_save_path(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
+                render_save_path(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
             }
-                if (*out_bool) {
+            if (*out_bool) {
                 break;
-            } if (!*save_path_bool) {
+            } else if(*check_active_tab_bool){
+                active = !active;
+                *check_active_tab_bool = false;
+            } 
+            if (!*save_path_bool) {
                 continue;
             }
         }
@@ -194,15 +205,19 @@ int main()
             if (active) {
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
-                active = render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
             } else {
                 render_ls(ptr_user_data, all_files_left, active, check_side, win_left);
                 render_ls(ptr_user_data, all_files_right, !active, !check_side, win_right);
-                active = render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
+                render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, !turn_render_ls, win_menu, win_right, win_left);
             }
-                if (*out_bool) {
+            if (*out_bool) {
                 break;
-            } if (!*save_path_bool || *save_path_bool || *menu_bool) {
+            } else if(*check_active_tab_bool){
+                active = !active;
+                *check_active_tab_bool = false;
+            }
+            if (!*create_bool) {
                 continue;
             }
         }

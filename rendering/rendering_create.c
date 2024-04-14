@@ -11,7 +11,7 @@
 
 #include "../func.h"
 
-int render_create(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
+void render_create(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
     start_color();
 
@@ -53,6 +53,7 @@ int render_create(user_data *ptr_user_data, file_data *all_files_left, file_data
     _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
     _Bool *save_path_bool = &ptr_user_data->set_bool.save_path_bool;
     _Bool *create_bool = &ptr_user_data->set_bool.create_bool;
+    _Bool *check_active_tab_bool = &ptr_user_data->set_bool.check_active_tab_bool;
 
     _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
     _Bool *delete_files = &ptr_user_data->set_bool.delete_files;
@@ -132,7 +133,7 @@ int render_create(user_data *ptr_user_data, file_data *all_files_left, file_data
                 } else {
                     *cursor_right = *cursor_y;
                 }
-                active = !active;
+                *check_active_tab_bool = true;
                 fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
                 *leng_arr_coorsor = 0;
                 if (active) {
@@ -201,7 +202,6 @@ int render_create(user_data *ptr_user_data, file_data *all_files_left, file_data
         }
     }
     wrefresh(win_menu);
-    return active;
 }
 
 

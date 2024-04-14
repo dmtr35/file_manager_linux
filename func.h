@@ -34,6 +34,8 @@ struct set_bool {
     _Bool move_files;
     _Bool copy_files;
     _Bool delete_files;
+
+    _Bool check_active_tab_bool;
 };
 
 struct coordinates {
@@ -114,9 +116,9 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
 void trim_filename(file_data *all_files, int number_lines, int max_length);
 void render_comm_line(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side, WINDOW *win_left, WINDOW *win_right);
 void render_help(user_data *ptr_user_data, file_data *all_files, _Bool active, WINDOW *win);
-int render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
-int render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
-int render_create(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+void render_create(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 
 void select_coorsor(user_data *ptr_user_data, file_data *all_files, int *quantity_lines, int *offset, int count_item_arr, int *check_empty);
 void render_ls_and_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
