@@ -18,6 +18,7 @@
                 "${fileDirname}/action_with_file/remove_files.c",
                 "${fileDirname}/action_with_file/cp_mv.c",
                 "${fileDirname}/action_with_file/form_list.c",
+                "${fileDirname}/action_with_file/create.c",
                 
                 "${fileDirname}/rendering/rendering_ls.c",
                 "${fileDirname}/rendering/rendering_help.c",

@@ -9,6 +9,8 @@
 #define MAX_ARR_SIZE_SAVE_PATH 5
 #define MAX_PATH_LENGTH 1024
 
+#define MAX_FILENAME_LENGTH 1024
+
 
 
 typedef struct file_data {
@@ -27,6 +29,7 @@ struct set_bool {
     _Bool menu_bool;
     _Bool save_path_bool;
     _Bool create_bool;
+    _Bool enter_name_bool;
 
     _Bool help_bool;
     _Bool out_bool;
@@ -124,7 +127,8 @@ void select_coorsor(user_data *ptr_user_data, file_data *all_files, int *quantit
 void render_ls_and_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 void render_ls_and_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 void render_ls_and_create(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
-
+void mkdir_p(char *file_name, char *path);
+void touch_file(char *file_name, char *path);
 
 // button_processing
 void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side);
@@ -138,6 +142,9 @@ void remove_char_from_command_line(WINDOW *win_left, size_t cursor_coords, char 
 void save_to_buffer(const char *text, char *screen_buffer, int *buffer_pos);
 void restore_from_buffer(WINDOW *win, char *screen_buffer);
 void restore_from_buffer_offset(WINDOW *win, char *screen_buffer, int offset);
+// buffer_save.c
+void add_char_to_enter_name(WINDOW *win, int ch, char *screen_buffer, int *buffer_pos);
+void delete_char_from_enter_name(WINDOW *win, char *screen_buffer, int *buffer_pos);
 
 
 // rendering_help
@@ -156,5 +163,9 @@ void copy_directory(const char *source_directory, const char *destination_direct
 // form_list.c
 void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files);
 void select_way(user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files);
+
+
+
+
 
 #endif

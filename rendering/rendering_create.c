@@ -1,10 +1,13 @@
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/stat.h>
+#include <sys/time.h>
+
 
 #include <ncurses.h>
 #include <signal.h>
@@ -33,6 +36,8 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
 
     int height_win;
     int width_win;
+    char screen_buffer[64] = {0};
+    int buffer_pos = 0;
 
     char path[256];
     strcpy(path, active ? ptr_user_data->left_path : ptr_user_data->right_path);
@@ -48,11 +53,13 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
     char *file_name = ptr_user_data->coorsor_file;
     char *right_path = ptr_user_data->right_path;
     char *left_path = ptr_user_data->left_path;
+    char *current_directory = active ? ptr_user_data->left_path : ptr_user_data->right_path;
     char *trash_directory = ptr_user_data->trash_directory;
     
     _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
     _Bool *save_path_bool = &ptr_user_data->set_bool.save_path_bool;
     _Bool *create_bool = &ptr_user_data->set_bool.create_bool;
+    _Bool *enter_name_bool = &ptr_user_data->set_bool.enter_name_bool;
     _Bool *check_active_tab_bool = &ptr_user_data->set_bool.check_active_tab_bool;
 
     _Bool *out_bool = &ptr_user_data->set_bool.out_bool;
@@ -95,9 +102,13 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                 mvwhline(win_menu, row, 1, ' ', width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
 
                 mvwprintw(win_menu, 1, 1, "%s", new_path);
-                mvwprintw(win_menu, 3, width_win / 2 - 3, "Folder");
-                mvwprintw(win_menu, 4, width_win / 2 - 2, "File");
-                mvwprintw(win_menu, 5, width_win / 2 - 2, "Link");
+                mvwprintw(win_menu, 3, width_win / 2 - 6, "create folder");
+                mvwprintw(win_menu, 4, width_win / 2 - 6, "create touch");
+                mvwprintw(win_menu, 5, width_win / 2 - 6, "create link");
+
+                if (*enter_name_bool) {
+                    mvwprintw(win_menu, 7, 1, "Enter name: %s", screen_buffer);
+                }
 
                 wattroff(win_menu, COLOR_PAIR(22)); // Отключаем цветовую пару
                 wattroff(win_menu, A_BOLD);
@@ -114,18 +125,21 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                 is_enter_pressed = false;
                 *create_bool = false;
                 *coords_cursor_y_menu = 3;
+                *enter_name_bool = false;
             } 
             else if (ch == 1 || ch == 'p') {                 
                 is_enter_pressed = false;
                 *create_bool = false;
                 *save_path_bool = true;
                 *coords_cursor_y_menu = 3;
+                *enter_name_bool = false;
             } 
             else if (ch == 1 || ch == 'm') {                 
                 is_enter_pressed = false;
                 *create_bool = false;
                 *menu_bool = true;
                 *coords_cursor_y_menu = 3;
+                *enter_name_bool = false;
             } 
             else if (ch == '\t') {
                 if (active) {
@@ -158,22 +172,46 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                 *create_bool = false;
                 *out_bool = true;
                 break;
-            } else if (ch == '\n') {
+            }
+            else if (ch == '\n')
+            {
                 if (*coords_cursor_y_menu == 3) {
-
+                    if(buffer_pos){
+                        char *file_name = screen_buffer;
+                        mkdir_p(file_name, path);
+                        
+                        is_enter_pressed = false;
+                        *create_bool = false;
+                        *coords_cursor_y_menu = 3;
+                        *enter_name_bool = false;
+                    } else {
+                        *enter_name_bool = true;
+                        render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                    }
                 } else if (*coords_cursor_y_menu == 4) {
-
+                    if(buffer_pos){
+                        char *file_name = screen_buffer;
+                        touch_file(file_name, path);
+                        
+                        is_enter_pressed = false;
+                        *create_bool = false;
+                        *coords_cursor_y_menu = 3;
+                        *enter_name_bool = false;
+                    } else {
+                        *enter_name_bool = true;
+                        render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                    }
                 } else if (*coords_cursor_y_menu == 5) {
-
+                    *enter_name_bool = true;
+                    render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
                 }
-
-
 
                 is_enter_pressed = false;
                 *create_bool = false;
             } else if (ch == 'r' || ch == KEY_RESIZE) {
                 render_ls_and_create(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
-            } else if (ch == 27) {
+            }
+            else if (ch == 27) {
                 int next1 = wgetch(stdscr);
                 int next2 = wgetch(stdscr);
                 if (next1 == '[' && next2 == 'A') {
@@ -182,6 +220,7 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                     } else if (*coords_cursor_y_menu == 3) {
                         *coords_cursor_y_menu = 5;
                     }
+                    *enter_name_bool = false;
                     render_ls_and_create(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
                 } else if (next1 == '[' && next2 == 'B') {
                     if (*coords_cursor_y_menu < 5) {
@@ -189,15 +228,24 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                     } else if (*coords_cursor_y_menu == 5) {
                         *coords_cursor_y_menu = 3;
                     }
+                    *enter_name_bool = false;
                     render_ls_and_create(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
                 } 
                 else if (next1 == '[' && next2 == 'C') {                                      // -> на последнюю
                     *coords_cursor_y_menu = 5;
+                    *enter_name_bool = false;
                     render_ls_and_create(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
                 } else if (next1 == '[' && next2 == 'D') {                                    // <- на первую
                     *coords_cursor_y_menu = 3;
+                    *enter_name_bool = false;
                     render_ls_and_create(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
                 }
+            }
+            else if (ch == KEY_BACKSPACE || ch == 127) {
+                    delete_char_from_enter_name(win_menu, screen_buffer, &buffer_pos);
+            }
+            else {
+                    add_char_to_enter_name(win_menu, ch, screen_buffer, &buffer_pos);
             }
         }
     }
@@ -219,3 +267,7 @@ void render_ls_and_create(user_data *ptr_user_data, file_data *all_files_left, f
     render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
     *is_enter_pressed = false;
 }
+
+
+
+

@@ -48,6 +48,7 @@ int main()
     ptr_user_data->set_bool.menu_bool = 0;
     ptr_user_data->set_bool.save_path_bool = 0;
     ptr_user_data->set_bool.create_bool = 0;
+    ptr_user_data->set_bool.enter_name_bool = 0;
     ptr_user_data->set_bool.help_bool = 0;
     ptr_user_data->set_bool.out_bool = 0;
     ptr_user_data->set_bool.restore_files = 0;

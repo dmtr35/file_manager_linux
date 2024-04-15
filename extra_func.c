@@ -7,8 +7,12 @@
 #include <string.h>
 #include <time.h>
 #include <dirent.h>
-#include <unistd.h>
 #include <stdint.h>
+
+#include <fcntl.h>
+#include <sys/time.h>
+#include <sys/times.h>
+#include <utime.h>
 
 
 
@@ -253,3 +257,4 @@ void check_cursor_y_less_zero(int *cursor_y)
         *cursor_y = 1;
     }
 }
+

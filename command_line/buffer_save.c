@@ -7,12 +7,33 @@
 #include <pwd.h>
 #include <sys/stat.h>
 #include <libgen.h>
+ #include <ctype.h>
 
 #include <ncurses.h>
 #include <locale.h>
 #include <signal.h>
 
 #include "../func.h"
+
+void add_char_to_enter_name(WINDOW *win, int ch, char *screen_buffer, int *buffer_pos) {
+    if (*buffer_pos < 63) {                                                                 // Убедитесь, что позиция буфера не превышает максимальную длину
+        if (isprint(ch)) {                                                                  // Проверяем, что символ является печатаемым
+            screen_buffer[*buffer_pos] = ch;                                                // Добавляем символ к буферу
+            mvwprintw(win, 7, 14 + *buffer_pos, "%c", ch);                                  // Выводим символ на экран в соответствии с позицией в строке
+            wrefresh(win);                                                                  // Обновляем окно
+            (*buffer_pos)++;                                                                // Увеличиваем позицию буфера для следующего символа
+        }
+    }
+}
+void delete_char_from_enter_name(WINDOW *win, char *screen_buffer, int *buffer_pos) {
+    if (*buffer_pos > 0) {                                                                  // Убеждаемся, что есть символы для удаления
+        (*buffer_pos)--;                                                                    // Уменьшаем позицию буфера для удаления последнего символа
+        screen_buffer[*buffer_pos] = '\0';                                                  // Устанавливаем последний символ в буфере как нулевой символ, чтобы удалить его
+        mvwprintw(win, 7, 14 + *buffer_pos, " ");                                           // Печатаем пробел на месте удаленного символа на экране
+        wrefresh(win);                                                                      // Обновляем окно
+    }
+}
+// =================================================================================================
 
 
 void add_char_to_command_line(WINDOW *win_left, char c, char *screen_buffer, int *buffer_pos) {
@@ -41,7 +62,6 @@ void remove_char_from_command_line(WINDOW *win_left, size_t cursor_coords, char 
         wmove(win_left, y, x - 1);                                                   // Перемещаем курсор на предыдущий символ
         wrefresh(win_left);
     }
-
 }
 
 void save_to_buffer(const char *text, char *screen_buffer, int *buffer_pos) {
