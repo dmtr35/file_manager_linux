@@ -111,16 +111,25 @@ void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
 
 void open_in_vim(user_data *ptr_user_data, file_data *all_files, _Bool check_side, WINDOW *win)
 {
-    int i = ptr_user_data->coordinates.cursor_y + (check_side ? ptr_user_data->coordinates.offset_left : ptr_user_data->coordinates.offset_right) - 1;
-    
+    int *cursor_y = &ptr_user_data->coordinates.cursor_y;
+    int *offset_left = &ptr_user_data->coordinates.offset_left;
+    int *offset_right = &ptr_user_data->coordinates.offset_right;
+    char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
+    int i = *cursor_y + (check_side ? *offset_left : *offset_right) - 1;
     char *file_name = all_files[i].name;
+
+    size_t full_path_size = strlen(current_directory) + strlen(file_name) + 2;
+    char *full_path = malloc(full_path_size * sizeof(char));
+    snprintf(full_path, full_path_size, "%s/%s", current_directory, file_name);
+
+    
     char height_win;
     char width_win;
 
     if ((strchr(all_files[i].permissions, '-') == 0) || (strchr(all_files[i].permissions, 'l') == 0)) {
         getmaxyx(win, height_win, width_win);
         char command[256];
-        snprintf(command, sizeof(command), "vim -c \"edit %s\" -c \"wincmd w\" -c \"resize %d\" -c \"wincmd w\" -c \"resize %d\"", file_name, height_win, width_win);
+        snprintf(command, sizeof(command), "vim -c \"edit %s\" -c \"wincmd w\" -c \"resize %d\" -c \"wincmd w\" -c \"resize %d\"", full_path, height_win, width_win);
 
         system(command);
         curs_set(1);
@@ -129,6 +138,7 @@ void open_in_vim(user_data *ptr_user_data, file_data *all_files, _Bool check_sid
         wclear(win);
         wnoutrefresh(win);
     }
+    free(full_path);
 }
 
 

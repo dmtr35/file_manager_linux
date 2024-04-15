@@ -1,8 +1,8 @@
 #define _GNU_SOURCE
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/stat.h>
@@ -345,7 +345,7 @@ int main()
             fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);                   // очистить массив с отметками строк
             *leng_arr_coorsor = 0;
         }
-        else if (ch == ('V' & 0x1F)) { // Обработка нажатия Ctrl + V
+        else if (ch == ('V' & 0x1F) || ch == 'v') { // Обработка нажатия Ctrl + V
             // // else if (ch == 'v') {                            // Обработка нажатия Ctrl + V
 
             if (active) {

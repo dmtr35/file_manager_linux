@@ -75,9 +75,11 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
     int *cursor_left = &ptr_user_data->coordinates.cursor_left;
     int *cursor_right = &ptr_user_data->coordinates.cursor_right;
 
+    file_data *all_files_ptr = active ? all_files_left : all_files_right;
+    char *name_file_row = all_files_ptr[*cursor_y - 1].name;
+    
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
     char new_path[size_new_path];
-    file_data *all_files_ptr = active ? all_files_left : all_files_right;
     _Bool is_enter_pressed = true;
     _Bool save_files = 0;
 
@@ -202,8 +204,18 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                         render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
                     }
                 } else if (*coords_cursor_y_menu == 5) {
-                    *enter_name_bool = true;
-                    render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                if(buffer_pos){
+                        char *file_name = screen_buffer;
+                        create_link(file_name, path, name_file_row);
+                        
+                        is_enter_pressed = false;
+                        *create_bool = false;
+                        *coords_cursor_y_menu = 3;
+                        *enter_name_bool = false;
+                    } else {
+                        *enter_name_bool = true;
+                        render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                    }
                 }
 
                 is_enter_pressed = false;

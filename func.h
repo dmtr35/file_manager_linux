@@ -127,8 +127,11 @@ void select_coorsor(user_data *ptr_user_data, file_data *all_files, int *quantit
 void render_ls_and_menu(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 void render_ls_and_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
 void render_ls_and_create(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool turn_render_ls, _Bool active, _Bool check_side, _Bool *is_enter_pressed, int *coords_cursor_y_menu, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left);
+
+// create.c
 void mkdir_p(char *file_name, char *path);
 void touch_file(char *file_name, char *path);
+void create_link(char *file_name, char *path, char *name_file_row);
 
 // button_processing
 void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side);
