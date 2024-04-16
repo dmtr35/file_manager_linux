@@ -53,7 +53,7 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
     char *file_name = ptr_user_data->coorsor_file;
     char *right_path = ptr_user_data->right_path;
     char *left_path = ptr_user_data->left_path;
-    char *current_directory = active ? ptr_user_data->left_path : ptr_user_data->right_path;
+    char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
     char *trash_directory = ptr_user_data->trash_directory;
     
     _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;

@@ -16,16 +16,12 @@
 #include "func.h"
 
 
-int ls_list(char *path, file_data *all_files, _Bool *flag_hidden_files, int *quantity_lines)
+int ls_list(user_data *ptr_user_data, file_data *all_files, char *path, _Bool check_side, _Bool *flag_hidden_files, int *quantity_lines)
 {
-    // *quantity_lines = 0;
-    // for (int i = 0; i < *quantity_lines; ++i) {
-    // //     // printf("%s\n", all_files[i].name);
-    //     int tt=0;
-    // }
+    char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
+    size_t len_current_directory = strlen(current_directory);
 
     char symb[2];
-    // int dir_count = 0;
     
     DIR *dir = opendir(path);
     if (dir == NULL){
@@ -47,7 +43,6 @@ int ls_list(char *path, file_data *all_files, _Bool *flag_hidden_files, int *qua
     strcpy(all_files[*quantity_lines].size, " size");
     strcpy(all_files[*quantity_lines].time, "     data");
     strcpy(all_files[*quantity_lines].permissions, "permission");
-    // all_files[*quantity_lines].file_id = 0;
     (*quantity_lines)++;
 
     int file_id = 0;
@@ -70,19 +65,22 @@ int ls_list(char *path, file_data *all_files, _Bool *flag_hidden_files, int *qua
                 size_t target_length = readlink(full_path, link_target, sizeof(link_target));
                 link_target[target_length] = '\0';
 
-                size_t length_link_name = strlen(entry->d_name) + strlen(link_target) + 5;
+                size_t length_link_name = strlen(entry->d_name) + strlen(current_directory) + strlen(link_target) + 6;
                 char link_name[target_length];
-                snprintf(link_name, length_link_name, "%s -> %s\n", entry->d_name, link_target);
+                
+                if(len_current_directory > 0 && current_directory[len_current_directory - 1] != '/') {
+                    snprintf(link_name, length_link_name, "%s -> %s/%s\n", entry->d_name, current_directory, link_target);
+                } else {
+                    snprintf(link_name, length_link_name - 1, "%s -> %s%s\n", entry->d_name, current_directory, link_target);
+                }
                 strcpy(symb, "l");
 
                 form_current_file(&current_file, link_name, &file_info, symb, file_id);
-                // file_id++;
 
                 files[file_count++] = current_file;
             } else {
                 strcpy(symb, (S_ISDIR(file_info.st_mode)) ? "d" : "-");
                 form_current_file(&current_file, entry->d_name, &file_info, symb, file_id);
-                // file_id++;
 
                 if (S_ISDIR(file_info.st_mode)) {
                     all_files[(*quantity_lines)++] = current_file;
@@ -101,13 +99,6 @@ int ls_list(char *path, file_data *all_files, _Bool *flag_hidden_files, int *qua
     }
     for(int i = 0; i < *quantity_lines; ++i) {
         all_files[i].file_id = i;
-        // int tt;
-        // char nema[50];
-        // tt = all_files[i].file_id;
-        // strcpy(nema, all_files[i].name);
-        // printf("here");
-    //     all_files[*quantity_lines] = files[i];
-    //     (*quantity_lines)++;
     }
 
     free(files);

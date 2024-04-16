@@ -106,10 +106,11 @@ int longest(user_data *ptr_user_data, size_t leng_path);                        
 int count_non_zero_elements(int *arr, size_t size);                     // сколько элементов в массиве
 void check_offset_less_zero(int *offset);
 void check_cursor_y_less_zero(int *cursor_y);
+void split_link(char *full_name, char *path_link, char *name_link);   // разделение link на имя и ссылку
 
 
 // list_builder.c
-int ls_list(char *path, file_data *directories, _Bool *flag_hidden_files, int *quantity_lines);
+int ls_list(user_data *ptr_user_data, file_data *directories, char *path, _Bool check_side, _Bool *flag_hidden_files, int *quantity_lines);
 void form_current_file(file_data *current_file, char *file_name, struct stat *file_info, char *symb, int file_id);
 void strtrim(char *str);
 

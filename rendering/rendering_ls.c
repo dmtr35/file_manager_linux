@@ -30,7 +30,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
     int quantity_lines = 0;
     _Bool *hidden_files = check_side ? &(ptr_user_data->set_bool.hidden_left_bool) : &(ptr_user_data->set_bool.hidden_right_bool);
 
-    ls_list(path, all_files, hidden_files, &quantity_lines);
+    ls_list(ptr_user_data, all_files, path, check_side, hidden_files, &quantity_lines);
 
     if (check_side) {
         ptr_user_data->coordinates.quantity_lines_left = quantity_lines;
@@ -121,14 +121,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
             strcpy(target_name, all_files[i].name);
             strcpy(full_target_path, all_files_ls[i].name);
             
-            char *ptr_path = strstr(all_files[i].name, " -> ");
-            if (ptr_path != NULL) {
-                strcpy(target_path, ptr_path + 4);
-            }
-            char *ptr_name = strstr(target_name, " -> ");
-            if (ptr_name != NULL) {
-                *ptr_name = '\0';
-            }
+            split_link(target_name, target_path, target_name);
 
             int max_leng = strlen(full_target_path) - strlen(target_name) - 4;
             if (max_leng < 0) {
@@ -138,18 +131,9 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
             strncpy(cut_target_path, target_path, max_leng);
             cut_target_path[max_leng] = '\0';
 
-            size_t leng_absolute_path = strlen(target_path) + strlen(path) + 2;
-            char absolute_path[leng_absolute_path];
-
-            if(target_path[0] == '/'){
-                strcpy(absolute_path, target_path);
-            } else {
-                snprintf(absolute_path, leng_absolute_path, "%s/%s", path, target_path);
-            }
-
 
             wattroff(win, A_BOLD);
-            if (access(absolute_path, F_OK) != -1) {
+            if (access(target_path, F_OK) != -1) {
             // Файл существует
 
                 active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));

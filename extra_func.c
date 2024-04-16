@@ -258,3 +258,19 @@ void check_cursor_y_less_zero(int *cursor_y)
     }
 }
 
+void split_link(char *full_name, char *path_link, char *name_link)
+{
+    char *path = strstr(full_name, " -> ");
+    if (path != NULL) {
+        // Копирование оставшейся части строки после " -> " в path_link
+        strcpy(path_link, path + 4);
+        
+        // Рассчитываем длину имени
+        size_t name_length = path - full_name;
+        
+        // Копируем имя
+        strncpy(name_link, full_name, name_length);
+        name_link[name_length] = '\0';
+    }
+}
+

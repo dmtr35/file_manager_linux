@@ -86,25 +86,25 @@ void touch_file(char *file_name, char *path) {
 
 
 void create_link(char *file_name_link, char *path, char *file_name) {
-    size_t new_path_file_name_link_size = strlen(path) + strlen(file_name_link) + 2;
-    size_t new_path_file_name_size = strlen(path) + strlen(file_name) + 2;
-    char *full_path_file_name_link = malloc(new_path_file_name_link_size * sizeof(char));
-    char *full_path_file_name = malloc(new_path_file_name_size * sizeof(char));
+    // size_t new_path_file_name_link_size = strlen(path) + strlen(file_name_link) + 2;
+    // size_t new_path_file_name_size = strlen(path) + strlen(file_name) + 2;
+    // char *full_path_file_name_link = malloc(new_path_file_name_link_size * sizeof(char));
+    // char *full_path_file_name = malloc(new_path_file_name_size * sizeof(char));
 
-    if (full_path_file_name == NULL || full_path_file_name_link == NULL) {
-        perror("Memory allocation failed");
-        return;
-    }
+    // if (full_path_file_name == NULL || full_path_file_name_link == NULL) {
+    //     perror("Memory allocation failed");
+    //     return;
+    // }
 
-    snprintf(full_path_file_name_link, new_path_file_name_link_size, "%s/%s", path, file_name_link);
-    snprintf(full_path_file_name, new_path_file_name_size, "%s/%s", path, file_name);
+    // snprintf(full_path_file_name_link, new_path_file_name_link_size, "%s/%s", path, file_name_link);
+    // snprintf(full_path_file_name, new_path_file_name_size, "%s/%s", path, file_name);
 
-    if (symlink(full_path_file_name, full_path_file_name_link) == -1) {
-        perror("Failed to create symbolic link");
-        free(full_path_file_name);
-        free(full_path_file_name_link);
-        return;
-    }
+    // if (symlink(full_path_file_name, full_path_file_name_link) == -1) {
+    //     perror("Failed to create symbolic link");
+    //     free(full_path_file_name);
+    //     free(full_path_file_name_link);
+    //     return;
+    // }
 
     // struct stat st;
     // if (stat(full_path, &st) == -1) {
@@ -123,8 +123,8 @@ void create_link(char *file_name_link, char *path, char *file_name) {
     //     return;
     // }
 
-    free(full_path_file_name);
-    free(full_path_file_name_link);
+    // free(full_path_file_name);
+    // free(full_path_file_name_link);
 }
 
 // void create_link(char *file_name_link, char *path, char *file_name) {
