@@ -86,46 +86,32 @@ void touch_file(char *file_name, char *path) {
 
 
 void create_link(char *file_name_link, char *path, char *file_name) {
-    // size_t new_path_file_name_link_size = strlen(path) + strlen(file_name_link) + 2;
-    // size_t new_path_file_name_size = strlen(path) + strlen(file_name) + 2;
-    // char *full_path_file_name_link = malloc(new_path_file_name_link_size * sizeof(char));
-    // char *full_path_file_name = malloc(new_path_file_name_size * sizeof(char));
+    size_t size_path_to_name_link = strlen(path) + strlen(file_name_link) + 2;
+    size_t size_path_to_file_name = strlen(path) + strlen(file_name) + 2;
+    char *full_path_file_name_link = malloc(size_path_to_name_link * sizeof(char));
+    char *full_path_file_name = malloc(size_path_to_file_name * sizeof(char));
 
-    // if (full_path_file_name == NULL || full_path_file_name_link == NULL) {
-    //     perror("Memory allocation failed");
-    //     return;
-    // }
+    if (full_path_file_name == NULL || full_path_file_name_link == NULL) {
+        perror("Memory allocation failed");
+        return;
+    }
 
-    // snprintf(full_path_file_name_link, new_path_file_name_link_size, "%s/%s", path, file_name_link);
-    // snprintf(full_path_file_name, new_path_file_name_size, "%s/%s", path, file_name);
+    snprintf(full_path_file_name_link, size_path_to_name_link, "%s/%s", path, file_name_link);
+    snprintf(full_path_file_name, size_path_to_file_name, "%s/%s", path, file_name);
 
-    // if (symlink(full_path_file_name, full_path_file_name_link) == -1) {
-    //     perror("Failed to create symbolic link");
-    //     free(full_path_file_name);
-    //     free(full_path_file_name_link);
-    //     return;
-    // }
+    if (symlink(full_path_file_name, full_path_file_name_link) == -1) {
+    // if (symlink(full_path_file_name_link, full_path_file_name) == -1) {
+        perror("Failed to create symbolic link");
+        free(full_path_file_name);
+        free(full_path_file_name_link);
+        return;
+    }
 
-    // struct stat st;
-    // if (stat(full_path, &st) == -1) {
-    //     perror("stat");
-    //     return;
-    // }
 
-    // // Обновляем время доступа и модификации файла
-    // struct timeval times[2];
-    // times[0].tv_sec = st.st_atime;
-    // times[0].tv_usec = 0;
-    // times[1].tv_sec = time(NULL);                            // Текущее время
-    // times[1].tv_usec = 0;
-    // if (utimes(full_path, times) == -1) {
-    //     perror("utimes");
-    //     return;
-    // }
-
-    // free(full_path_file_name);
-    // free(full_path_file_name_link);
+    free(full_path_file_name);
+    free(full_path_file_name_link);
 }
+
 
 // void create_link(char *file_name_link, char *path, char *file_name) {
 //     // Вычисляем размеры для полных путей

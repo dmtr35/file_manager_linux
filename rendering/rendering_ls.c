@@ -133,13 +133,29 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
 
 
             wattroff(win, A_BOLD);
-            if (access(target_path, F_OK) != -1) {
+            if (access(target_path, F_OK) != -1 && (is_directory(target_path)) == 0) {
             // Файл существует
-
                 active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));
                 mvwprintw(win, row, col, "%s", target_name);
                 col += strlen(target_name);
                 active ? wattroff(win, COLOR_PAIR(3)) : wattroff(win, COLOR_PAIR(13));
+
+                active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
+                mvwprintw(win, row, col, " -> ");
+                col += 4;
+                active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
+
+                active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));
+                mvwprintw(win, row, col, "%s", cut_target_path);
+                col += strlen(cut_target_path);
+                active ? wattroff(win, COLOR_PAIR(3)) : wattroff(win, COLOR_PAIR(13));
+            } else if(is_directory(target_path)) {
+                wattron(win, A_BOLD);
+                active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
+                mvwprintw(win, row, col, "%s", target_name);
+                col += strlen(target_name);
+                active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
+                wattroff(win, A_BOLD);
 
                 active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
                 mvwprintw(win, row, col, " -> ");

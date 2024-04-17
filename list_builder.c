@@ -64,15 +64,10 @@ int ls_list(user_data *ptr_user_data, file_data *all_files, char *path, _Bool ch
                 char link_target[1024];
                 size_t target_length = readlink(full_path, link_target, sizeof(link_target));
                 link_target[target_length] = '\0';
-
-                size_t length_link_name = strlen(entry->d_name) + strlen(current_directory) + strlen(link_target) + 6;
+                size_t length_link_name = strlen(entry->d_name) + strlen(link_target) + 5;
                 char link_name[target_length];
                 
-                if(len_current_directory > 0 && current_directory[len_current_directory - 1] != '/') {
-                    snprintf(link_name, length_link_name, "%s -> %s/%s\n", entry->d_name, current_directory, link_target);
-                } else {
-                    snprintf(link_name, length_link_name - 1, "%s -> %s%s\n", entry->d_name, current_directory, link_target);
-                }
+                snprintf(link_name, (strlen(path) == 1) ? length_link_name + 1 : length_link_name, (strlen(path) == 1) ? "%s -> /%s" : "%s -> %s", entry->d_name, link_target);
                 strcpy(symb, "l");
 
                 form_current_file(&current_file, link_name, &file_info, symb, file_id);
