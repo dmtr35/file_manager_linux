@@ -19,7 +19,7 @@
 #include "func.h"
 
 
-int is_directory(const char *path)
+int is_directory(const char *path)                              // проверка на директорию
 {
     DIR *dir = opendir(path);
     if(dir != NULL) {
@@ -28,6 +28,21 @@ int is_directory(const char *path)
     } else {
         return 0;
     }
+}
+
+int item(user_data *ptr_user_data, _Bool active)                //получить i
+{
+    int i = 0;
+    int check_empty = check_int_arr(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
+    int *cursor_y = &ptr_user_data->coordinates.cursor_y;
+    int *offset = active ? &(ptr_user_data->coordinates.offset_left) : &(ptr_user_data->coordinates.offset_right);
+
+    if(check_empty) {
+        i = ptr_user_data->arr_coorsor_struct.arr[0];
+    } else {
+        i = *cursor_y + (*offset) - 1;
+    }
+    return i;
 }
 
 char* get_current_datatime(void)
@@ -242,6 +257,21 @@ int count_non_zero_elements(int *arr, size_t size)
     }
 
     return non_zero_count;
+}
+
+void remove_first_element(int *arr, size_t size) {                             // удалить первый элемент массива
+    if (size == 0) {
+        // Если массив пуст, ничего удалять не нужно
+        return;
+    }
+
+    // Сдвигаем элементы массива на одну позицию влево, начиная с индекса 1
+    for (size_t i = 1; i < size; i++) {
+        arr[i - 1] = arr[i];
+    }
+
+    // Уменьшаем размер массива на 1
+    (size)--;
 }
 
 void check_offset_less_zero(int *offset)                       

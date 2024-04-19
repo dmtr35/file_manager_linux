@@ -83,9 +83,9 @@ int main()
     ptr_user_data->save_paths.save_paths_arr[0][MAX_PATH_LENGTH - 1] = '\0';
     strncpy(ptr_user_data->save_paths.save_paths_arr[1], ptr_user_data->trash_directory, MAX_PATH_LENGTH - 1);
     ptr_user_data->save_paths.save_paths_arr[0][MAX_PATH_LENGTH - 1] = '\0';
-    strncpy(ptr_user_data->save_paths.save_paths_arr[2], "/home/dm/XXXXX/lint_to_d", MAX_PATH_LENGTH - 1);
-    ptr_user_data->save_paths.save_paths_arr[0][MAX_PATH_LENGTH - 1] = '\0';
-    for(int i = 3; i < MAX_ARR_SIZE_SAVE_PATH; ++i){
+    // strncpy(ptr_user_data->save_paths.save_paths_arr[2], "/home/dm/XXXXX/lint_to_d", MAX_PATH_LENGTH - 1);
+    // ptr_user_data->save_paths.save_paths_arr[0][MAX_PATH_LENGTH - 1] = '\0';
+    for(int i = 2; i < MAX_ARR_SIZE_SAVE_PATH; ++i){
         strncpy(ptr_user_data->save_paths.save_paths_arr[i], "/", MAX_PATH_LENGTH - 1);
         ptr_user_data->save_paths.save_paths_arr[i][MAX_PATH_LENGTH - 1] = '\0';
     }

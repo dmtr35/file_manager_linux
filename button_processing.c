@@ -23,8 +23,6 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
     char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
     int *cursor_y = &ptr_user_data->coordinates.cursor_y;
     char *previous_path = active ? ptr_user_data->previous_path_left : ptr_user_data->previous_path_right;
-    // char path[256];
-    // strcpy(path, check_side ? ptr_user_data->left_path : ptr_user_data->right_path);
     int i = *cursor_y + (check_side ? ptr_user_data->coordinates.offset_left : ptr_user_data->coordinates.offset_right) - 1;
     char *file_name = all_files[i].name;
     

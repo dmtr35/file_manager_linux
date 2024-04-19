@@ -19,8 +19,8 @@
 void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files)
 {
     int *arr_coorsorarr_coorsor = ptr_user_data->arr_coorsor_struct.arr;
-    
     size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;
+    
     if (*check_empty) {
         for(int i = 0; i < *quantity_lines; ++i) {
             for(int j = 0; j < ptr_user_data->coordinates.leng_arr_coorsor; ++j) {
@@ -29,13 +29,14 @@ void processing_list_files(user_data *ptr_user_data, file_data *all_files, char 
                     char file_name[leng_file_name];
                     strcpy(file_name, all_files[i].name);
                     
-                    select_way(ptr_user_data, path, file_name, active, quantity_lines, offset, save_files);
+                    select_way(ptr_user_data, all_files, path, file_name, active, quantity_lines, offset, save_files);
+                    remove_first_element(arr_coorsorarr_coorsor, *arr_coorsor_size);
                 }
             }
         }
     } else {
         if(!(strcmp(file_name, "..") == 0)) {
-            select_way(ptr_user_data, path, file_name, active, quantity_lines, offset, save_files);
+            select_way(ptr_user_data, all_files, path, file_name, active, quantity_lines, offset, save_files);
         }
     }
     if (offset < 0) {
@@ -47,7 +48,7 @@ void processing_list_files(user_data *ptr_user_data, file_data *all_files, char 
 
 
 
-void select_way(user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files)
+void select_way(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files)
 {   
     int *arr_coorsorarr_coorsor = ptr_user_data->arr_coorsor_struct.arr;
     size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;
@@ -61,7 +62,7 @@ void select_way(user_data *ptr_user_data, char *path, char *file_name, _Bool act
     if (*restore_files) {
         restore(ptr_user_data, path, file_name, active);
     } else if (*copy_files || ptr_user_data->set_bool.move_files){
-        cp_mv_file(ptr_user_data, path, file_name, active);
+        cp_mv_file(ptr_user_data, all_files, path, file_name, active);
         if (*move_files) {
             remove_directory_recursive(ptr_user_data, path, file_name, save_files);
         }

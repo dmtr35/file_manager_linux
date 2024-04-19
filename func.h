@@ -89,6 +89,7 @@ int check_func(user_data *ptr_user_data);
 void check_and_create_trash(user_data *ptr_user_data);
 
 // extra_func.c
+int item(user_data *ptr_user_data, _Bool active);                       // получить i
 int is_directory(const char *path);
 char *get_current_datatime(void);
 char *replace_slashes_dash(char *path);
@@ -102,6 +103,7 @@ void removeFromArr(int *arr, size_t size, int value);
 bool containsElement(int *arr, size_t size, int value);
 void fillWithZeros(int *arr, size_t size);
 int check_int_arr(int *arr, size_t size);                               // проверка массива, есть ли в нем элементы
+void remove_first_element(int *arr, size_t size);                             // удалить первый элемент массива
 int longest(user_data *ptr_user_data, size_t leng_path);                           // определяем какой размер самой длинной строки в массиве
 int count_non_zero_elements(int *arr, size_t size);                     // сколько элементов в массиве
 void check_offset_less_zero(int *offset);
@@ -160,13 +162,13 @@ void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file
 void remove_one_file(char *path);
 void save_file(char *path, char *file_name, char *ptr_full_path, user_data *ptr_user_data);
 void restore(user_data *ptr_user_data, char *path, char *file_name, _Bool active);
-void cp_mv_file(user_data *ptr_user_data, char *path, char *file_name, _Bool active);
-void copy_file(const char *source_directory, const char *destination_directory);
-void copy_directory(const char *source_directory, const char *destination_directory);
+void cp_mv_file(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active);
+void copy_file(user_data *ptr_user_data, file_data *all_files, char *source_directory, char *destination_directory, _Bool active);
+void copy_directory(user_data *ptr_user_data, file_data *all_files, char *source_directory, char *destination_directory, _Bool active);
 
 // form_list.c
 void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files);
-void select_way(user_data *ptr_user_data, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files);
+void select_way(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files);
 
 
 

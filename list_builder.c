@@ -65,7 +65,8 @@ int ls_list(user_data *ptr_user_data, file_data *all_files, char *path, _Bool ch
                 size_t target_length = readlink(full_path, link_target, sizeof(link_target));
                 link_target[target_length] = '\0';
                 size_t length_link_name = strlen(entry->d_name) + strlen(link_target) + 5;
-                char link_name[target_length];
+                // char link_name[target_length];
+                char link_name[length_link_name];
                 
                 snprintf(link_name, (strlen(path) == 1) ? length_link_name + 1 : length_link_name, (strlen(path) == 1) ? "%s -> /%s" : "%s -> %s", entry->d_name, link_target);
                 strcpy(symb, "l");
