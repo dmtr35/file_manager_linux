@@ -16,14 +16,13 @@
 #include "func.h"
 
 
-int ls_list(user_data *ptr_user_data, file_data *all_files, char *path, _Bool check_side, _Bool *flag_hidden_files, int *quantity_lines)
+int ls_list(user_data *ptr_user_data, file_data *all_files, _Bool check_side, _Bool *flag_hidden_files, int *quantity_lines)
 {
     char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
-    size_t len_current_directory = strlen(current_directory);
 
     char symb[2];
     
-    DIR *dir = opendir(path);
+    DIR *dir = opendir(current_directory);
     if (dir == NULL){
         perror("Error opening directory");
         return 1;
@@ -35,7 +34,7 @@ int ls_list(user_data *ptr_user_data, file_data *all_files, char *path, _Bool ch
     file_data *files = (file_data *)malloc(500 * sizeof(file_data));
     int file_count = 0;
 
-    if (strlen(path) == 1) {
+    if (strlen(current_directory) == 1) {
         strcpy(all_files[*quantity_lines].name, "/");
     } else {
         strcpy(all_files[*quantity_lines].name, "..");
@@ -47,45 +46,32 @@ int ls_list(user_data *ptr_user_data, file_data *all_files, char *path, _Bool ch
 
     int file_id = 0;
     while ((entry = readdir(dir)) != NULL) {
-        if ((strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)){
-            continue;
-        }
-        if ((strchr(entry->d_name, '.') == entry->d_name) && *flag_hidden_files){
+        char *file_name = entry->d_name;
+
+        if ((strcmp(file_name, ".") == 0 || strcmp(file_name, "..") == 0) || ((strchr(file_name, '.') == file_name) && *flag_hidden_files)){
             continue;
         }
 
-        size_t length_full_path = strlen(path) + strlen(entry->d_name) + 2;
+        size_t length_full_path = strlen(current_directory) + strlen(file_name) + 2;
         char full_path[length_full_path];
-        snprintf(full_path, length_full_path, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, entry->d_name);
+        snprintf(full_path, length_full_path, (strlen(current_directory) == 1) ? "%s%s" : "%s/%s", current_directory, file_name);
 
         file_data current_file;
         if (lstat(full_path, &file_info) == 0) {
-            if (S_ISLNK(file_info.st_mode)) {
-                char link_target[1024];
-                size_t target_length = readlink(full_path, link_target, sizeof(link_target));
-                link_target[target_length] = '\0';
-                size_t length_link_name = strlen(entry->d_name) + strlen(link_target) + 5;
-                // char link_name[target_length];
-                char link_name[length_link_name];
-                
-                snprintf(link_name, (strlen(path) == 1) ? length_link_name + 1 : length_link_name, (strlen(path) == 1) ? "%s -> /%s" : "%s -> %s", entry->d_name, link_target);
-                strcpy(symb, "l");
-
-                form_current_file(&current_file, link_name, &file_info, symb, file_id);
-
+            if (S_ISDIR(file_info.st_mode)) {
+                strcpy(symb, "d");
+                form_current_file(&current_file, file_name, &file_info, symb, file_id);
+                all_files[(*quantity_lines)++] = current_file;
+            } else if (S_ISREG(file_info.st_mode)) {
+                strcpy(symb, "-");
+                form_current_file(&current_file, file_name, &file_info, symb, file_id);
                 files[file_count++] = current_file;
-            } else {
-                strcpy(symb, (S_ISDIR(file_info.st_mode)) ? "d" : "-");
-                form_current_file(&current_file, entry->d_name, &file_info, symb, file_id);
-
-                if (S_ISDIR(file_info.st_mode)) {
-                    all_files[(*quantity_lines)++] = current_file;
-                } else {
-                    files[file_count++] = current_file;
-                }
-            }
+            } else if (S_ISLNK(file_info.st_mode)) {
+                strcpy(symb, "l");
+                form_current_file(&current_file, file_name, &file_info, symb, file_id);
+                files[file_count++] = current_file;
+            } 
         }
-        
     }
     closedir(dir);
 

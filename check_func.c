@@ -44,6 +44,7 @@ int check_func(user_data *ptr_user_data)
     if((pw = getpwnam(ptr_user)) != NULL) {
         strcpy(ptr_user_data->right_path, pw->pw_dir);
         strcpy(ptr_home_path, pw->pw_dir);
+        strcpy(ptr_user_data->right_path, "/home/dm/XXXXX");     //////////////////////////////////// удалить, тестовая папка
 
         snprintf(ptr_user_data->trash_directory, strlen(ptr_home_path) + 11, "%s/.my_trash", ptr_home_path);
         check_and_create_trash(ptr_user_data);
@@ -55,6 +56,8 @@ int check_func(user_data *ptr_user_data)
         perror("Error getting current directory");
         return 1;
     }
+
+    strcpy(ptr_user_data->left_path, "/home/dm/YYYYY"); //////////////////////////////////// удалить, тестовая папка
 
     return 0;
 

@@ -8,6 +8,7 @@
 #define MAX_ARR_SIZE 100
 #define MAX_ARR_SIZE_SAVE_PATH 5
 #define MAX_PATH_LENGTH 1024
+// #define ARROW " --> "
 
 #define MAX_FILENAME_LENGTH 1024
 
@@ -112,7 +113,7 @@ void split_link(char *full_name, char *path_link, char *name_link);   // раз�
 
 
 // list_builder.c
-int ls_list(user_data *ptr_user_data, file_data *directories, char *path, _Bool check_side, _Bool *flag_hidden_files, int *quantity_lines);
+int ls_list(user_data *ptr_user_data, file_data *directories, _Bool check_side, _Bool *flag_hidden_files, int *quantity_lines);
 void form_current_file(file_data *current_file, char *file_name, struct stat *file_info, char *symb, int file_id);
 void strtrim(char *str);
 

@@ -15,22 +15,23 @@
 
 #include "../func.h"
 
+
+
 void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side, WINDOW *win)
 {
     int *height = &ptr_user_data->coordinates.height;
     int *width = &ptr_user_data->coordinates.width;
     int *height_win = &ptr_user_data->coordinates.height_win;
     int *width_win = &ptr_user_data->coordinates.width_win;
+    char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
 
     getmaxyx(win, *height_win, *width_win);
-    char path[256];
-    strcpy(path, check_side ? ptr_user_data->left_path : ptr_user_data->right_path);
 
     int offset = 0;
     int quantity_lines = 0;
     _Bool *hidden_files = check_side ? &(ptr_user_data->set_bool.hidden_left_bool) : &(ptr_user_data->set_bool.hidden_right_bool);
 
-    ls_list(ptr_user_data, all_files, path, check_side, hidden_files, &quantity_lines);
+    ls_list(ptr_user_data, all_files, check_side, hidden_files, &quantity_lines);
 
     if (check_side) {
         ptr_user_data->coordinates.quantity_lines_left = quantity_lines;
@@ -71,11 +72,9 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
     active ? wbkgd(win, COLOR_PAIR(1)) : wbkgd(win, COLOR_PAIR(11));
 
 
-
     int max_length = ptr_user_data->coordinates.width_win - 35;
     trim_filename(all_files_ls, quantity_lines, max_length);
-    // char qqq[256];
-    // strcpy(qqq, all_files_ls[2].name);
+    
 
     if(check_side) {
         mvwvline(win, 1, *width_win - 34, ACS_VLINE, *height - 4);
@@ -91,8 +90,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
 
     wattron(win, A_BOLD);
     wattron(win, COLOR_PAIR(6));
-    // mvwprintw(win, 0, 1, path);
-    mvwprintw(win, 0, 1, "%s", path);
+    mvwprintw(win, 0, 1, "%s", current_directory);
     wattroff(win, COLOR_PAIR(6));
     wattroff(win, A_BOLD);
 
@@ -114,75 +112,138 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
             }
 // ==========================================================================================================  
         } else if((strstr(all_files[i].permissions, "l") != NULL)) {
-            char target_name[1024];
-            char target_path[1024];
-            char full_target_path[1024];
-            int col = 1;
-            strcpy(target_name, all_files[i].name);
-            strcpy(full_target_path, all_files_ls[i].name);
+            size_t length_full_path = strlen(current_directory) + strlen(all_files[i].name) + 2;
+            char *full_path = malloc(length_full_path * sizeof(char));
+            char *name_cut = all_files_ls[i].name;
+            char *name_full = all_files[i].name;
+            char arrow[] = " --> ";
             
-            split_link(target_name, target_path, target_name);
 
-            int max_leng = strlen(full_target_path) - strlen(target_name) - 4;
-            if (max_leng < 0) {
-                max_leng = 0;
+            char *target_to_path = malloc(1024);
+            snprintf(full_path, length_full_path, (strlen(current_directory) == 1) ? "%s%s" : "%s/%s", current_directory, all_files[i].name);
+
+            struct stat st;
+            if (lstat(full_path, &st) == -1) {
+                perror("Ошибка получения информации о файле");
+                return;
             }
-            char cut_target_path[max_leng + 1];
-            strncpy(cut_target_path, target_path, max_leng);
-            cut_target_path[max_leng] = '\0';
 
+            size_t target_length = readlink(full_path, target_to_path, 1023);
+            if (target_length != -1) {
+                target_to_path[target_length] = '\0';
+            } else {
+                perror("Ошибка чтения символической ссылки");
+            }
+            free(full_path);
+
+            if (target_to_path[0] != '/') {
+                size_t length_full_target_path = strlen(current_directory) + strlen(target_to_path) + 2;
+                char *full_target_path = malloc(length_full_path * sizeof(char));
+                snprintf(full_target_path, (strlen(current_directory) == 1) ? length_full_target_path - 1 : length_full_target_path, (strlen(current_directory) == 1) ? "%s%s" : "%s/%s", current_directory, target_to_path);
+                strcpy(target_to_path, full_target_path);
+                free(full_target_path);
+            }
+
+            int col = 1;
+            int first_col_width = *width_win - 35;
 
             wattroff(win, A_BOLD);
-            if (access(target_path, F_OK) != -1 && (is_directory(target_path)) == 0) {
+            
+            if (access(target_to_path, F_OK) != -1 && (is_directory(target_to_path)) == 0) {
             // Файл существует
-                active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));
-                mvwprintw(win, row, col, "%s", target_name);
-                col += strlen(target_name);
-                active ? wattroff(win, COLOR_PAIR(3)) : wattroff(win, COLOR_PAIR(13));
+                active ? wattron(win, COLOR_PAIR(2)) : wattron(win, COLOR_PAIR(12));
+                mvwprintw(win, row, col, "%s", name_cut);
+                col += strlen(name_cut);
+                
+                active ? wattroff(win, COLOR_PAIR(2)) : wattroff(win, COLOR_PAIR(12));
 
+
+                if (first_col_width > strlen(name_full)) {
+                    active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
+                    int difference = first_col_width - strlen(name_full);
+                    if (difference > 5) {
+                        difference = 5;
+                    }
+                    arrow[difference] = '\0';
+                    mvwprintw(win, row, col, "%s", arrow);
+                    col += strlen(arrow);
+                    active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
+                }
+
+                if (first_col_width > strlen(name_full) + strlen(arrow)) {
+                    active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));
+                    int difference = first_col_width - (strlen(name_full) + strlen(arrow));
+                    if (difference > strlen(target_to_path)) {
+                        difference = strlen(target_to_path);
+                    }
+                    target_to_path[difference] = '\0';
+                    mvwprintw(win, row, col, "%s", target_to_path);
+                    active ? wattroff(win, COLOR_PAIR(3)) : wattroff(win, COLOR_PAIR(13));
+                }
+            } else if(is_directory(target_to_path)) {
                 active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
-                mvwprintw(win, row, col, " -> ");
-                col += 4;
+                mvwprintw(win, row, col, "%s", name_cut);
+                col += strlen(name_cut);
+                
                 active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
 
-                active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));
-                mvwprintw(win, row, col, "%s", cut_target_path);
-                col += strlen(cut_target_path);
-                active ? wattroff(win, COLOR_PAIR(3)) : wattroff(win, COLOR_PAIR(13));
-            } else if(is_directory(target_path)) {
-                wattron(win, A_BOLD);
-                active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
-                mvwprintw(win, row, col, "%s", target_name);
-                col += strlen(target_name);
-                active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
-                wattroff(win, A_BOLD);
 
-                active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
-                mvwprintw(win, row, col, " -> ");
-                col += 4;
-                active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
+                if (first_col_width > strlen(name_full)) {
+                    active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
+                    int difference = first_col_width - strlen(name_full);
+                    if (difference > 5) {
+                        difference = 5;
+                    }
+                    arrow[difference] = '\0';
+                    mvwprintw(win, row, col, "%s", arrow);
+                    col += strlen(arrow);
+                    active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
+                }
 
-                active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));
-                mvwprintw(win, row, col, "%s", cut_target_path);
-                col += strlen(cut_target_path);
-                active ? wattroff(win, COLOR_PAIR(3)) : wattroff(win, COLOR_PAIR(13));
+                if (first_col_width > strlen(name_full) + strlen(arrow)) {
+                    active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));
+                    int difference = first_col_width - (strlen(name_full) + strlen(arrow));
+                    if (difference > strlen(target_to_path)) {
+                        difference = strlen(target_to_path);
+                    }
+                    target_to_path[difference] = '\0';
+                    mvwprintw(win, row, col, "%s", target_to_path);
+                    active ? wattroff(win, COLOR_PAIR(3)) : wattroff(win, COLOR_PAIR(13));
+                }
             } else {
             // Файл не существует
-                active ? wattron(win, COLOR_PAIR(5)) : wattron(win, COLOR_PAIR(15));
-                mvwprintw(win, row, col, "%s", target_name);
-                col += strlen(target_name);
-                active ? wattroff(win, COLOR_PAIR(5)) : wattroff(win, COLOR_PAIR(15));
+            active ? wattron(win, COLOR_PAIR(2)) : wattron(win, COLOR_PAIR(12));
+                mvwprintw(win, row, col, "%s", name_cut);
+                col += strlen(name_cut);
+                
+                active ? wattroff(win, COLOR_PAIR(2)) : wattroff(win, COLOR_PAIR(12));
 
-                active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
-                mvwprintw(win, row, col, " -> ");
-                col += 4;
-                active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
 
-                active ? wattron(win, COLOR_PAIR(3)) : wattron(win, COLOR_PAIR(13));
-                mvwprintw(win, row, col, "%s", cut_target_path);
-                col += strlen(cut_target_path);
+                if (first_col_width > strlen(name_full)) {
+                    active ? wattron(win, COLOR_PAIR(1)) : wattron(win, COLOR_PAIR(11));
+                    int difference = first_col_width - strlen(name_full);
+                    if (difference > 5) {
+                        difference = 5;
+                    }
+                    arrow[difference] = '\0';
+                    mvwprintw(win, row, col, "%s", arrow);
+                    col += strlen(arrow);
+                    active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
+                }
+
+                if (first_col_width > strlen(name_full) + strlen(arrow)) {
+                    active ? wattron(win, COLOR_PAIR(5)) : wattron(win, COLOR_PAIR(15));
+                    int difference = first_col_width - (strlen(name_full) + strlen(arrow));
+                    if (difference > strlen(target_to_path)) {
+                        difference = strlen(target_to_path);
+                    }
+                    target_to_path[difference] = '\0';
+                    mvwprintw(win, row, col, "%s", target_to_path);
+                    active ? wattroff(win, COLOR_PAIR(5)) : wattroff(win, COLOR_PAIR(15));
+                }
                 active ? wattroff(win, COLOR_PAIR(3)) : wattroff(win, COLOR_PAIR(13));
             }
+            free(target_to_path);
 // ==========================================================================================================  
         } else if((strstr(all_files[i].name, ".zip") != NULL) || (strstr(all_files[i].name, ".gz") != NULL) || (strstr(all_files[i].name, ".tar") != NULL)) {
             active ? wattron(win, COLOR_PAIR(5)) : wattron(win, COLOR_PAIR(15));
@@ -193,7 +254,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
             active ? wattron(win, COLOR_PAIR(2)) : wattron(win, COLOR_PAIR(12));  
             mvwprintw(win, row, 1, "%s", all_files_ls[i].name);
             active ? wattroff(win, COLOR_PAIR(2)) : wattroff(win, COLOR_PAIR(12));
-        } else if (all_files[i].permissions[9] == 'x'){
+        } else if (all_files[i].permissions[9] == 'x'){                                             // исполняемый файл
             active ? wattron(win, COLOR_PAIR(4)) : wattron(win, COLOR_PAIR(14));
             mvwprintw(win, row, 1, "%s", all_files_ls[i].name);
             active ? wattroff(win, COLOR_PAIR(4)) : wattroff(win, COLOR_PAIR(14));

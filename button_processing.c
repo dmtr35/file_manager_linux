@@ -110,7 +110,7 @@ void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
 
     file_data *backspace_files = (file_data *)malloc(500 * sizeof(file_data));
     _Bool *hidden_files = active ? &ptr_user_data->set_bool.hidden_right_bool : &ptr_user_data->set_bool.hidden_right_bool;
-    ls_list(ptr_user_data, backspace_files, path, check_side, hidden_files, &quantity_lines);
+    ls_list(ptr_user_data, backspace_files, check_side, hidden_files, &quantity_lines);
 
     int count = 0;
     for(; count < quantity_lines; ++count){
