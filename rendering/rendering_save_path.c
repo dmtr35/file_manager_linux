@@ -34,8 +34,7 @@ void render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_
     int height_win;
     int width_win;
 
-    char path[256];
-    strcpy(path, active ? ptr_user_data->left_path : ptr_user_data->right_path);
+    char *path = active ? ptr_user_data->left_path : ptr_user_data->right_path;
 
 
     int *height = &ptr_user_data->coordinates.height;
@@ -44,7 +43,6 @@ void render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_
     char *file_name = ptr_user_data->coorsor_file;
     char *right_path = ptr_user_data->right_path;
     char *left_path = ptr_user_data->left_path;
-    char *current_directory = active ? ptr_user_data->left_path : ptr_user_data->right_path;
 
     _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
     _Bool *save_path_bool = &ptr_user_data->set_bool.save_path_bool;
@@ -86,7 +84,7 @@ void render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_
                 mvwhline(win_menu, row, 1, ' ', width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
                 current_row = getcury(win_menu);
 
-                mvwprintw(win_menu, 1, 1, "%s", current_directory);
+                mvwprintw(win_menu, 1, 1, "%s", path);
 
                 for(int i = 0; i < MAX_ARR_SIZE_SAVE_PATH; ++i) {
                     mvwprintw(win_menu, i+3, 1, "%s", ptr_user_data->save_paths.save_paths_arr[i]);
@@ -153,7 +151,7 @@ void render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_
                 break;
             } else if (ch == '\n') {
                 if (*coords_cursor_y_menu == current_row) {
-                    strncpy(current_directory, ptr_user_data->save_paths.save_paths_arr[current_row-3], MAX_PATH_LENGTH - 1);
+                    strncpy(path, ptr_user_data->save_paths.save_paths_arr[current_row-3], MAX_PATH_LENGTH - 1);
                 }
 
                 is_enter_pressed = false;
@@ -179,7 +177,7 @@ void render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_
                     render_ls_and_save_path(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
                 } 
                 else if (next1 == '[' && next2 == 'C') {                                      // -> на последнюю
-                    strncpy(ptr_user_data->save_paths.save_paths_arr[current_row-3], current_directory, MAX_PATH_LENGTH - 1);
+                    strncpy(ptr_user_data->save_paths.save_paths_arr[current_row-3], path, MAX_PATH_LENGTH - 1);
                     ptr_user_data->save_paths.save_paths_arr[0][MAX_PATH_LENGTH - 1] = '\0';
 
                     render_ls_and_save_path(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);

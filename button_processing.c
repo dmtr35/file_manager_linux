@@ -20,7 +20,7 @@
 
 void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,_Bool check_side)
 {
-    char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
+    char *path = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
     int *cursor_y = &ptr_user_data->coordinates.cursor_y;
     char *previous_path = active ? ptr_user_data->previous_path_left : ptr_user_data->previous_path_right;
     int i = *cursor_y + (check_side ? ptr_user_data->coordinates.offset_left : ptr_user_data->coordinates.offset_right) - 1;
@@ -29,14 +29,14 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
 
 
     if ((strchr(all_files[i].permissions, 'd') != NULL)) {
-        strcpy(previous_path, current_directory);
-        size_t size_new_path = strlen(current_directory) + strlen(file_name) + 2;
+        strcpy(previous_path, path);
+        size_t size_new_path = strlen(path) + strlen(file_name) + 2;
         char new_path[size_new_path];
-        snprintf(new_path, size_new_path, "%s/%s", current_directory, file_name);
+        snprintf(new_path, size_new_path, "%s/%s", path, file_name);
         if ((strstr(new_path, "//") != NULL)) {
             remove_first_char(new_path);
         }
-        strcpy(current_directory, new_path);
+        strcpy(path, new_path);
         *cursor_y = 1;
 
         if (check_side) {
@@ -45,9 +45,9 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
             ptr_user_data->coordinates.offset_right = 0;
         }
     } else if ((strcmp(all_files[i].name, "..") == 0)) {
-        strcpy(previous_path, current_directory);
-        char *parent_dir = dirname(current_directory);
-        strcpy(current_directory, parent_dir);
+        strcpy(previous_path, path);
+        char *parent_dir = dirname(path);
+        strcpy(path, parent_dir);
         *cursor_y = 1;
 
         if (check_side) {
@@ -56,7 +56,7 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
             ptr_user_data->coordinates.offset_right = 0;
         }
     } else if (strchr(all_files[i].permissions, 'l') != 0) {
-        size_t full_path_size = strlen(current_directory) + strlen(file_name) + 1;
+        size_t full_path_size = strlen(path) + strlen(file_name) + 1;
         char *full_path_for_link = malloc(full_path_size * sizeof(char));
         char *path_link = malloc(full_path_size * sizeof(char));
         char *name_link = malloc(full_path_size * sizeof(char));
@@ -64,12 +64,12 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
 
         if (is_directory(path_link) == 0) return;
         
-        size_t full_path_size_name_link = strlen(current_directory) + strlen(name_link) + 1;
+        size_t full_path_size_name_link = strlen(path) + strlen(name_link) + 1;
 
-        snprintf(full_path_for_link, (strlen(current_directory) == 1) ? full_path_size_name_link : full_path_size_name_link + 1, (strlen(current_directory) == 1) ? "%s%s" : "%s/%s", current_directory, name_link);
+        snprintf(full_path_for_link, (strlen(path) == 1) ? full_path_size_name_link : full_path_size_name_link + 1, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, name_link);
 
         if (is_directory(path_link)) {
-            strcpy(current_directory, full_path_for_link);
+            strcpy(path, full_path_for_link);
 
             if (check_side) {
                 ptr_user_data->coordinates.offset_left = 0;
@@ -83,7 +83,7 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
         free(path_link);
         free(name_link);
     }
-    strcpy(check_side ? ptr_user_data->left_path : ptr_user_data->right_path, current_directory);
+    strcpy(check_side ? ptr_user_data->left_path : ptr_user_data->right_path, path);
 }
 
 
@@ -142,13 +142,13 @@ void open_in_vim(user_data *ptr_user_data, file_data *all_files, _Bool check_sid
     int *cursor_y = &ptr_user_data->coordinates.cursor_y;
     int *offset_left = &ptr_user_data->coordinates.offset_left;
     int *offset_right = &ptr_user_data->coordinates.offset_right;
-    char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
+    char *path = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
     int i = *cursor_y + (check_side ? *offset_left : *offset_right) - 1;
     char *file_name = all_files[i].name;
 
-    size_t full_path_size = strlen(current_directory) + strlen(file_name) + 2;
+    size_t full_path_size = strlen(path) + strlen(file_name) + 2;
     char *full_path = malloc(full_path_size * sizeof(char));
-    snprintf(full_path, full_path_size, "%s/%s", current_directory, file_name);
+    snprintf(full_path, full_path_size, "%s/%s", path, file_name);
 
     char *path_link = malloc(full_path_size * sizeof(char));
     char *name_link = malloc(full_path_size * sizeof(char));

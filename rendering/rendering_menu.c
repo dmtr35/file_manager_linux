@@ -34,9 +34,7 @@ void render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data 
     int height_win;
     int width_win;
 
-    char path[256];
-    strcpy(path, active ? ptr_user_data->left_path : ptr_user_data->right_path);
-
+    char *path = active ? ptr_user_data->left_path : ptr_user_data->right_path;
 
     int check_empty = check_int_arr(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);
     int count_item_arr = count_non_zero_elements(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);

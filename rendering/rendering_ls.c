@@ -23,7 +23,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
     int *width = &ptr_user_data->coordinates.width;
     int *height_win = &ptr_user_data->coordinates.height_win;
     int *width_win = &ptr_user_data->coordinates.width_win;
-    char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
+    char *path = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
 
     getmaxyx(win, *height_win, *width_win);
 
@@ -90,7 +90,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
 
     wattron(win, A_BOLD);
     wattron(win, COLOR_PAIR(6));
-    mvwprintw(win, 0, 1, "%s", current_directory);
+    mvwprintw(win, 0, 1, "%s", path);
     wattroff(win, COLOR_PAIR(6));
     wattroff(win, A_BOLD);
 
@@ -111,8 +111,8 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
                 active ? wattroff(win, COLOR_PAIR(1)) : wattroff(win, COLOR_PAIR(11));
             }
 // ==========================================================================================================  
-        } else if((strstr(all_files[i].permissions, "l") != NULL)) {
-            size_t length_full_path = strlen(current_directory) + strlen(all_files[i].name) + 2;
+        } else if(strstr(all_files[i].permissions, "l") != NULL) {
+            size_t length_full_path = strlen(path) + strlen(all_files[i].name) + 2;
             char *full_path = malloc(length_full_path * sizeof(char));
             char *name_cut = all_files_ls[i].name;
             char *name_full = all_files[i].name;
@@ -120,7 +120,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
             
 
             char *target_to_path = malloc(1024);
-            snprintf(full_path, length_full_path, (strlen(current_directory) == 1) ? "%s%s" : "%s/%s", current_directory, all_files[i].name);
+            snprintf(full_path, length_full_path, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, all_files[i].name);
 
             struct stat st;
             if (lstat(full_path, &st) == -1) {
@@ -137,9 +137,9 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
             free(full_path);
 
             if (target_to_path[0] != '/') {
-                size_t length_full_target_path = strlen(current_directory) + strlen(target_to_path) + 2;
+                size_t length_full_target_path = strlen(path) + strlen(target_to_path) + 2;
                 char *full_target_path = malloc(length_full_path * sizeof(char));
-                snprintf(full_target_path, (strlen(current_directory) == 1) ? length_full_target_path - 1 : length_full_target_path, (strlen(current_directory) == 1) ? "%s%s" : "%s/%s", current_directory, target_to_path);
+                snprintf(full_target_path, (strlen(path) == 1) ? length_full_target_path - 1 : length_full_target_path, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, target_to_path);
                 strcpy(target_to_path, full_target_path);
                 free(full_target_path);
             }
@@ -285,30 +285,40 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
 
 
 
-    
+    int first_col_width = *width_win - 34;
+    char name[first_col_width];
     int j = 0;
     if (active) {
         for(row = 1, i = 0 + offset; i < quantity_lines && row <= last_line; ++i, ++row) {
             for(int j = 0; j < ptr_user_data->coordinates.leng_arr_coorsor; ++j) {
                 int item_arr = ptr_user_data->arr_coorsor_struct.arr[j];
-                int file_id = all_files[i].file_id;
+                 int file_id = all_files[i].file_id;
                 if(file_id == item_arr && item_arr > 0) {
+                    if (strstr(all_files[i].permissions, "l") != NULL) {
+                        char *result_name = full_name_for_link(all_files[i].name, path);
+                        strncpy(name, result_name, first_col_width);
+                        name[first_col_width - 1] = '\0';
+                        free(result_name);
+                    } else {
+                        strncpy(name, all_files[i].name, first_col_width);
+                        name[first_col_width - 1] = '\0';
+                    }
                     wattron(win, A_BOLD);
                     wattron(win, COLOR_PAIR(11));                       // Включаем цветовую пару для всей строки
                     mvwhline(win, row, 1, ' ', *width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
                     if (check_side) {
-                        mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
+                        mvwprintw(win, row, 1, "%s", name);  // Выводим текст
                         mvwprintw(win, row, (*width / 2 - 33), "%s", all_files_ls[i].size);
                         mvwprintw(win, row, (*width / 2 - 26), "%s", all_files_ls[i].time);
                         mvwprintw(win, row, (*width / 2 - 11), "%s", all_files_ls[i].permissions);
                     } else {
                         if (*width_win % 2 == 0 && *width % 2 == 0 || *width_win % 2 != 0 && *width % 2 == 0) {
-                            mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
+                            mvwprintw(win, row, 1, "%s", name);  // Выводим текст
                             mvwprintw(win, row, *width / 2 - 33, "%s", all_files_ls[i].size);
                             mvwprintw(win, row, *width / 2 - 26, "%s", all_files_ls[i].time);
                             mvwprintw(win, row, *width / 2 - 11, "%s", all_files_ls[i].permissions);
                         } else if (*width_win % 2 != 0 && *width % 2 != 0 || *width_win % 2 == 0 && *width % 2 != 0) {
-                            mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
+                            mvwprintw(win, row, 1, "%s", name);  // Выводим текст
                             mvwprintw(win, row, *width / 2 - 32, "%s", all_files_ls[i].size);
                             mvwprintw(win, row, *width / 2 - 25, "%s", all_files_ls[i].time);
                             mvwprintw(win, row, *width / 2 - 10, "%s", all_files_ls[i].permissions);
@@ -319,38 +329,44 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
         }
         for (row = 1, i = 0 + offset; i < quantity_lines && row <= last_line; ++i, ++row) {
             if (row == ptr_user_data->coordinates.cursor_y) {
+                if (strstr(all_files[i].permissions, "l") != NULL) {
+                        char *result_name = full_name_for_link(all_files[i].name, path);
+                        strncpy(name, result_name, first_col_width);
+                        name[first_col_width - 1] = '\0';
+                        free(result_name);
+                    } else {
+                        strncpy(name, all_files[i].name, first_col_width);
+                        name[first_col_width - 1] = '\0';
+                    }
                 wattron(win, A_BOLD);
                 wattron(win, COLOR_PAIR(6));                       // Включаем цветовую пару для всей строки
                 mvwhline(win, row, 1, ' ', *width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
                 if (check_side) {
-                    mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
+                    mvwprintw(win, row, 1, "%s", name);  // Выводим текст
                     mvwprintw(win, row, (*width / 2 - 33), "%s", all_files_ls[i].size);
                     mvwprintw(win, row, (*width / 2 - 26), "%s", all_files_ls[i].time);
                     mvwprintw(win, row, (*width / 2 - 11), "%s", all_files_ls[i].permissions);
-
-                    if (strcmp(all_files[i].name, "..") == 0) {
-
-                    } else {
-                        mvwprintw(win, *height_win - 2, 1, "%s", all_files[i].name);
-                    }
                 } else {
                     if (*width_win % 2 == 0 && *width % 2 == 0 || *width_win % 2 != 0 && *width % 2 == 0) {
-                        mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
+                        mvwprintw(win, row, 1, "%s", name);  // Выводим текст
                         mvwprintw(win, row, *width / 2 - 33, "%s", all_files_ls[i].size);
                         mvwprintw(win, row, *width / 2 - 26, "%s", all_files_ls[i].time);
                         mvwprintw(win, row, *width / 2 - 11, "%s", all_files_ls[i].permissions);
                     } else if (*width_win % 2 != 0 && *width % 2 != 0 || *width_win % 2 == 0 && *width % 2 != 0) {
-                        mvwprintw(win, row, 1, "%s", all_files_ls[i].name);  // Выводим текст
+                        mvwprintw(win, row, 1, "%s", name);  // Выводим текст
                         mvwprintw(win, row, *width / 2 - 32, "%s", all_files_ls[i].size);
                         mvwprintw(win, row, *width / 2 - 25, "%s", all_files_ls[i].time);
                         mvwprintw(win, row, *width / 2 - 10, "%s", all_files_ls[i].permissions);
                     } 
+                }
 
-                    if (strcmp(all_files[i].name, "..") == 0) {
-
-                    } else {
-                        mvwprintw(win, *height_win - 2, 1, "%s", all_files[i].name);
-                    }
+                if (strcmp(all_files[i].name, "..") == 0) {
+                } else if (strstr(all_files[i].permissions, "l") != NULL) {
+                    char *result_name = full_name_for_link(all_files[i].name, path);
+                    mvwprintw(win, *height_win - 2, 1, "%s", result_name);
+                    free(result_name);
+                } else {
+                    mvwprintw(win, *height_win - 2, 1, "%s", all_files[i].name);
                 }
                 wattroff(win, COLOR_PAIR(6)); // Отключаем цветовую пару
                 wattroff(win, A_BOLD);
@@ -372,3 +388,5 @@ void trim_filename(file_data *all_files_ls, int number_lines, int max_length) {
         all_files_ls[i].name[max_length] = '\0';
     }
 }
+
+

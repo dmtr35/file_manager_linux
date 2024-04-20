@@ -30,7 +30,7 @@ void processing_list_files(user_data *ptr_user_data, file_data *all_files, char 
                     strcpy(file_name, all_files[i].name);
                     
                     select_way(ptr_user_data, all_files, path, file_name, active, quantity_lines, offset, save_files);
-                    remove_first_element(arr_coorsorarr_coorsor, *arr_coorsor_size);
+                    // remove_first_element(arr_coorsorarr_coorsor, *arr_coorsor_size);
                 }
             }
         }

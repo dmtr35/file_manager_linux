@@ -18,11 +18,11 @@
 
 int ls_list(user_data *ptr_user_data, file_data *all_files, _Bool check_side, _Bool *flag_hidden_files, int *quantity_lines)
 {
-    char *current_directory = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
+    char *path = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
 
     char symb[2];
     
-    DIR *dir = opendir(current_directory);
+    DIR *dir = opendir(path);
     if (dir == NULL){
         perror("Error opening directory");
         return 1;
@@ -34,7 +34,7 @@ int ls_list(user_data *ptr_user_data, file_data *all_files, _Bool check_side, _B
     file_data *files = (file_data *)malloc(500 * sizeof(file_data));
     int file_count = 0;
 
-    if (strlen(current_directory) == 1) {
+    if (strlen(path) == 1) {
         strcpy(all_files[*quantity_lines].name, "/");
     } else {
         strcpy(all_files[*quantity_lines].name, "..");
@@ -52,9 +52,9 @@ int ls_list(user_data *ptr_user_data, file_data *all_files, _Bool check_side, _B
             continue;
         }
 
-        size_t length_full_path = strlen(current_directory) + strlen(file_name) + 2;
+        size_t length_full_path = strlen(path) + strlen(file_name) + 2;
         char full_path[length_full_path];
-        snprintf(full_path, length_full_path, (strlen(current_directory) == 1) ? "%s%s" : "%s/%s", current_directory, file_name);
+        snprintf(full_path, length_full_path, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, file_name);
 
         file_data current_file;
         if (lstat(full_path, &file_info) == 0) {

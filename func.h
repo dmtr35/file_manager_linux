@@ -110,6 +110,7 @@ int count_non_zero_elements(int *arr, size_t size);                     // ск�
 void check_offset_less_zero(int *offset);
 void check_cursor_y_less_zero(int *cursor_y);
 void split_link(char *full_name, char *path_link, char *name_link);   // разделение link на имя и ссылку
+char *full_name_for_link(const char *name, const char *path);          // полное имя с сылкой на линк
 
 
 // list_builder.c

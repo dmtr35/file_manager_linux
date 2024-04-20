@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -13,7 +14,6 @@
 #include <sys/time.h>
 #include <sys/times.h>
 #include <utime.h>
-
 
 
 #include "func.h"
@@ -259,20 +259,20 @@ int count_non_zero_elements(int *arr, size_t size)
     return non_zero_count;
 }
 
-void remove_first_element(int *arr, size_t size) {                             // удалить первый элемент массива
-    if (size == 0) {
-        // Если массив пуст, ничего удалять не нужно
-        return;
-    }
+// void remove_first_element(int *arr, size_t size) {                             // удалить первый элемент массива
+//     if (size == 0) {
+//         // Если массив пуст, ничего удалять не нужно
+//         return;
+//     }
 
-    // Сдвигаем элементы массива на одну позицию влево, начиная с индекса 1
-    for (size_t i = 1; i < size; i++) {
-        arr[i - 1] = arr[i];
-    }
+//     // Сдвигаем элементы массива на одну позицию влево, начиная с индекса 1
+//     for (size_t i = 1; i < size; i++) {
+//         arr[i - 1] = arr[i];
+//     }
 
-    // Уменьшаем размер массива на 1
-    (size)--;
-}
+//     // Уменьшаем размер массива на 1
+//     (size)--;
+// }
 
 void check_offset_less_zero(int *offset)                       
 {
@@ -302,5 +302,38 @@ void split_link(char *full_name, char *path_link, char *name_link)
         strncpy(name_link, full_name, name_length);
         name_link[name_length] = '\0';
     }
+}
+
+
+char *full_name_for_link(const char *name, const char *path)
+{
+    char *target_to_path = malloc(1024);
+    size_t length_full_path = strlen(path) + strlen(name) + 2;
+    char *full_path = malloc(length_full_path);
+
+    snprintf(full_path, length_full_path, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, name);
+    size_t target_length = readlink(full_path, target_to_path, 1023);
+    if (target_length != -1) {
+        target_to_path[target_length] = '\0';
+    } else {
+        perror("Ошибка чтения символической ссылки");
+    }
+
+    if (target_to_path[0] != '/') {
+        size_t length_full_target_path = strlen(path) + strlen(target_to_path) + 2;
+        char *full_target_path = malloc(length_full_path * sizeof(char));
+        snprintf(full_target_path, (strlen(path) == 1) ? length_full_target_path - 1 : length_full_target_path, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, target_to_path);
+        strcpy(target_to_path, full_target_path);
+        free(full_target_path);
+    }
+
+    size_t length_name_and_target_path = strlen(name) + strlen(target_to_path) + 6;
+    char *result_name = malloc(length_name_and_target_path);
+    snprintf(result_name, length_name_and_target_path, "%s --> %s", name, target_to_path);
+
+
+    free(target_to_path);
+    free(full_path);
+    return result_name;
 }
 
