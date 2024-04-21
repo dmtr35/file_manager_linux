@@ -24,6 +24,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
     int *height_win = &ptr_user_data->coordinates.height_win;
     int *width_win = &ptr_user_data->coordinates.width_win;
     char *path = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
+    int *leng_arr_coorsor = &ptr_user_data->coordinates.leng_arr_coorsor;
 
     getmaxyx(win, *height_win, *width_win);
 
@@ -290,7 +291,7 @@ void render_ls(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bo
     int j = 0;
     if (active) {
         for(row = 1, i = 0 + offset; i < quantity_lines && row <= last_line; ++i, ++row) {
-            for(int j = 0; j < ptr_user_data->coordinates.leng_arr_coorsor; ++j) {
+            for(int j = 0; j < *leng_arr_coorsor; ++j) {
                 int item_arr = ptr_user_data->arr_coorsor_struct.arr[j];
                  int file_id = all_files[i].file_id;
                 if(file_id == item_arr && item_arr > 0) {

@@ -119,10 +119,10 @@ int main()
         _Bool *hidden_right_bool = &ptr_user_data->set_bool.hidden_right_bool;
         _Bool *check_active_tab_bool = &ptr_user_data->set_bool.check_active_tab_bool;
 
-        int i = *cursor_y + *offset - 1;
+        int item = *cursor_y + *offset - 1;
 
         removeDuplicates(arr_coorsor_coorsor, *arr_coorsor_size);
-        active ? strcpy(ptr_user_data->coorsor_file, all_files_left[i].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[i].name);
+        active ? strcpy(ptr_user_data->coorsor_file, all_files_left[item].name) : strcpy(ptr_user_data->coorsor_file, all_files_right[item].name);
         size_t leng_path = active ? strlen(ptr_user_data->left_path) + strlen(ptr_user_data->coorsor_file) + 4 : strlen(ptr_user_data->right_path) + strlen(ptr_user_data->coorsor_file) + 4;
         size_t width_menu = leng_path < *width / 3 ? *width / 3 : leng_path;
 
@@ -238,7 +238,7 @@ int main()
         else if (ch == 'r' || ch == KEY_RESIZE) {
             int new_height, new_width;
             getmaxyx(stdscr, new_height, new_width);
-            int cursor_position = all_files_ptr[i].file_id;
+            int cursor_position = all_files_ptr[item].file_id;
             if (new_height > *height) {
                 if (*offset > 0) {
                     (*offset)--;
@@ -392,15 +392,15 @@ int main()
         }
         if (ch == ' ') {
             if (strcmp(ptr_user_data->coorsor_file, "..") != 0) {
-                bool contains = containsElement(arr_coorsor_coorsor, *arr_coorsor_size, i);
+                bool contains = containsElement(arr_coorsor_coorsor, *arr_coorsor_size, item);
                 if(contains) {
                     if (*leng_arr_coorsor > 0) {
-                        removeFromArr(arr_coorsor_coorsor, *arr_coorsor_size, i);
+                        removeFromArr(arr_coorsor_coorsor, *arr_coorsor_size, item);
                         (*leng_arr_coorsor)--;
                     }
                 } else {
                     if (*leng_arr_coorsor < *arr_coorsor_size - 1) {
-                        addToArr(arr_coorsor_coorsor, *arr_coorsor_size, i);
+                        addToArr(arr_coorsor_coorsor, *arr_coorsor_size, item);
                         (*leng_arr_coorsor)++;
                     }
                 }

@@ -47,7 +47,6 @@ void render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data 
     char *right_path = ptr_user_data->right_path;
     char *left_path = ptr_user_data->left_path;
     char *trash_directory = ptr_user_data->trash_directory;
-    
 
     _Bool *menu_bool = &ptr_user_data->set_bool.menu_bool;
     _Bool *save_path_bool = &ptr_user_data->set_bool.save_path_bool;
@@ -66,6 +65,8 @@ void render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data 
     int *leng_arr_coorsor = &ptr_user_data->coordinates.leng_arr_coorsor;
     int *cursor_left = &ptr_user_data->coordinates.cursor_left;
     int *cursor_right = &ptr_user_data->coordinates.cursor_right;
+
+    int item = *cursor_y + *offset - 1;
 
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
     char new_path[size_new_path];
@@ -162,18 +163,30 @@ void render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data 
             } else if (ch == '\n') {                                                                                        // Copy
                 if (*coords_cursor_y_menu == 3) {
                     *copy_files = 1;
-                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
+                    if(!check_empty) {
+                        addToArr(arr_coorsor_coorsor, *arr_coorsor_size, item);
+                        (*leng_arr_coorsor)++;
+                    }
+                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &save_files);
 
                     *copy_files = 0;
                 } else if (*coords_cursor_y_menu == 4) {                                                                    // Move
                     *move_files = 1;
-                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
+                    if(!check_empty) {
+                        addToArr(arr_coorsor_coorsor, *arr_coorsor_size, item);
+                        (*leng_arr_coorsor)++;
+                    }
+                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &save_files);
 
                     *move_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
                 } else if (*coords_cursor_y_menu == 5) {                                                                    // Delete
                     *delete_files = 1;
-                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
+                    if(!check_empty) {
+                        addToArr(arr_coorsor_coorsor, *arr_coorsor_size, item);
+                        (*leng_arr_coorsor)++;
+                    }
+                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &save_files);
                     *delete_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
                     
@@ -182,19 +195,27 @@ void render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data 
                         save_files = 1;
                     }
                     *delete_files = 1;
-                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
+                    if(!check_empty) {
+                        addToArr(arr_coorsor_coorsor, *arr_coorsor_size, item);
+                        (*leng_arr_coorsor)++;
+                    }
+                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &save_files);
                     *delete_files = 0;
                     save_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
 
                 } else if (*coords_cursor_y_menu == 7 && strcmp(path, trash_directory) == 0) {               // Restore
                     *restore_files = 1;
-
-                    if (!check_empty || count_item_arr == 1) {
-                        restore(ptr_user_data, path, file_name, active);
-                    } else {
-                        processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &check_empty, &save_files);
+                    if(!check_empty) {
+                        addToArr(arr_coorsor_coorsor, *arr_coorsor_size, item);
+                        (*leng_arr_coorsor)++;
                     }
+
+                    // if (!check_empty || count_item_arr == 1) {
+                        // restore(ptr_user_data, path, file_name, active);
+                    // } else {
+                        processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &save_files);
+                    // }
                     *restore_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
                 }

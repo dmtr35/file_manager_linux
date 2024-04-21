@@ -39,7 +39,7 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
     char screen_buffer[64] = {0};
     int buffer_pos = 0;
 
-    char *path = check_side ? ptr_user_data->left_path : ptr_user_data->right_path;
+    char *path = active ? ptr_user_data->left_path : ptr_user_data->right_path;
 
 
     // int check_empty = check_int_arr(ptr_user_data->arr_coorsor_struct.arr, ptr_user_data->arr_coorsor_struct.size);

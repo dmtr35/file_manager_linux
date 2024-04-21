@@ -22,32 +22,18 @@ void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file
     char *full_path = malloc(size_new_path * sizeof(char));
     snprintf(full_path, size_new_path, "%s/%s", path, file_name);
     if (*save_files && strcmp(file_name, ".my_trash") != 0) {
-        save_file(path, file_name, full_path, ptr_user_data);                                   // save_file
+        save_file(ptr_user_data, path, file_name, full_path);                                   // save_file
     }
     
-    struct stat statbuf;
-    if (lstat(full_path, &statbuf) == -1) {
-        char original_full_path[size_new_path];
-        strcpy(original_full_path, full_path);
-        char *ptr = strstr(original_full_path, " ->");
-            if (ptr != NULL) {
-            *ptr = '\0';
-        }
-        remove_one_file(original_full_path);
+    struct stat file_info;
+        if (lstat(full_path, &file_info) == -1) {
         perror("Error getting file status");
         return;
     }
-
-    if (stat(full_path, &statbuf) == -1) {
-        perror("Error getting file status");
-        return;
-    }
-
-
-    if (!S_ISDIR(statbuf.st_mode)) {
+    if (S_ISREG(file_info.st_mode) || S_ISLNK(file_info.st_mode)) {
         remove_one_file(full_path);
         return;
-    }
+    } 
 
 
     DIR *dir = opendir(full_path);
@@ -56,7 +42,6 @@ void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file
     }
 
     struct dirent *entry;                                                       // прочитать содержимое директории
-
     while ((entry = readdir(dir)) != NULL) {
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
             continue;
@@ -88,7 +73,7 @@ void remove_one_file(char *path)
 
 
 
-void save_file(char *path, char *file_name, char *ptr_full_path, user_data *ptr_user_data)
+void save_file(user_data *ptr_user_data, char *path, char *file_name, char *ptr_full_path)
 {   
     char *trash_directory = ptr_user_data->trash_directory;
     char dir_or_file[4];
@@ -121,9 +106,10 @@ void restore(user_data *ptr_user_data, char *path, char *file_name, _Bool active
 {
     char *trash_directory = ptr_user_data->trash_directory;
     int quantity_lines = active ? ptr_user_data->coordinates.quantity_lines_left : ptr_user_data->coordinates.quantity_lines_right;
-    extractFileNameAndPath(file_name, path);
+    char * copy_path = malloc(strlen(path) + 1);
+    extractFileNameAndPath(file_name, copy_path);
 
-    char *restore_path = replace_slashes_dash(path);
+    char *restore_path = replace_slashes_dash(copy_path);
     if (is_directory(restore_path)){
         size_t len_absolute_path = strlen(trash_directory) + strlen(file_name) + 2;
         char *absolute_path = malloc(len_absolute_path * sizeof(char));
@@ -143,6 +129,5 @@ void restore(user_data *ptr_user_data, char *path, char *file_name, _Bool active
         }
         free(absolute_path);
     }
-
-        
+    free(copy_path);
 }

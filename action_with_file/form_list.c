@@ -16,34 +16,29 @@
 
 
 
-void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files)
+void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files)
 {
     int *arr_coorsorarr_coorsor = ptr_user_data->arr_coorsor_struct.arr;
     size_t *arr_coorsor_size = &ptr_user_data->arr_coorsor_struct.size;
+    int *leng_arr_coorsor = &ptr_user_data->coordinates.leng_arr_coorsor;
     
-    if (*check_empty) {
-        for(int i = 0; i < *quantity_lines; ++i) {
-            for(int j = 0; j < ptr_user_data->coordinates.leng_arr_coorsor; ++j) {
-                if(all_files[i].file_id == arr_coorsorarr_coorsor[j]) {
-                    size_t leng_file_name = strlen(all_files[i].name) + 1;
-                    char file_name[leng_file_name];
-                    strcpy(file_name, all_files[i].name);
-                    
-                    select_way(ptr_user_data, all_files, path, file_name, active, quantity_lines, offset, save_files);
-                    // remove_first_element(arr_coorsorarr_coorsor, *arr_coorsor_size);
-                }
+    for(int i = 0; i < *quantity_lines; ++i) {
+        for(int j = 0; j < *leng_arr_coorsor; ++j) {
+            if(all_files[i].file_id == arr_coorsorarr_coorsor[j]) {
+                size_t leng_file_name = strlen(all_files[i].name) + 1;
+                char file_name[leng_file_name];
+                strcpy(file_name, all_files[i].name);
+                
+                select_way(ptr_user_data, all_files, path, file_name, active, quantity_lines, offset, save_files);
             }
         }
-    } else {
-        if(!(strcmp(file_name, "..") == 0)) {
-            select_way(ptr_user_data, all_files, path, file_name, active, quantity_lines, offset, save_files);
-        }
     }
+    
     if (offset < 0) {
         offset = 0;
     }
     fillWithZeros(arr_coorsorarr_coorsor, *arr_coorsor_size);
-    ptr_user_data->coordinates.leng_arr_coorsor = 0;
+    *leng_arr_coorsor = 0;
 }
 
 

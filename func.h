@@ -162,14 +162,14 @@ void delete_char_from_enter_name(WINDOW *win, char *screen_buffer, int *buffer_p
 // remove_file
 void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file_name, _Bool *save_files);
 void remove_one_file(char *path);
-void save_file(char *path, char *file_name, char *ptr_full_path, user_data *ptr_user_data);
+void save_file(user_data *ptr_user_data, char *path, char *file_name, char *ptr_full_path);
 void restore(user_data *ptr_user_data, char *path, char *file_name, _Bool active);
 void cp_mv_file(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active);
 void copy_file(user_data *ptr_user_data, file_data *all_files, char *source_directory, char *destination_directory, _Bool active);
 void copy_directory(user_data *ptr_user_data, file_data *all_files, char *source_directory, char *destination_directory, _Bool active);
 
 // form_list.c
-void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, int *check_empty, _Bool *save_files);
+void processing_list_files(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files);
 void select_way(user_data *ptr_user_data, file_data *all_files, char *path, char *file_name, _Bool active, int *quantity_lines, int *offset, _Bool *save_files);
 
 
