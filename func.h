@@ -111,6 +111,7 @@ void check_offset_less_zero(int *offset);
 void check_cursor_y_less_zero(int *cursor_y);
 void split_link(char *full_name, char *path_link, char *name_link);   // разделение link на имя и ссылку
 char *full_name_for_link(const char *name, const char *path);          // полное имя с сылкой на линк
+void link_to_file(char *full_path);                                 // достать ссылку на файл из ссылки
 
 
 // list_builder.c
@@ -137,6 +138,7 @@ void render_ls_and_create(user_data *ptr_user_data, file_data *all_files_left, f
 void mkdir_p(char *file_name, char *path);
 void touch_file(char *file_name, char *path);
 void create_link(char *file_name, char *path, char *name_file_row);
+void split_and_creation_link(char *source_directory, char *destination_directory);
 
 // button_processing
 void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side);

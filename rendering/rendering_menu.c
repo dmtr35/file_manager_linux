@@ -211,11 +211,7 @@ void render_menu(user_data *ptr_user_data, file_data *all_files_left, file_data 
                         (*leng_arr_coorsor)++;
                     }
 
-                    // if (!check_empty || count_item_arr == 1) {
-                        // restore(ptr_user_data, path, file_name, active);
-                    // } else {
-                        processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &save_files);
-                    // }
+                    processing_list_files(ptr_user_data, all_files_ptr, path, file_name, active, quantity_lines, offset, &save_files);
                     *restore_files = 0;
                     select_coorsor(ptr_user_data, all_files_ptr, quantity_lines, offset, count_item_arr, &check_empty);
                 }

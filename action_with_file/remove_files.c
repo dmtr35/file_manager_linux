@@ -21,14 +21,15 @@ void remove_directory_recursive(user_data *ptr_user_data, char *path, char *file
     size_t size_new_path = strlen(path) + strlen(file_name) + 3;
     char *full_path = malloc(size_new_path * sizeof(char));
     snprintf(full_path, size_new_path, "%s/%s", path, file_name);
-    if (*save_files && strcmp(file_name, ".my_trash") != 0) {
-        save_file(ptr_user_data, path, file_name, full_path);                                   // save_file
-    }
+
     
     struct stat file_info;
         if (lstat(full_path, &file_info) == -1) {
         perror("Error getting file status");
         return;
+    }
+    if (*save_files && strcmp(file_name, ".my_trash") != 0 && !S_ISLNK(file_info.st_mode)) {
+        save_file(ptr_user_data, path, file_name, full_path);                                   // save_file
     }
     if (S_ISREG(file_info.st_mode) || S_ISLNK(file_info.st_mode)) {
         remove_one_file(full_path);

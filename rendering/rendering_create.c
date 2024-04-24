@@ -204,7 +204,14 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                 } else if (*coords_cursor_y_menu == 5) {
                 if(buffer_pos){
                         char *file_name = screen_buffer;
-                        create_link(file_name, path, name_file_row);
+                        
+                        size_t size_path_to_file_name = strlen(path) + strlen(name_file_row) + 2;
+                        char *path_to_file_name = malloc(size_path_to_file_name * sizeof(char));
+                        snprintf(path_to_file_name, size_path_to_file_name, "%s/%s", path, name_file_row);
+
+                        create_link(file_name, path, path_to_file_name);
+                        
+                        free(path_to_file_name);
                         
                         is_enter_pressed = false;
                         *create_bool = false;

@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <sys/times.h>
 #include <utime.h>
-
+#include <errno.h>
 
 
 #include <ncurses.h>
@@ -86,66 +86,24 @@ void touch_file(char *file_name, char *path) {
 }
 
 
-void create_link(char *file_name_link, char *path, char *file_name) {
-    size_t size_path_to_name_link = strlen(path) + strlen(file_name_link) + 2;
-    size_t size_path_to_file_name = strlen(path) + strlen(file_name) + 2;
-    char *full_path_file_name_link = malloc(size_path_to_name_link * sizeof(char));
-    char *full_path_file_name = malloc(size_path_to_file_name * sizeof(char));
 
-    if (full_path_file_name == NULL || full_path_file_name_link == NULL) {
+void create_link(char *file_name_link, char *path, char *path_to_file_name) {
+    size_t size_path_to_name_link = strlen(path) + strlen(file_name_link) + 2;
+    char *full_path_file_name_link = malloc(size_path_to_name_link * sizeof(char));
+
+    if (full_path_file_name_link == NULL) {
         perror("Memory allocation failed");
         return;
     }
 
     snprintf(full_path_file_name_link, size_path_to_name_link, "%s/%s", path, file_name_link);
-    snprintf(full_path_file_name, size_path_to_file_name, "%s/%s", path, file_name);
 
-    if (symlink(full_path_file_name, full_path_file_name_link) == -1) {
-    // if (symlink(full_path_file_name_link, full_path_file_name) == -1) {
-        perror("Failed to create symbolic link");
-        free(full_path_file_name);
+    if (symlink(path_to_file_name, full_path_file_name_link) == -1) {
+        fprintf(stderr, "Failed to create symbolic link: %s\n", strerror(errno));
         free(full_path_file_name_link);
         return;
     }
 
 
-    free(full_path_file_name);
     free(full_path_file_name_link);
 }
-
-
-// void create_link(char *file_name_link, char *path, char *file_name) {
-//     // Вычисляем размеры для полных путей
-//     size_t path_len = strlen(path);
-//     size_t file_name_len = strlen(file_name);
-//     size_t file_name_link_len = strlen(file_name_link);
-//     size_t full_path_file_name_size = path_len + file_name_len + 2;
-//     size_t full_path_file_name_link_size = path_len + file_name_link_len + 2;
-
-//     // Выделяем память под строки
-//     char *full_path_file_name = malloc(full_path_file_name_size * sizeof(char));
-//     char *full_path_file_name_link = malloc(full_path_file_name_link_size * sizeof(char));
-
-//     // Проверяем, была ли память выделена успешно
-//     if (full_path_file_name == NULL || full_path_file_name_link == NULL) {
-//         perror("Memory allocation failed");
-//         return;
-//     }
-
-//     // Создаем полные пути к файлам
-//     snprintf(full_path_file_name, full_path_file_name_size, "%s/%s", path, file_name);
-//     snprintf(full_path_file_name_link, full_path_file_name_link_size, "%s/%s", path, file_name_link);
-
-//     // Создаем символическую ссылку
-//     if (symlink(full_path_file_name, full_path_file_name_link) == -1) {
-//         perror("Failed to create symbolic link");
-//         // Освобождаем память перед выходом из функции в случае ошибки
-//         free(full_path_file_name);
-//         free(full_path_file_name_link);
-//         return;
-//     }
-
-//     // Освобождаем выделенную память
-//     free(full_path_file_name);
-//     free(full_path_file_name_link);
-// }

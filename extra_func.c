@@ -337,3 +337,19 @@ char *full_name_for_link(const char *name, const char *path)
     return result_name;
 }
 
+
+// достать ссылку на файл из ссылким
+void link_to_file(char *full_path)
+{
+    char *target_to_path = malloc(1024);
+
+    size_t target_length = readlink(full_path, target_to_path, 1023);
+    if (target_length != -1) {
+        target_to_path[target_length] = '\0';
+    } else {
+        perror("Ошибка чтения символической ссылки");
+    }
+
+    strcpy(full_path, target_to_path);
+    free(target_to_path);
+}

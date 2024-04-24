@@ -26,7 +26,7 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
     int i = *cursor_y + (check_side ? ptr_user_data->coordinates.offset_left : ptr_user_data->coordinates.offset_right) - 1;
     char *file_name = all_files[i].name;
     
-
+    
 
     if ((strchr(all_files[i].permissions, 'd') != NULL)) {
         strcpy(previous_path, path);
@@ -56,20 +56,13 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
             ptr_user_data->coordinates.offset_right = 0;
         }
     } else if (strchr(all_files[i].permissions, 'l') != 0) {
-        size_t full_path_size = strlen(path) + strlen(file_name) + 1;
-        char *full_path_for_link = malloc(full_path_size * sizeof(char));
-        char *path_link = malloc(full_path_size * sizeof(char));
-        char *name_link = malloc(full_path_size * sizeof(char));
-        split_link(file_name, path_link, name_link);
+        size_t full_path_size = strlen(path) + strlen(all_files[i].name) + 2;
+        char *full_path = malloc(1024);
+        snprintf(full_path, full_path_size, "%s/%s", path, all_files[i].name);
 
-        if (is_directory(path_link) == 0) return;
-        
-        size_t full_path_size_name_link = strlen(path) + strlen(name_link) + 1;
 
-        snprintf(full_path_for_link, (strlen(path) == 1) ? full_path_size_name_link : full_path_size_name_link + 1, (strlen(path) == 1) ? "%s%s" : "%s/%s", path, name_link);
-
-        if (is_directory(path_link)) {
-            strcpy(path, full_path_for_link);
+        if (is_directory(full_path)) {
+            strcpy(path, full_path);
 
             if (check_side) {
                 ptr_user_data->coordinates.offset_left = 0;
@@ -78,10 +71,8 @@ void click_on_file(user_data *ptr_user_data, file_data *all_files, _Bool active,
             }
         }
 
-
         *cursor_y = 1;
-        free(path_link);
-        free(name_link);
+        free(full_path);
     }
     strcpy(check_side ? ptr_user_data->left_path : ptr_user_data->right_path, path);
 }
@@ -147,28 +138,26 @@ void open_in_vim(user_data *ptr_user_data, file_data *all_files, _Bool check_sid
     char *file_name = all_files[i].name;
 
     size_t full_path_size = strlen(path) + strlen(file_name) + 2;
-    char *full_path = malloc(full_path_size * sizeof(char));
+    char *full_path = malloc(1024);
     snprintf(full_path, full_path_size, "%s/%s", path, file_name);
 
-    char *path_link = malloc(full_path_size * sizeof(char));
-    char *name_link = malloc(full_path_size * sizeof(char));
-    split_link(full_path, path_link, name_link);
+    struct stat file_info;
+    if (lstat(full_path, &file_info) == 0) {
+        if (S_ISLNK(file_info.st_mode)) {
+            link_to_file(full_path);                                // достать ссылку на файл из ссылки
+        } else if (S_ISDIR(file_info.st_mode)) {
+            return;
+        }
+    }
+
 
     
-    if(strchr(all_files[i].permissions, 'd') != 0 || is_directory(name_link)) return;
 
     
     char height_win;
     char width_win;
     getmaxyx(win, height_win, width_win);
     char command[256];
-
-    if (strchr(all_files[i].permissions, 'l') != 0) {
-        
-        strcpy(full_path, path_link);
-        free(path_link);
-        free(name_link);
-    } 
 
     snprintf(command, sizeof(command), "vim -c \"edit %s\" -c \"wincmd w\" -c \"resize %d\" -c \"wincmd w\" -c \"resize %d\"", full_path, height_win, width_win);
 
