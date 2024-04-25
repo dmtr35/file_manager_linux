@@ -375,9 +375,24 @@ int main()
             // else if (ch == 'a') {
             *create_bool = !*create_bool;
         }
-        else if (ch == 1) {                                           // ch == 1 -> ctrl + a   терминал, приостановлено
+        // else if (ch == 1) {                                           // ch == 1 -> ctrl + a   терминал, приостановлено
         // else if (ch == 'a') {
-            *command_bool = !*command_bool;
+            // *command_bool = !*command_bool;
+        // }
+        else if (ch == 1 || ch == 'a') {                                           // ch == 1 -> ctrl + a   выделить все
+            // _Bool contains = containsAnyElement(arr_coorsor_coorsor, *arr_coorsor_size, (*quantity_lines - 1));
+                // if(contains) {
+                    if ((*quantity_lines - 1) > *leng_arr_coorsor) {
+                        addAllToArr(arr_coorsor_coorsor, *arr_coorsor_size, (*quantity_lines - 1));
+                        *leng_arr_coorsor = *quantity_lines - 1;
+                    } else {
+                        fillWithZeros(arr_coorsor_coorsor, *arr_coorsor_size);
+                        *leng_arr_coorsor = 0;
+                    }
+                // } else {
+                    // if ((*quantity_lines - 1) == *leng_arr_coorsor) {
+                    // }
+                // }
         }
         else if (ch == 'w')
         { // ctrl + a   терминал, приостановлено
@@ -392,7 +407,7 @@ int main()
         }
         if (ch == ' ') {
             if (strcmp(ptr_user_data->coorsor_file, "..") != 0) {
-                bool contains = containsElement(arr_coorsor_coorsor, *arr_coorsor_size, item);
+                _Bool contains = containsElement(arr_coorsor_coorsor, *arr_coorsor_size, item);
                 if(contains) {
                     if (*leng_arr_coorsor > 0) {
                         removeFromArr(arr_coorsor_coorsor, *arr_coorsor_size, item);

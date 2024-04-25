@@ -5,7 +5,7 @@
 #include <time.h>
 #include <ncurses.h>
 
-#define MAX_ARR_SIZE 100
+#define MAX_ARR_SIZE 1000
 #define MAX_ARR_SIZE_SAVE_PATH 5
 #define MAX_PATH_LENGTH 1024
 // #define ARROW " --> "
@@ -101,17 +101,18 @@ void remove_first_char(char *str);
 void removeDuplicates(int *arr, size_t size);
 void addToArr(int *arr, size_t size, int value);
 void removeFromArr(int *arr, size_t size, int value);
-bool containsElement(int *arr, size_t size, int value);
+_Bool containsElement(int *arr, size_t size, int value);
 void fillWithZeros(int *arr, size_t size);
 int check_int_arr(int *arr, size_t size);                               // проверка массива, есть ли в нем элементы
-void remove_first_element(int *arr, size_t size);                             // удалить первый элемент массива
-int longest(user_data *ptr_user_data, size_t leng_path);                           // определяем какой размер самой длинной строки в массиве
+void remove_first_element(int *arr, size_t size);                       // удалить первый элемент массива
+int longest(user_data *ptr_user_data, size_t leng_path);                // определяем какой размер самой длинной строки в массиве
 int count_non_zero_elements(int *arr, size_t size);                     // сколько элементов в массиве
 void check_offset_less_zero(int *offset);
 void check_cursor_y_less_zero(int *cursor_y);
-void split_link(char *full_name, char *path_link, char *name_link);   // разделение link на имя и ссылку
-char *full_name_for_link(const char *name, const char *path);          // полное имя с сылкой на линк
-void link_to_file(char *full_path);                                 // достать ссылку на файл из ссылки
+void split_link(char *full_name, char *path_link, char *name_link);     // разделение link на имя и ссылку
+char *full_name_for_link(const char *name, const char *path);           // полное имя с сылкой на линк
+void link_to_file(char *full_path);                                     // достать ссылку на файл из ссылки
+void addAllToArr(int *arr, size_t size, int item);                          // добавить все элементы в массив
 
 
 // list_builder.c

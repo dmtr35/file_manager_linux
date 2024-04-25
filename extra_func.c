@@ -203,14 +203,22 @@ void removeFromArr(int *arr, size_t size, int value)
     }
 }
 
-bool containsElement(int *arr, size_t size, int value)
+
+void addAllToArr(int *arr, size_t size, int items)                    // добавить все элементы в массив
+{
+    for(int i = 0; i < items; ++i) {
+        arr[i] = i + 1;
+    }
+}
+
+_Bool containsElement(int *arr, size_t size, int value)
 {
     for (int i = 0; i < size; i++) {
         if (arr[i] == value) {
-            return true;  // Элемент найден, возвращаем true
+            return true;                                // Элемент найден, возвращаем true
         }
     }
-    return false;  // Элемент не найден, возвращаем false
+    return false;                                       // Элемент не найден, возвращаем false
 }
 
 void fillWithZeros(int *arr, size_t size)
@@ -221,10 +229,10 @@ void fillWithZeros(int *arr, size_t size)
 // проверка массива, есть ли в нем элементы
 int check_int_arr(int *arr, size_t size)
 {
-int is_empty = 0;                                    // Предполагаем, что массив пустой (заполнен нулями)
+int is_empty = 0;                                               // Предполагаем, что массив пустой (заполнен нулями)
     for (int i = 0; i < size; i++) {
         if (arr[i] != 0) {
-            is_empty = 1;                           // Массив не пустой, так как найден ненулевой элемент
+            is_empty = 1;                                        // Массив не пустой, так как найден ненулевой элемент
             return is_empty;
         }
     }
@@ -259,20 +267,6 @@ int count_non_zero_elements(int *arr, size_t size)
     return non_zero_count;
 }
 
-// void remove_first_element(int *arr, size_t size) {                             // удалить первый элемент массива
-//     if (size == 0) {
-//         // Если массив пуст, ничего удалять не нужно
-//         return;
-//     }
-
-//     // Сдвигаем элементы массива на одну позицию влево, начиная с индекса 1
-//     for (size_t i = 1; i < size; i++) {
-//         arr[i - 1] = arr[i];
-//     }
-
-//     // Уменьшаем размер массива на 1
-//     (size)--;
-// }
 
 void check_offset_less_zero(int *offset)                       
 {
@@ -353,3 +347,7 @@ void link_to_file(char *full_path)
     strcpy(full_path, target_to_path);
     free(target_to_path);
 }
+
+
+
+
