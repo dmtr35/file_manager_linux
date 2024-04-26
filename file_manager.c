@@ -12,7 +12,7 @@
 #include <locale.h>
 #include <signal.h>
 
-#include "func.h"
+#include "header.h"
 
 // #define MAX_ARR_SIZE 100
 

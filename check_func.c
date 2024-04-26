@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 
 
-#include "func.h"
+#include "header.h"
 
 
 int check_func(user_data *ptr_user_data)

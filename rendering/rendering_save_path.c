@@ -9,7 +9,7 @@
 #include <ncurses.h>
 #include <signal.h>
 
-#include "../func.h"
+#include "../header.h"
 
 void render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {

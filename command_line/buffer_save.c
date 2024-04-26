@@ -13,7 +13,7 @@
 #include <locale.h>
 #include <signal.h>
 
-#include "../func.h"
+#include "../header.h"
 
 void add_char_to_enter_name(WINDOW *win, int ch, char *screen_buffer, int *buffer_pos) {
     if (*buffer_pos < 63) {                                                                 // Убедитесь, что позиция буфера не превышает максимальную длину

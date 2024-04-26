@@ -5,7 +5,7 @@
 #include <time.h>
 #include <ncurses.h>
 
-#define MAX_ARR_SIZE 1000
+#define MAX_ARR_SIZE 500
 #define MAX_ARR_SIZE_SAVE_PATH 5
 #define MAX_PATH_LENGTH 1024
 // #define ARROW " --> "
@@ -140,6 +140,9 @@ void mkdir_p(char *file_name, char *path);
 void touch_file(char *file_name, char *path);
 void create_link(char *file_name, char *path, char *name_file_row);
 void split_and_creation_link(char *source_directory, char *destination_directory);
+void rename_file(char *new_file_name, char *path, char *name_file_row);
+void change_permission(char *new_file_name, char *path, char *name_file_row);
+mode_t parmission(char *new_permission, char *full_path);
 
 // button_processing
 void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side);

@@ -12,7 +12,7 @@
 #include <ncurses.h>
 #include <signal.h>
 
-#include "../func.h"
+#include "../header.h"
 
 void render_create(user_data *ptr_user_data, file_data *all_files_left, file_data *all_files_right, _Bool active, _Bool check_side, _Bool turn_render_ls, WINDOW *win_menu, WINDOW *win_right, WINDOW *win_left)
 {
@@ -95,19 +95,21 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
         int offset_menu = 0;
         int i = 0 + offset_menu;
         int row = 3;
-        for (; i < 3 && row <= 5; ++i, ++row) {
+        for (; i < 5 && row <= 7; ++i, ++row) {
             if (row == *coords_cursor_y_menu) {
                 wattron(win_menu, A_BOLD);
                 wattron(win_menu, COLOR_PAIR(22));                       // Включаем цветовую пару для всей строки
                 mvwhline(win_menu, row, 1, ' ', width_win - 2); // Заполняем строку пробелами для очистки ее содержимого
 
                 mvwprintw(win_menu, 1, 1, "%s", new_path);
-                mvwprintw(win_menu, 3, width_win / 2 - 6, "create folder");
+                mvwprintw(win_menu, 3, width_win / 2 - 8, "create directory");
                 mvwprintw(win_menu, 4, width_win / 2 - 6, "create touch");
                 mvwprintw(win_menu, 5, width_win / 2 - 6, "create link");
+                mvwprintw(win_menu, 6, width_win / 2 - 3, "rename");
+                mvwprintw(win_menu, 7, width_win / 2 - 5, "permission");
 
                 if (*enter_name_bool) {
-                    mvwprintw(win_menu, 7, 1, "Enter name: %s", screen_buffer);
+                    mvwprintw(win_menu, 8, 1, "Enter name: %s", screen_buffer);
                 }
 
                 wattroff(win_menu, COLOR_PAIR(22)); // Отключаем цветовую пару
@@ -175,10 +177,10 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
             }
             else if (ch == '\n')
             {
-                if (*coords_cursor_y_menu == 3) {
+                if (*coords_cursor_y_menu == 3) {                                   // create dir
                     if(buffer_pos){
-                        char *file_name = screen_buffer;
-                        mkdir_p(file_name, path);
+                        char *new_file_name = screen_buffer;
+                        mkdir_p(new_file_name, path);
                         
                         is_enter_pressed = false;
                         *create_bool = false;
@@ -188,10 +190,10 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                         *enter_name_bool = true;
                         render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
                     }
-                } else if (*coords_cursor_y_menu == 4) {
+                } else if (*coords_cursor_y_menu == 4) {                            // create touch
                     if(buffer_pos){
-                        char *file_name = screen_buffer;
-                        touch_file(file_name, path);
+                        char *new_file_name = screen_buffer;
+                        touch_file(new_file_name, path);
                         
                         is_enter_pressed = false;
                         *create_bool = false;
@@ -201,15 +203,15 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                         *enter_name_bool = true;
                         render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
                     }
-                } else if (*coords_cursor_y_menu == 5) {
-                if(buffer_pos){
-                        char *file_name = screen_buffer;
+                } else if (*coords_cursor_y_menu == 5) {                            // create link
+                    if(buffer_pos){
+                        char *new_file_name = screen_buffer;
                         
                         size_t size_path_to_file_name = strlen(path) + strlen(name_file_row) + 2;
                         char *path_to_file_name = malloc(size_path_to_file_name * sizeof(char));
                         snprintf(path_to_file_name, size_path_to_file_name, "%s/%s", path, name_file_row);
 
-                        create_link(file_name, path, path_to_file_name);
+                        create_link(new_file_name, path, path_to_file_name);
                         
                         free(path_to_file_name);
                         
@@ -221,6 +223,34 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                         *enter_name_bool = true;
                         render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
                     }
+                } else if (*coords_cursor_y_menu == 6) {                            // rename
+                    if(buffer_pos){
+                        char *new_file_name = screen_buffer;
+
+                        rename_file(new_file_name, path, name_file_row);
+
+                        is_enter_pressed = false;
+                        *create_bool = false;
+                        *coords_cursor_y_menu = 3;
+                        *enter_name_bool = false;
+                    } else {
+                        *enter_name_bool = true;
+                        render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                    }
+                } else if (*coords_cursor_y_menu == 7) {                            // permission
+                    if(buffer_pos){
+                        char *new_permission = screen_buffer;
+                        change_permission(new_permission, path, name_file_row);
+
+                        is_enter_pressed = false;
+                        *create_bool = false;
+                        *coords_cursor_y_menu = 3;
+                        *enter_name_bool = false;
+                    } else {
+                        *enter_name_bool = true;
+                        render_create(ptr_user_data, all_files_left, all_files_right, active, check_side, turn_render_ls, win_menu, win_right, win_left);
+                    }
+
                 }
 
                 is_enter_pressed = false;
@@ -235,21 +265,21 @@ void render_create(user_data *ptr_user_data, file_data *all_files_left, file_dat
                     if (*coords_cursor_y_menu > 3) {
                         (*coords_cursor_y_menu)--;
                     } else if (*coords_cursor_y_menu == 3) {
-                        *coords_cursor_y_menu = 5;
+                        *coords_cursor_y_menu = 7;
                     }
                     *enter_name_bool = false;
                     render_ls_and_create(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
                 } else if (next1 == '[' && next2 == 'B') {
-                    if (*coords_cursor_y_menu < 5) {
+                    if (*coords_cursor_y_menu < 7) {
                         (*coords_cursor_y_menu)++;
-                    } else if (*coords_cursor_y_menu == 5) {
+                    } else if (*coords_cursor_y_menu == 7) {
                         *coords_cursor_y_menu = 3;
                     }
                     *enter_name_bool = false;
                     render_ls_and_create(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
                 } 
                 else if (next1 == '[' && next2 == 'C') {                                      // -> на последнюю
-                    *coords_cursor_y_menu = 5;
+                    *coords_cursor_y_menu = 7;
                     *enter_name_bool = false;
                     render_ls_and_create(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
                 } else if (next1 == '[' && next2 == 'D') {                                    // <- на первую

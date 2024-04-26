@@ -13,7 +13,7 @@
 #include <libgen.h>
 #include <locale.h>
 
-#include "../func.h"
+#include "../header.h"
 
 
 

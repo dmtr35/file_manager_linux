@@ -16,7 +16,7 @@
 #include <ncurses.h>
 #include <signal.h>
 
-#include "../func.h"
+#include "../header.h"
 
 
 
@@ -107,3 +107,23 @@ void create_link(char *file_name_link, char *path, char *path_to_file_name) {
 
     free(full_path_file_name_link);
 }
+
+
+
+void rename_file(char *new_file_name, char *path, char *name_file_row)
+{
+    size_t size_old_directory = strlen(path) + strlen(name_file_row) + 2;
+    char *old_directory = malloc(size_old_directory * sizeof(char));
+    snprintf(old_directory, size_old_directory, "%s/%s", path, name_file_row);
+
+    size_t size_new_directory = strlen(path) + strlen(new_file_name) + 2;
+    char *new_directory = malloc(size_new_directory * sizeof(char));
+    snprintf(new_directory, size_new_directory, "%s/%s", path, new_file_name);
+
+    rename(old_directory, new_directory);
+
+    free(old_directory);
+    free(new_directory);
+}
+
+

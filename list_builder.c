@@ -13,7 +13,7 @@
 #include <stdint.h>
 
 
-#include "func.h"
+#include "header.h"
 
 
 int ls_list(user_data *ptr_user_data, file_data *all_files, _Bool check_side, _Bool *flag_hidden_files, int *quantity_lines)

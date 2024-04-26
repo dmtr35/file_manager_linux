@@ -16,7 +16,7 @@
 #include <utime.h>
 
 
-#include "func.h"
+#include "../header.h"
 
 
 int is_directory(const char *path)                              // проверка на директорию

@@ -12,7 +12,7 @@
 #include <locale.h>
 #include <signal.h>
 
-#include "../func.h"
+#include "../header.h"
 
 char screen_buffer[10000] = {0};
 int buffer_pos = 0;
