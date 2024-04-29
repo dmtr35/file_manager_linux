@@ -156,7 +156,8 @@ void render_save_path(user_data *ptr_user_data, file_data *all_files_left, file_
 
                 is_enter_pressed = false;
                 *save_path_bool = false;
-            } else if (ch == 'r' || ch == KEY_RESIZE) {
+            } else if (ch == KEY_RESIZE) {
+            // } else if (ch == 'r' || ch == KEY_RESIZE) {
                 render_ls_and_save_path(ptr_user_data, all_files_left, all_files_right, turn_render_ls, active, check_side, &is_enter_pressed, coords_cursor_y_menu, win_menu, win_right, win_left);
             } else if (ch == 27) {
                 int next1 = wgetch(stdscr);

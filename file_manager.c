@@ -236,6 +236,7 @@ int main()
             break;
         } 
         else if (ch == 'r' || ch == KEY_RESIZE) {
+        // else if (ch == 'r' || ch == KEY_RESIZE) {
             int new_height, new_width;
             getmaxyx(stdscr, new_height, new_width);
             int cursor_position = all_files_ptr[item].file_id;

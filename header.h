@@ -141,8 +141,16 @@ void touch_file(char *file_name, char *path);
 void create_link(char *file_name, char *path, char *name_file_row);
 void split_and_creation_link(char *source_directory, char *destination_directory);
 void rename_file(char *new_file_name, char *path, char *name_file_row);
-void change_permission(char *new_file_name, char *path, char *name_file_row);
+
+// permission.c
+void change_permission(char *new_permission, char *path, char *name_file_row);
 mode_t parmission(char *new_permission, char *full_path);
+void set_permission_sign(char first_part, char *sign, char *second_part, unsigned short *mode, const mode_t previous_permissions);
+void second_args(char *second_part, char *sign, unsigned short *mode, const mode_t previous_permissions, unsigned char offset);
+void set_permission_s_and_t(char first_part, char *sign, char *second_part, unsigned short *mode, const mode_t previous_permissions);
+void set_permission_num(char *permission, unsigned short *mode);
+void change_bit(char *sign, unsigned short *mode, const mode_t previous_permissions, unsigned char offset, short exec_bit_value);
+
 
 // button_processing
 void backspace(user_data *ptr_user_data, file_data *all_files, _Bool active, _Bool check_side);
